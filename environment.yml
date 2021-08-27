@@ -4,7 +4,8 @@ channels:
     - defaults
 dependencies:
     - python=3.9
+    - pandas
+    - pytables
     - pyvista
-    - pip
-    - pip:
-          - dearpygui
+    - pyvistaqt
+    - pyqt
