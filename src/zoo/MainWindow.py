@@ -20,9 +20,9 @@ class MainWindow(qtw.QMainWindow):
 
         self.plotter = QtInteractor(self.ui.viewport)
         self.ui.viewport.layout().addWidget(self.plotter.interactor)
-        self.hook_up_signals()
 
-        self.model = None
+        self.model = H5Model()
+        self.hook_up_signals()
 
         if show:
             self.show()
@@ -51,11 +51,18 @@ class MainWindow(qtw.QMainWindow):
         self.ui.zminSpinBox.valueChanged.connect(self.set_clip_zmin)
         self.ui.zmaxSpinBox.valueChanged.connect(self.set_clip_zmax)
 
+        self.model.loaded_file.connect(self.toggle_controls)
+
+        self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
+
     def open_file(self):
         # stackoverflow.com/a/44076057/13130795
         filename, _ = qtw.QFileDialog.getOpenFileName(self)
         if filename:
-            self.model = H5Model(filename)
+            self.model.load_file(filename)
+
+    def toggle_controls(self, enable: bool):
+        print("toggle_controls", enable)
 
     def increment_timestep(self):
         self.model.timestep_index += 1
@@ -107,6 +114,6 @@ class MainWindow(qtw.QMainWindow):
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
+    app = qtw.QApplication(sys.argv)
     window = MainWindow()
     sys.exit(app.exec_())
