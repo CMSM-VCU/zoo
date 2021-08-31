@@ -1,5 +1,9 @@
+import os
 import sys
 
+os.environ["QT_API"] = "pyqt5"
+
+from pyvistaqt import QtInteractor
 from qtpy import QtCore as qtc
 from qtpy import QtGui as qtg
 from qtpy import QtWidgets as qtw
@@ -13,6 +17,9 @@ class MainWindow(qtw.QMainWindow):
         super().__init__(parent=parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        self.plotter = QtInteractor(self.ui.viewport)
+        self.ui.viewport.layout().addWidget(self.plotter.interactor)
         self.hook_up_signals()
 
         self.model = None
