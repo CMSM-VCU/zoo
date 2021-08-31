@@ -439,7 +439,7 @@
               <item>
                <layout class="QGridLayout" name="gridLayout_2">
                 <item row="3" column="1">
-                 <widget class="QDoubleSpinBox" name="znegSpinBox">
+                 <widget class="QDoubleSpinBox" name="zminSpinBox">
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -457,7 +457,7 @@
                  </widget>
                 </item>
                 <item row="2" column="2">
-                 <widget class="QDoubleSpinBox" name="yposSpinBox">
+                 <widget class="QDoubleSpinBox" name="ymaxSpinBox">
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -496,7 +496,7 @@
                  </widget>
                 </item>
                 <item row="3" column="2">
-                 <widget class="QDoubleSpinBox" name="zposSpinBox">
+                 <widget class="QDoubleSpinBox" name="zmaxSpinBox">
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -535,7 +535,7 @@
                  </widget>
                 </item>
                 <item row="2" column="1">
-                 <widget class="QDoubleSpinBox" name="ynegSpinBox">
+                 <widget class="QDoubleSpinBox" name="yminSpinBox">
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -553,7 +553,7 @@
                  </widget>
                 </item>
                 <item row="0" column="2">
-                 <widget class="QDoubleSpinBox" name="xposSpinBox">
+                 <widget class="QDoubleSpinBox" name="xmaxSpinBox">
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -592,7 +592,7 @@
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QDoubleSpinBox" name="xnegSpinBox">
+                 <widget class="QDoubleSpinBox" name="xminSpinBox">
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -700,12 +700,12 @@
   <tabstop>colormaxSpinBox</tabstop>
   <tabstop>maskminSpinBox</tabstop>
   <tabstop>maskmaxSpinBox</tabstop>
-  <tabstop>xnegSpinBox</tabstop>
-  <tabstop>xposSpinBox</tabstop>
-  <tabstop>ynegSpinBox</tabstop>
-  <tabstop>yposSpinBox</tabstop>
-  <tabstop>znegSpinBox</tabstop>
-  <tabstop>zposSpinBox</tabstop>
+  <tabstop>xminSpinBox</tabstop>
+  <tabstop>xmaxSpinBox</tabstop>
+  <tabstop>yminSpinBox</tabstop>
+  <tabstop>ymaxSpinBox</tabstop>
+  <tabstop>zminSpinBox</tabstop>
+  <tabstop>zmaxSpinBox</tabstop>
  </tabstops>
  <resources/>
  <connections/>
