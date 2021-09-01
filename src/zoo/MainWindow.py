@@ -22,6 +22,7 @@ class MainWindow(qtw.QMainWindow):
         self.ui.viewport.layout().addWidget(self.model.plotter.interactor)
 
         self.hook_up_signals()
+        self.toggle_control_pane(enable=False)
 
         if show:
             self.show()
@@ -55,7 +56,7 @@ class MainWindow(qtw.QMainWindow):
         self.ui.zminSpinBox.valueChanged.connect(self.set_clip_zmin)
         self.ui.zmaxSpinBox.valueChanged.connect(self.set_clip_zmax)
 
-        self.model.loaded_file.connect(self.toggle_controls)
+        self.model.loaded_file.connect(self.toggle_control_pane)
 
         self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
 
@@ -65,27 +66,51 @@ class MainWindow(qtw.QMainWindow):
         if filename:
             self.model.load_file(filename)
 
-    def toggle_controls(self, enable: bool):
+    def toggle_control_pane(self, enable: bool):
         print("toggle_controls", enable)
-        self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
-        self.ui.datasetSelector.addItems(self.model.datasets)
-        self.ui.gsSpinBox.setValue(self.model.grid_spacing)
-        self.ui.exagSpinBox.setValue(self.model.exaggeration)
+        self.ui.timeStepSelector.setEnabled(enable)
+        self.ui.nextTimeStep.setEnabled(enable)
+        self.ui.prevTimeStep.setEnabled(enable)
+        self.ui.gsSpinBox.setEnabled(enable)
+        self.ui.exagSpinBox.setEnabled(enable)
+        self.ui.datasetSelector.setEnabled(enable)
+        self.ui.colorCheckBox.setEnabled(enable)
+        self.ui.maskCheckBox.setEnabled(enable)
+        self.ui.xclipCheckBox.setEnabled(enable)
+        self.ui.yclipCheckBox.setEnabled(enable)
+        self.ui.zclipCheckBox.setEnabled(enable)
+        self.ui.menuView.setEnabled(enable)
+        if enable:
+            self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
+            self.ui.datasetSelector.addItems(self.model.datasets)
+            self.ui.gsSpinBox.setValue(self.model.grid_spacing)
+            self.ui.exagSpinBox.setValue(self.model.exaggeration)
+        else:
+            self.ui.colorCheckBox.setChecked(enable)
+            self.ui.maskCheckBox.setChecked(enable)
+            self.ui.xclipCheckBox.setChecked(enable)
+            self.ui.yclipCheckBox.setChecked(enable)
+            self.ui.zclipCheckBox.setChecked(enable)
 
     def toggle_color_controls(self, enable: bool):
-        print("toggle_color_controls", enable)
+        self.ui.colorminSpinBox.setEnabled(enable)
+        self.ui.colormaxSpinBox.setEnabled(enable)
 
     def toggle_mask_controls(self, enable: bool):
-        print("toggle_mask_controls", enable)
+        self.ui.maskminSpinBox.setEnabled(enable)
+        self.ui.maskmaxSpinBox.setEnabled(enable)
 
     def toggle_xclip_controls(self, enable: bool):
-        print("toggle_xclip_controls", enable)
+        self.ui.xminSpinBox.setEnabled(enable)
+        self.ui.xmaxSpinBox.setEnabled(enable)
 
     def toggle_yclip_controls(self, enable: bool):
-        print("toggle_yclip_controls", enable)
+        self.ui.yminSpinBox.setEnabled(enable)
+        self.ui.ymaxSpinBox.setEnabled(enable)
 
     def toggle_zclip_controls(self, enable: bool):
-        print("toggle_zclip_controls", enable)
+        self.ui.zminSpinBox.setEnabled(enable)
+        self.ui.zmaxSpinBox.setEnabled(enable)
 
     def increment_timestep(self):
         self.model.timestep_index += 1
