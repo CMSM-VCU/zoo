@@ -347,6 +347,9 @@
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="colorminSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -365,6 +368,9 @@
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="colormaxSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -409,6 +415,9 @@
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="maskminSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -427,6 +436,9 @@
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="maskmaxSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -486,6 +498,9 @@
                <layout class="QGridLayout" name="gridLayout_2">
                 <item row="3" column="2">
                  <widget class="QDoubleSpinBox" name="zminSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -525,6 +540,9 @@
                 </item>
                 <item row="2" column="3">
                  <widget class="QDoubleSpinBox" name="ymaxSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -564,6 +582,9 @@
                 </item>
                 <item row="3" column="3">
                  <widget class="QDoubleSpinBox" name="zmaxSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -603,6 +624,9 @@
                 </item>
                 <item row="0" column="3">
                  <widget class="QDoubleSpinBox" name="xmaxSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -621,6 +645,9 @@
                 </item>
                 <item row="0" column="2">
                  <widget class="QDoubleSpinBox" name="xminSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -639,6 +666,9 @@
                 </item>
                 <item row="2" column="2">
                  <widget class="QDoubleSpinBox" name="yminSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
