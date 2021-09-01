@@ -96,15 +96,18 @@ class H5Model(qtc.QAbstractItemModel):
         )
         for dataset in self.datasets:
             self.mesh[dataset] = self.df.loc[self.timestep, dataset].to_numpy()
+        self.mesh["_displacement"] = self.df.loc[
+            self.timestep, ("u1", "u2", "u3")
+        ].to_numpy()
 
         self.change_glyphs()
         self.refit_scalar_bar()
 
     def change_glyphs(self) -> None:
         if self.mesh:
-            self.glyphmesh = self.mesh.glyph(
-                scale=False, orient=False, factor=self.grid_spacing, geom=pv.Cube()
-            )
+            self.glyphmesh = self.mesh.warp_by_vector(
+                "_displacement", factor=self.exaggeration,
+            ).glyph(scale=False, orient=False, factor=self.grid_spacing, geom=pv.Cube())
             self.plotter.add_mesh(
                 self.glyphmesh, scalars=self.dataset, name="primary", render=False
             )
