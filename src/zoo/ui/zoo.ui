@@ -339,6 +339,13 @@
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
+                 <widget class="QCheckBox" name="colorCheckBox">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QDoubleSpinBox" name="colorminSpinBox">
                   <property name="font">
                    <font>
@@ -393,6 +400,13 @@
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <item>
+                 <widget class="QCheckBox" name="maskCheckBox">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="maskminSpinBox">
                   <property name="font">
@@ -470,7 +484,7 @@
               </property>
               <item>
                <layout class="QGridLayout" name="gridLayout_2">
-                <item row="3" column="1">
+                <item row="3" column="2">
                  <widget class="QDoubleSpinBox" name="zminSpinBox">
                   <property name="font">
                    <font>
@@ -488,7 +502,28 @@
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="2">
+                <item row="3" column="0">
+                 <widget class="QLabel" name="zLabel">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>8</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Z</string>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="3">
                  <widget class="QDoubleSpinBox" name="ymaxSpinBox">
                   <property name="font">
                    <font>
@@ -527,65 +562,8 @@
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="2">
+                <item row="3" column="3">
                  <widget class="QDoubleSpinBox" name="zmaxSpinBox">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="zLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Z</string>
-                  </property>
-                  <property name="scaledContents">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QDoubleSpinBox" name="yminSpinBox">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QDoubleSpinBox" name="xmaxSpinBox">
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -623,7 +601,25 @@
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="1">
+                <item row="0" column="3">
+                 <widget class="QDoubleSpinBox" name="xmaxSpinBox">
+                  <property name="font">
+                   <font>
+                    <pointsize>8</pointsize>
+                   </font>
+                  </property>
+                  <property name="decimals">
+                   <number>3</number>
+                  </property>
+                  <property name="minimum">
+                   <double>-99999999999.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>99999999999.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
                  <widget class="QDoubleSpinBox" name="xminSpinBox">
                   <property name="font">
                    <font>
@@ -638,6 +634,45 @@
                   </property>
                   <property name="maximum">
                    <double>99999999999.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QDoubleSpinBox" name="yminSpinBox">
+                  <property name="font">
+                   <font>
+                    <pointsize>8</pointsize>
+                   </font>
+                  </property>
+                  <property name="decimals">
+                   <number>3</number>
+                  </property>
+                  <property name="minimum">
+                   <double>-99999999999.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>99999999999.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QCheckBox" name="xclipCheckBox">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QCheckBox" name="yclipCheckBox">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QCheckBox" name="zclipCheckBox">
+                  <property name="text">
+                   <string/>
                   </property>
                  </widget>
                 </item>
