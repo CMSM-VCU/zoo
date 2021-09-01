@@ -38,11 +38,16 @@ class MainWindow(qtw.QMainWindow):
         self.ui.exagSpinBox.editingFinished.connect(self.set_exaggeration)
 
         self.ui.datasetSelector.currentTextChanged.connect(self.select_dataset)
+        self.ui.colorCheckBox.stateChanged.connect(self.toggle_color_controls)
+        self.ui.maskCheckBox.stateChanged.connect(self.toggle_mask_controls)
         self.ui.colorminSpinBox.valueChanged.connect(self.set_color_min)
         self.ui.colormaxSpinBox.valueChanged.connect(self.set_color_max)
         self.ui.maskminSpinBox.valueChanged.connect(self.set_mask_min)
         self.ui.maskmaxSpinBox.valueChanged.connect(self.set_mask_max)
 
+        self.ui.xclipCheckBox.stateChanged.connect(self.toggle_xclip_controls)
+        self.ui.yclipCheckBox.stateChanged.connect(self.toggle_yclip_controls)
+        self.ui.zclipCheckBox.stateChanged.connect(self.toggle_zclip_controls)
         self.ui.xminSpinBox.valueChanged.connect(self.set_clip_xmin)
         self.ui.xmaxSpinBox.valueChanged.connect(self.set_clip_xmax)
         self.ui.yminSpinBox.valueChanged.connect(self.set_clip_ymin)
@@ -66,6 +71,21 @@ class MainWindow(qtw.QMainWindow):
         self.ui.datasetSelector.addItems(self.model.datasets)
         self.ui.gsSpinBox.setValue(self.model.grid_spacing)
         self.ui.exagSpinBox.setValue(self.model.exaggeration)
+
+    def toggle_color_controls(self, enable: bool):
+        print("toggle_color_controls", enable)
+
+    def toggle_mask_controls(self, enable: bool):
+        print("toggle_mask_controls", enable)
+
+    def toggle_xclip_controls(self, enable: bool):
+        print("toggle_xclip_controls", enable)
+
+    def toggle_yclip_controls(self, enable: bool):
+        print("toggle_yclip_controls", enable)
+
+    def toggle_zclip_controls(self, enable: bool):
+        print("toggle_zclip_controls", enable)
 
     def increment_timestep(self):
         self.model.timestep_index += 1
