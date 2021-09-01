@@ -64,6 +64,8 @@ class MainWindow(qtw.QMainWindow):
         print("toggle_controls", enable)
         self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
         self.ui.datasetSelector.addItems(self.model.datasets)
+        self.ui.gsSpinBox.setValue(self.model.grid_spacing)
+        self.ui.exagSpinBox.setValue(self.model.exaggeration)
 
     def increment_timestep(self):
         self.model.timestep_index += 1
