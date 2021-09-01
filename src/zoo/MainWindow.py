@@ -3,7 +3,6 @@ import sys
 
 os.environ["QT_API"] = "pyqt5"
 
-from pyvistaqt import QtInteractor
 from qtpy import QtCore as qtc
 from qtpy import QtGui as qtg
 from qtpy import QtWidgets as qtw
@@ -18,10 +17,10 @@ class MainWindow(qtw.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.plotter = QtInteractor(self.ui.viewport)
-        self.ui.viewport.layout().addWidget(self.plotter.interactor)
-
         self.model = H5Model()
+        self.model.plotter.setParent(self.ui.viewport)
+        self.ui.viewport.layout().addWidget(self.model.plotter.interactor)
+
         self.hook_up_signals()
 
         if show:
@@ -33,10 +32,10 @@ class MainWindow(qtw.QMainWindow):
 
         self.ui.nextTimeStep.clicked.connect(self.increment_timestep)
         self.ui.prevTimeStep.clicked.connect(self.decrement_timestep)
-        self.ui.timeStepSelector.currentTextChanged.connect(self.set_timestep)
+        self.ui.timeStepSelector.activated.connect(self.set_timestep)
 
-        self.ui.gsSpinBox.valueChanged.connect(self.set_grid_spacing)
-        self.ui.exagSpinBox.valueChanged.connect(self.set_exaggeration)
+        self.ui.gsSpinBox.editingFinished.connect(self.set_grid_spacing)
+        self.ui.exagSpinBox.editingFinished.connect(self.set_exaggeration)
 
         self.ui.datasetSelector.currentTextChanged.connect(self.select_dataset)
         self.ui.colorminSpinBox.valueChanged.connect(self.set_color_min)
@@ -63,6 +62,8 @@ class MainWindow(qtw.QMainWindow):
 
     def toggle_controls(self, enable: bool):
         print("toggle_controls", enable)
+        self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
+        self.ui.datasetSelector.addItems(self.model.datasets)
 
     def increment_timestep(self):
         self.model.timestep_index += 1
@@ -71,13 +72,16 @@ class MainWindow(qtw.QMainWindow):
         self.model.timestep_index -= 1
 
     def set_timestep(self, new_time: str):
-        self.model.timestep = int(new_time)
+        try:
+            self.model.timestep = int(new_time)
+        except:
+            print("Bad timestep string: ", new_time)
 
-    def set_grid_spacing(self, value: float):
-        self.model.grid_spacing = value
+    def set_grid_spacing(self):
+        self.model.grid_spacing = self.ui.gsSpinBox.value()
 
-    def set_exaggeration(self, value: float):
-        self.model.exaggeration = value
+    def set_exaggeration(self):
+        self.model.exaggeration = self.ui.exagSpinBox.value()
 
     def select_dataset(self, new_dataset: str):
         self.model.dataset = new_dataset
