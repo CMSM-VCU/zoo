@@ -71,11 +71,8 @@ class MainWindow(qtw.QMainWindow):
     def decrement_timestep(self):
         self.model.timestep_index -= 1
 
-    def set_timestep(self, new_time: str):
-        try:
-            self.model.timestep = int(new_time)
-        except:
-            print("Bad timestep string: ", new_time)
+    def set_timestep(self, new_timestep: str):
+        self.model.timestep_index = int(new_timestep)
 
     def set_grid_spacing(self):
         self.model.grid_spacing = self.ui.gsSpinBox.value()
