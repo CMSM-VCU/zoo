@@ -30,6 +30,7 @@ class MainWindow(qtw.QMainWindow):
     def hook_up_signals(self):
         self.ui.actionOpen.triggered.connect(self.open_file)
         self.ui.actionExit.triggered.connect(self.close)
+        self.ui.actionShow_Grid.triggered.connect(self.model.add_filters)
 
         self.ui.nextTimeStep.clicked.connect(self.increment_timestep)
         self.ui.prevTimeStep.clicked.connect(self.decrement_timestep)
