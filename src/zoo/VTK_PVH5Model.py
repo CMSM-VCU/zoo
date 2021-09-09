@@ -28,6 +28,7 @@ class VTK_PVH5Model(H5Model):
         self.loaded_file.connect(self.load_mesh)
         self.changed_timestep.connect(self.load_mesh)
         self.changed_grid_spacing.connect(self.change_grid_spacing)
+        self.changed_clipping_extents.connect(self.change_clipping_extents)
         # self.changed_exaggeration.connect()
         # self.changed_dataset.connect()
 
@@ -57,6 +58,8 @@ class VTK_PVH5Model(H5Model):
 
         self.apply_shaders()
         self.plotter.add_actor(self.actor)
+        self._original_extents = polydata.GetPoints().GetBounds()
+        self.clipping_extents = self._original_extents
 
     def apply_shaders(self):
         shader_property = self.actor.GetShaderProperty()
@@ -86,6 +89,26 @@ class VTK_PVH5Model(H5Model):
 
     def change_grid_spacing(self, new_value: float) -> None:
         self.uniforms.SetUniformf("glyph_scale", new_value)
+
+    def change_clipping_extents(self, extents: tuple[float]) -> None:
+        extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
+
+        self.uniforms.SetUniform3f("bottomLeft", extents_MC[0])
+        self.uniforms.SetUniform3f("topRight", extents_MC[1])
+
+
+def bbox_to_model_coordinates(bbox_bounds, base_bounds):
+    base_bottom_left = np.array(base_bounds[0::2])
+    base_top_right = np.array(base_bounds[1::2])
+    bbox_mc_bl = (
+        (base_bottom_left - np.array(bbox_bounds[0::2]))
+        / (base_top_right - base_bottom_left)
+    ) - 0.5
+    bbox_mc_tr = (
+        (np.array(bbox_bounds[1::2]) - base_top_right)
+        / (base_top_right - base_bottom_left)
+    ) + 0.5
+    return (bbox_mc_bl, bbox_mc_tr)
 
 
 if __name__ == "__main__":

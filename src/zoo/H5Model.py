@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import typing
 import pandas as pd
 
 from qtpy import QtCore as qtc
@@ -16,6 +17,7 @@ class H5Model(qtc.QAbstractItemModel):
     changed_grid_spacing = qtc.Signal(float)
     changed_exaggeration = qtc.Signal(float)
     changed_dataset = qtc.Signal(str)
+    changed_clipping_extents = qtc.Signal(tuple)
 
     timesteps: tuple[int] = (None,)
     datasets: tuple[str] = (None,)
@@ -23,6 +25,8 @@ class H5Model(qtc.QAbstractItemModel):
     _timestep_index: int = 0
     _grid_spacing: float = 0.005
     _exaggeration: float = 0.0
+    _clipping_extents: tuple[float] = (None,) * 6
+    _original_extents: tuple[float] = (None,) * 6
 
     @abstractmethod
     def __init__(self) -> None:
@@ -88,3 +92,22 @@ class H5Model(qtc.QAbstractItemModel):
         if name in self.datasets:
             self._dataset = name
         self.changed_dataset.emit(self._dataset)
+
+    @property
+    def clipping_extents(self) -> tuple[float]:
+        return self._clipping_extents
+
+    @clipping_extents.setter
+    def clipping_extents(self, extents: typing.Sequence[float]) -> None:
+        self._clipping_extents = tuple(extents)
+        self.changed_clipping_extents.emit(self._clipping_extents)
+
+    def replace_clipping_extents(
+        self, indeces: typing.Sequence[int], values: typing.Sequence[float]
+    ) -> None:
+        extents = list(self._clipping_extents)
+        for index, value in zip(indeces, values):
+            extents[index] = (
+                value if value is not None else self._original_extents[index]
+            )
+        self.clipping_extents = tuple(extents)

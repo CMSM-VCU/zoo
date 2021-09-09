@@ -60,8 +60,8 @@ class MainWindow(qtw.QMainWindow):
         self.ui.zmaxSpinBox.editingFinished.connect(self.set_clip_zmax)
 
         self.model.loaded_file.connect(self.toggle_control_pane)
-
         self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
+        self.model.changed_clipping_extents.connect(self.update_extents_boxes)
 
     def open_file(self):
         # stackoverflow.com/a/44076057/13130795
@@ -70,7 +70,6 @@ class MainWindow(qtw.QMainWindow):
             self.model.load_file(filename)
 
     def toggle_control_pane(self, enable: bool):
-        print("toggle_controls", enable)
         self.ui.timeStepSelector.setEnabled(enable)
         self.ui.nextTimeStep.setEnabled(enable)
         self.ui.prevTimeStep.setEnabled(enable)
@@ -95,6 +94,14 @@ class MainWindow(qtw.QMainWindow):
             self.ui.yclipCheckBox.setChecked(enable)
             self.ui.zclipCheckBox.setChecked(enable)
 
+    def update_extents_boxes(self, extents: tuple[float]) -> None:
+        self.ui.xminSpinBox.setValue(extents[0])
+        self.ui.xmaxSpinBox.setValue(extents[1])
+        self.ui.yminSpinBox.setValue(extents[2])
+        self.ui.ymaxSpinBox.setValue(extents[3])
+        self.ui.zminSpinBox.setValue(extents[4])
+        self.ui.zmaxSpinBox.setValue(extents[5])
+
     def toggle_color_controls(self, enable: bool):
         self.ui.colorminSpinBox.setEnabled(enable)
         self.ui.colormaxSpinBox.setEnabled(enable)
@@ -106,14 +113,17 @@ class MainWindow(qtw.QMainWindow):
     def toggle_xclip_controls(self, enable: bool):
         self.ui.xminSpinBox.setEnabled(enable)
         self.ui.xmaxSpinBox.setEnabled(enable)
+        self.model.replace_clipping_extents(indeces=[0, 1], values=[None, None])
 
     def toggle_yclip_controls(self, enable: bool):
         self.ui.yminSpinBox.setEnabled(enable)
         self.ui.ymaxSpinBox.setEnabled(enable)
+        self.model.replace_clipping_extents(indeces=[2, 3], values=[None, None])
 
     def toggle_zclip_controls(self, enable: bool):
         self.ui.zminSpinBox.setEnabled(enable)
         self.ui.zmaxSpinBox.setEnabled(enable)
+        self.model.replace_clipping_extents(indeces=[4, 5], values=[None, None])
 
     def increment_timestep(self):
         self.model.timestep_index += 1
@@ -145,23 +155,35 @@ class MainWindow(qtw.QMainWindow):
     def set_mask_max(self, value: float):
         print("set_mask_max", value)
 
-    def set_clip_xmin(self, value: float):
-        print("set_clip_xmin", value)
+    def set_clip_xmin(self):
+        self.model.replace_clipping_extents(
+            indeces=[0], values=[self.ui.xminSpinBox.value()]
+        )
 
-    def set_clip_xmax(self, value: float):
-        print("set_clip_xmax", value)
+    def set_clip_xmax(self):
+        self.model.replace_clipping_extents(
+            indeces=[1], values=[self.ui.xmaxSpinBox.value()]
+        )
 
-    def set_clip_ymin(self, value: float):
-        print("set_clip_ymin", value)
+    def set_clip_ymin(self):
+        self.model.replace_clipping_extents(
+            indeces=[2], values=[self.ui.yminSpinBox.value()]
+        )
 
-    def set_clip_ymax(self, value: float):
-        print("set_clip_ymax", value)
+    def set_clip_ymax(self):
+        self.model.replace_clipping_extents(
+            indeces=[3], values=[self.ui.ymaxSpinBox.value()]
+        )
 
-    def set_clip_zmin(self, value: float):
-        print("set_clip_zmin", value)
+    def set_clip_zmin(self):
+        self.model.replace_clipping_extents(
+            indeces=[4], values=[self.ui.zminSpinBox.value()]
+        )
 
-    def set_clip_zmax(self, value: float):
-        print("set_clip_zmax", value)
+    def set_clip_zmax(self):
+        self.model.replace_clipping_extents(
+            indeces=[5], values=[self.ui.zmaxSpinBox.value()]
+        )
 
 
 if __name__ == "__main__":
