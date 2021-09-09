@@ -1,14 +1,14 @@
 import os
 import sys
 
+from PyVistaH5Model import PyVistaH5Model
+from ui.zoo_ui import Ui_MainWindow
+
 os.environ["QT_API"] = "pyqt5"
 
 from qtpy import QtCore as qtc
 from qtpy import QtGui as qtg
 from qtpy import QtWidgets as qtw
-
-from PyVistaH5Model import PyVistaH5Model
-from ui.zoo_ui import Ui_MainWindow
 
 
 class MainWindow(qtw.QMainWindow):

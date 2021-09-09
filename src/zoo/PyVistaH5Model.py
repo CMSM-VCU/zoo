@@ -4,6 +4,7 @@ import pyvista as pv
 import pyvistaqt
 from qtpy import QtCore as qtc
 
+from H5Model import H5Model
 from utils import measure
 
 try:
@@ -12,7 +13,7 @@ except NameError:
     profile = lambda x: x
 
 
-class PyVistaH5Model(qtc.QAbstractItemModel):
+class PyVistaH5Model(H5Model):
     loaded_file = qtc.Signal(bool)
     changed_timestep = qtc.Signal(str)
     # changed_mesh_appearance = qtc.Signal()
