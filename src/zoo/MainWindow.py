@@ -36,7 +36,7 @@ class MainWindow(qtw.QMainWindow):
         self.ui.timeStepSelector.activated.connect(self.set_timestep)
 
         self.ui.gsSpinBox.editingFinished.connect(self.set_grid_spacing)
-        self.ui.exagSpinBox.editingFinished.connect(self.set_exaggeration)
+        self.ui.exagSpinBox.valueChanged.connect(self.set_exaggeration)
 
         self.ui.datasetSelector.currentTextChanged.connect(self.select_dataset)
         self.ui.colorCheckBox.stateChanged.connect(self.toggle_color_controls)
