@@ -14,10 +14,6 @@ except NameError:
 
 
 class PyVistaH5Model(H5Model):
-    loaded_file = qtc.Signal(bool)
-    changed_timestep = qtc.Signal(str)
-    # changed_mesh_appearance = qtc.Signal()
-
     raw_mesh_cache: dict = {}
 
     _timestep_index: int = 0
@@ -32,76 +28,11 @@ class PyVistaH5Model(H5Model):
 
         self.plotter = pyvistaqt.QtInteractor()
 
+        self.loaded_file.connect(self.load_mesh)
         self.changed_timestep.connect(self.load_mesh)
-        # self.changed_mesh_appearance.connect(self.refresh_mesh)
-
-    @measure
-    @profile
-    def load_file(self, h5_filename) -> None:
-        try:
-            self.df = pd.read_hdf(h5_filename, key="data", mode="r")
-        except Exception as err:
-            raise err
-        else:
-            self.datasets = tuple(self.df.columns)
-            self.timesteps = tuple(self.df.index.levels[0])
-
-            self._dataset = self.datasets[0]
-            # self.timestep = self.timesteps[0]
-            self.loaded_file.emit(True)
-            self.load_mesh()
-
-    @property
-    def timestep_index(self) -> int:
-        return self._timestep_index
-
-    @timestep_index.setter
-    def timestep_index(self, value: int) -> None:
-        self._timestep_index = max(0, min(len(self.timesteps) - 1, value))
-        self.changed_timestep.emit(str(self.timestep))
-
-    @property
-    def timestep(self) -> int:
-        return self.timesteps[self.timestep_index]
-
-    @timestep.setter
-    def timestep(self, value: int) -> None:
-        if value in self.timesteps:
-            self.timestep_index = self.timesteps.index(self.timestep)
-        self.changed_timestep.emit(str(self.timestep))
-
-    @property
-    def grid_spacing(self) -> float:
-        return self._grid_spacing
-
-    @grid_spacing.setter
-    def grid_spacing(self, value: float) -> None:
-        if value > 0.0:
-            self._grid_spacing = value
-        # self.changed_mesh_appearance.emit()
-        self.change_glyphs()
-
-    @property
-    def exaggeration(self) -> float:
-        return self._exaggeration
-
-    @exaggeration.setter
-    def exaggeration(self, value: float) -> None:
-        if value >= 0.0:
-            self._exaggeration = value
-        # self.changed_mesh_appearance.emit()
-        self.change_exaggeration()
-
-    @property
-    def dataset(self) -> str:
-        return self._dataset
-
-    @dataset.setter
-    def dataset(self, name: str) -> None:
-        if name in self.datasets:
-            self._dataset = name
-        # self.changed_mesh_appearance.emit()
-        self.refit_scalar_bar()
+        self.changed_grid_spacing.connect(self.change_glyphs)
+        self.changed_exaggeration.connect(self.change_exaggeration)
+        self.changed_dataset.connect(self.refit_scalar_bar)
 
     @measure
     @profile
@@ -127,7 +58,7 @@ class PyVistaH5Model(H5Model):
 
     @measure
     @profile
-    def change_glyphs(self) -> None:
+    def change_glyphs(self, _=None) -> None:
         if self.mesh:
             self.glyphmesh = self.mesh.glyph(
                 scale=False,
@@ -143,14 +74,14 @@ class PyVistaH5Model(H5Model):
 
     @measure
     @profile
-    def change_exaggeration(self) -> None:
+    def change_exaggeration(self, _=None) -> None:
         self.plotter.update_coordinates(
             self.glyphmesh_points + self.glyph_displacement * self.exaggeration
         )
 
     @measure
     @profile
-    def refit_scalar_bar(self) -> None:
+    def refit_scalar_bar(self, _=None) -> None:
         if self.mesh:
             self.plotter.update_scalars(self.dataset, render=False)
             self.plotter.scalar_bar.SetTitle(self.dataset)

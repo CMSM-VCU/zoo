@@ -1,18 +1,90 @@
 from abc import abstractmethod
+import pandas as pd
 
 from qtpy import QtCore as qtc
 
 
 class H5Model(qtc.QAbstractItemModel):
-    plotter: "InteractorLike"
-    datasets: tuple[str]
+    plotter: "InteractorLike"  # e.g. QtInteractor, vtkInteractor
     dataset: str
     timestep_index: int
     grid_spacing: float
     exaggeration: float
-    loaded_file: qtc.Signal
-    changed_timestep: qtc.Signal
+
+    loaded_file = qtc.Signal(bool)
+    changed_timestep = qtc.Signal(str)  # intended for a socket expecting a str, not int
+    changed_grid_spacing = qtc.Signal(float)
+    changed_exaggeration = qtc.Signal(float)
+    changed_dataset = qtc.Signal(str)
+
+    timesteps: tuple[int] = (None,)
+    datasets: tuple[str] = (None,)
+
+    _timestep_index: int = 0
+    _grid_spacing: float = 0.005
+    _exaggeration: float = 0.0
 
     @abstractmethod
+    def __init__(self) -> None:
+        super().__init__()
+
     def load_file(self, filename) -> None:
-        ...
+        try:
+            self.df = pd.read_hdf(filename, key="data", mode="r")
+        except Exception as err:
+            raise err
+        else:
+            self.datasets = tuple(self.df.columns)
+            self.timesteps = tuple(self.df.index.levels[0])
+
+            self._dataset = self.datasets[0]
+            self.loaded_file.emit(True)
+
+    @property
+    def timestep_index(self) -> int:
+        return self._timestep_index
+
+    @timestep_index.setter
+    def timestep_index(self, value: int) -> None:
+        self._timestep_index = max(0, min(len(self.timesteps) - 1, value))
+        self.changed_timestep.emit(str(self.timestep))
+
+    @property
+    def timestep(self) -> int:
+        return self.timesteps[self.timestep_index]
+
+    @timestep.setter
+    def timestep(self, value: int) -> None:
+        if value in self.timesteps:
+            self.timestep_index = self.timesteps.index(self.timestep)
+        self.changed_timestep.emit(str(self.timestep))
+
+    @property
+    def grid_spacing(self) -> float:
+        return self._grid_spacing
+
+    @grid_spacing.setter
+    def grid_spacing(self, value: float) -> None:
+        if value > 0.0:
+            self._grid_spacing = value
+        self.changed_grid_spacing.emit(self._grid_spacing)
+
+    @property
+    def exaggeration(self) -> float:
+        return self._exaggeration
+
+    @exaggeration.setter
+    def exaggeration(self, value: float) -> None:
+        if value >= 0.0:
+            self._exaggeration = value
+        self.changed_exaggeration.emit(self._exaggeration)
+
+    @property
+    def dataset(self) -> str:
+        return self._dataset
+
+    @dataset.setter
+    def dataset(self, name: str) -> None:
+        if name in self.datasets:
+            self._dataset = name
+        self.changed_dataset.emit(self._dataset)
