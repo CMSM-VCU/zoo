@@ -7,7 +7,7 @@ from qtpy import QtCore as qtc
 from qtpy import QtGui as qtg
 from qtpy import QtWidgets as qtw
 
-from H5Model import H5Model
+from PyVistaH5Model import PyVistaH5Model
 from ui.zoo_ui import Ui_MainWindow
 
 
@@ -17,7 +17,7 @@ class MainWindow(qtw.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.model = H5Model()
+        self.model = PyVistaH5Model()
         self.model.plotter.setParent(self.ui.viewport)
         self.ui.viewport.layout().addWidget(self.model.plotter.interactor)
 

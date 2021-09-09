@@ -12,7 +12,7 @@ except NameError:
     profile = lambda x: x
 
 
-class H5Model(qtc.QAbstractItemModel):
+class PyVistaH5Model(qtc.QAbstractItemModel):
     loaded_file = qtc.Signal(bool)
     changed_timestep = qtc.Signal(str)
     # changed_mesh_appearance = qtc.Signal()
@@ -175,6 +175,6 @@ if __name__ == "__main__":
 
     app = qtw.QApplication(sys.argv)
 
-    model = H5Model()
+    model = PyVistaH5Model()
     model.load_file("./test_data/kylesheartest1.h5")
     model.load_mesh()
