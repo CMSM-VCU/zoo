@@ -2,6 +2,7 @@ import os
 import sys
 
 from PyVistaH5Model import PyVistaH5Model
+from VTK_PVH5Model import VTK_PVH5Model
 from ui.zoo_ui import Ui_MainWindow
 
 os.environ["QT_API"] = "pyqt5"
@@ -17,7 +18,8 @@ class MainWindow(qtw.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.model = PyVistaH5Model()
+        # self.model = PyVistaH5Model()
+        self.model = VTK_PVH5Model()
         self.model.plotter.setParent(self.ui.viewport)
         self.ui.viewport.layout().addWidget(self.model.plotter.interactor)
 
@@ -30,13 +32,13 @@ class MainWindow(qtw.QMainWindow):
     def hook_up_signals(self):
         self.ui.actionOpen.triggered.connect(self.open_file)
         self.ui.actionExit.triggered.connect(self.close)
-        self.ui.actionShow_Grid.triggered.connect(self.model.add_filters)
+        # self.ui.actionShow_Grid.triggered.connect(self.model.add_filters)
 
         self.ui.nextTimeStep.clicked.connect(self.increment_timestep)
         self.ui.prevTimeStep.clicked.connect(self.decrement_timestep)
         self.ui.timeStepSelector.activated.connect(self.set_timestep)
 
-        self.ui.gsSpinBox.editingFinished.connect(self.set_grid_spacing)
+        self.ui.gsSpinBox.valueChanged.connect(self.set_grid_spacing)
         self.ui.exagSpinBox.valueChanged.connect(self.set_exaggeration)
 
         self.ui.datasetSelector.currentTextChanged.connect(self.select_dataset)
