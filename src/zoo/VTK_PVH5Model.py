@@ -82,19 +82,19 @@ class VTK_PVH5Model(H5Model):
             srcGS = f.read()
         shader_property.SetGeometryShaderCode(srcGS)
 
-        self.uniforms = shader_property.GetGeometryCustomUniforms()
-        self.uniforms.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
-        self.uniforms.SetUniform3f("topRight", [1.0, 1.0, 1.0])
-        self.uniforms.SetUniformf("glyph_scale", self.grid_spacing)
+        self.shader_parameters = shader_property.GetGeometryCustomUniforms()
+        self.shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
+        self.shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
+        self.shader_parameters.SetUniformf("glyph_scale", self.grid_spacing)
 
     def change_grid_spacing(self, new_value: float) -> None:
-        self.uniforms.SetUniformf("glyph_scale", new_value)
+        self.shader_parameters.SetUniformf("glyph_scale", new_value)
 
     def change_clipping_extents(self, extents: tuple[float]) -> None:
         extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
 
-        self.uniforms.SetUniform3f("bottomLeft", extents_MC[0])
-        self.uniforms.SetUniform3f("topRight", extents_MC[1])
+        self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
+        self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):
