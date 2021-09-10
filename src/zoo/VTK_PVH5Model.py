@@ -67,9 +67,9 @@ class VTK_PVH5Model(H5Model):
         self.actor.SetMapper(mapper)
 
         self.apply_shaders()
-        self.plotter.add_actor(self.actor, name="primary")
+        self.plotter.add_actor(self.actor, name="primary", render=False)
         self.plotter.mapper = mapper
-        self.plotter.add_scalar_bar()
+        self.plotter.add_scalar_bar(render=False)
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self.clipping_extents = self._original_extents
         self.update_dataset()
