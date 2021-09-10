@@ -6,6 +6,8 @@ import vtk
 from vtk.numpy_interface import dataset_adapter as dsa
 
 from qtpy import QtCore as qtc
+from pyvista.plotting.mapper import make_mapper
+from pyvista.utilities import wrap
 
 from H5Model import H5Model
 
@@ -30,36 +32,47 @@ class VTK_PVH5Model(H5Model):
         self.changed_grid_spacing.connect(self.change_grid_spacing)
         self.changed_clipping_extents.connect(self.change_clipping_extents)
         # self.changed_exaggeration.connect()
-        # self.changed_dataset.connect()
+        self.changed_dataset.connect(self.update_dataset)
 
     def load_mesh(self, _=None) -> None:
         coords = self.df.loc[self.timestep, ("x1", "x2", "x3")].values
         points = vtk.vtkPoints()
         points.SetData(dsa.numpyTovtkDataArray(coords))
-        polydata = vtk.vtkPolyData()
-        polydata.SetPoints(points)
-        polydata.GetPointData().SetNormals(
+        self.polydata = vtk.vtkPolyData()
+        self.polydata.SetPoints(points)
+        self.polydata.GetPointData().SetNormals(
             dsa.numpyTovtkDataArray(np.empty_like(coords))
         )  # Assign dummy normals to trick VTK into enabling (specular?) lighting
         for dataset in self.datasets:
-            polydata.GetPointData().SetScalars(
+            self.polydata.GetPointData().AddArray(
                 dsa.numpyTovtkDataArray(
                     self.df.loc[self.timestep, dataset].values, name=dataset
                 )
             )
+        self.polydata.GetPointData().SetActiveScalars(self.datasets[0])
+        self.polydata = wrap(self.polydata)
         vertexGlyphFilter = vtk.vtkVertexGlyphFilter()
-        vertexGlyphFilter.AddInputDataObject(polydata)
+        vertexGlyphFilter.AddInputDataObject(self.polydata)
         vertexGlyphFilter.Update()
 
-        mapper = vtk.vtkPolyDataMapper()
+        mapper = make_mapper(vtk.vtkPolyDataMapper)
         mapper.SetInputConnection(vertexGlyphFilter.GetOutputPort())
+        lut = vtk.vtkLookupTable()
+        lut.SetNumberOfColors(256)
+        lut.SetHueRange(0.0, 0.667)
+        lut.Build()
+        mapper.SetLookupTable(lut)
+
         self.actor = vtk.vtkActor()
         self.actor.SetMapper(mapper)
 
         self.apply_shaders()
-        self.plotter.add_actor(self.actor)
-        self._original_extents = polydata.GetPoints().GetBounds()
+        self.plotter.add_actor(self.actor, name="primary")
+        self.plotter.mapper = mapper
+        self.plotter.add_scalar_bar()
+        self._original_extents = self.polydata.GetPoints().GetBounds()
         self.clipping_extents = self._original_extents
+        self.update_dataset()
 
     def apply_shaders(self):
         shader_property = self.actor.GetShaderProperty()
@@ -95,6 +108,14 @@ class VTK_PVH5Model(H5Model):
 
         self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
         self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
+
+    def update_dataset(self, _=None) -> None:
+        clim = self.polydata.get_data_range(self.dataset)
+        self.plotter.update_scalar_bar_range(clim)
+        self.plotter.scalar_bar.SetTitle(self.dataset)
+        self.plotter.update_scalars(
+            scalars=self.dataset, mesh=self.polydata, render=True
+        )
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):
