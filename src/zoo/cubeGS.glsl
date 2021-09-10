@@ -1,18 +1,23 @@
+// Some text replacements disabled with leading hyphen
 //VTK::System::Dec
-//VTK::PositionVC::Dec
+//-VTK::PositionVC::Dec
 
 //VTK::CustomUniforms::Dec
 
 in vec4 vertexColorVSOutput[];
+out vec4 vertexColorGSOutput;
 in vec4 vertexVCVSOutput[];
 in vec4 vertexMCVSOutput[];
+
+out vec4 vertexVCGSOutput;
+out vec3 normalVCGSOutput;
 
 uniform mat4 MCDCMatrix;
 uniform mat4 MCVCMatrix;
 
 //VTK::PrimID::Dec
-//VTK::Color::Dec
-//VTK::Normal::Dec
+//-VTK::Color::Dec
+//-VTK::Normal::Dec
 //VTK::Light::Dec
 //VTK::TCoord::Dec
 //VTK::Picking::Dec
