@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import sys
 
 from PyVistaH5Model import PyVistaH5Model
@@ -13,7 +14,7 @@ from qtpy import QtWidgets as qtw
 
 
 class MainWindow(qtw.QMainWindow):
-    def __init__(self, parent=None, show=True) -> None:
+    def __init__(self, parent=None, show=True, file_to_load=None) -> None:
         super().__init__(parent=parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -28,6 +29,9 @@ class MainWindow(qtw.QMainWindow):
 
         if show:
             self.show()
+
+        if file_to_load is not None:
+            self.model.load_file(file_to_load)
 
     def hook_up_signals(self):
         self.ui.actionOpen.triggered.connect(self.open_file)
@@ -188,5 +192,14 @@ class MainWindow(qtw.QMainWindow):
 
 if __name__ == "__main__":
     app = qtw.QApplication(sys.argv)
-    window = MainWindow()
+    try:
+        file_to_load = Path(sys.argv[1])
+        assert file_to_load.is_file()
+    except IndexError:
+        file_to_load = None
+    except:
+        print(f"Could not find a file at {sys.argv[1]}")
+        file_to_load = None
+    finally:
+        window = MainWindow(file_to_load=file_to_load)
     sys.exit(app.exec_())
