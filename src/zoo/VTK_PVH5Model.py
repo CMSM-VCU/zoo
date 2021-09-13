@@ -1,3 +1,4 @@
+from PIL.Image import new
 import numpy as np
 import pandas as pd
 import pyvista as pv
@@ -31,7 +32,7 @@ class VTK_PVH5Model(H5Model):
         self.changed_timestep.connect(self.load_mesh)
         self.changed_grid_spacing.connect(self.change_grid_spacing)
         self.changed_clipping_extents.connect(self.change_clipping_extents)
-        # self.changed_exaggeration.connect()
+        self.changed_exaggeration.connect(self.change_exaggeration)
         self.changed_dataset.connect(self.update_dataset)
 
     def load_mesh(self, _=None) -> None:
@@ -49,6 +50,12 @@ class VTK_PVH5Model(H5Model):
                     self.df.loc[self.timestep, dataset].values, name=dataset
                 )
             )
+        self.polydata.GetPointData().AddArray(
+            dsa.numpyTovtkDataArray(
+                self.df.loc[self.timestep, ("u1", "u2", "u3")].values,
+                name="_displacement",
+            )
+        )
         self.polydata.GetPointData().SetActiveScalars(self.datasets[0])
         self.polydata = wrap(self.polydata)
         vertexGlyphFilter = vtk.vtkVertexGlyphFilter()
@@ -62,6 +69,10 @@ class VTK_PVH5Model(H5Model):
         lut.SetHueRange(0.0, 0.667)
         lut.Build()
         mapper.SetLookupTable(lut)
+
+        mapper.MapDataArrayToVertexAttribute(
+            "_disp", "_displacement", vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
+        )
 
         self.actor = vtk.vtkActor()
         self.actor.SetMapper(mapper)
@@ -81,14 +92,19 @@ class VTK_PVH5Model(H5Model):
             vtk.vtkShader.Vertex,
             "//VTK::PositionVC::Dec",
             True,
-            "//VTK::PositionVC::Dec\n" "out vec4 vertexMCVSOutput;\n",
+            "//VTK::PositionVC::Dec\n"
+            "out vec4 vertexMCVSOutput;\n"
+            "in vec3 _disp;\n"
+            "out vec4 dispMCVSOutput;\n",
             False,
         )
         shader_property.AddShaderReplacement(
             vtk.vtkShader.Vertex,
             "//VTK::PositionVC::Impl",
             True,
-            "//VTK::PositionVC::Impl\n" "vertexMCVSOutput = vertexMC;\n",
+            "//VTK::PositionVC::Impl\n"
+            "vertexMCVSOutput = vertexMC;\n"
+            "dispMCVSOutput = vec4(_disp, 0.0);\n",
             False,
         )
         with open("src/zoo/cubeGS.glsl", "r") as f:
@@ -99,6 +115,7 @@ class VTK_PVH5Model(H5Model):
         self.shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
         self.shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
         self.shader_parameters.SetUniformf("glyph_scale", self.grid_spacing)
+        self.shader_parameters.SetUniformf("disp_scale", self.exaggeration)
 
     def change_grid_spacing(self, new_value: float) -> None:
         self.shader_parameters.SetUniformf("glyph_scale", new_value)
@@ -108,6 +125,9 @@ class VTK_PVH5Model(H5Model):
 
         self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
         self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
+
+    def change_exaggeration(self, new_value: float) -> None:
+        self.shader_parameters.SetUniformf("disp_scale", new_value)
 
     def update_dataset(self, _=None) -> None:
         clim = self.polydata.get_data_range(self.dataset)

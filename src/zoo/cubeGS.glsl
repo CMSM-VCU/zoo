@@ -9,6 +9,8 @@ out vec4 vertexColorGSOutput;
 in vec4 vertexVCVSOutput[];
 in vec4 vertexMCVSOutput[];
 
+in vec4 dispMCVSOutput[];
+
 out vec4 vertexVCGSOutput;
 out vec3 normalVCGSOutput;
 
@@ -87,8 +89,12 @@ void main()
     }
 
     for (int i = 0; i<24; i++) {
-        gl_Position = center + (MCDCMatrix * cube_strip[i] * glyph_scale/2);
-        vertexVCGSOutput = vertexVCVSOutput[0] + (MCVCMatrix * cube_strip[i] * glyph_scale/2);
+        gl_Position = center + MCDCMatrix * (
+            dispMCVSOutput[0] * disp_scale + cube_strip[i] * glyph_scale/2
+        );
+        vertexVCGSOutput = vertexVCVSOutput[0] + MCVCMatrix * (
+            dispMCVSOutput[0] * disp_scale + cube_strip[i] * glyph_scale/2
+        );
         normalVCGSOutput = mat3(MCVCMatrix) * face_normals[i/(24/6)];
         EmitVertex();
 
