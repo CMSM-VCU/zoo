@@ -89,8 +89,8 @@ class MainWindow(qtw.QMainWindow):
         if enable:
             self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
             self.ui.datasetSelector.addItems(self.model.datasets)
-            self.ui.gsSpinBox.setValue(self.model.grid_spacing)
-            self.ui.exagSpinBox.setValue(self.model.exaggeration)
+            self.ui.gsSpinBox.setValue(self.model.grid_spacing[0])
+            self.ui.exagSpinBox.setValue(self.model.exaggeration[0])
         else:
             self.ui.colorCheckBox.setChecked(enable)
             self.ui.maskCheckBox.setChecked(enable)

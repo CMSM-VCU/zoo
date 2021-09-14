@@ -16,10 +16,6 @@ from H5Model import H5Model
 class VTK_PVH5Model(H5Model):
     raw_mesh_cache: dict = {}
 
-    _timestep_index: int = 0
-    _grid_spacing: float = 0.005
-    _exaggeration: float = 0.0
-
     def __init__(self) -> None:
         super().__init__()
         self.timesteps = (None,)
@@ -114,20 +110,20 @@ class VTK_PVH5Model(H5Model):
         self.shader_parameters = shader_property.GetGeometryCustomUniforms()
         self.shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
         self.shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
-        self.shader_parameters.SetUniformf("glyph_scale", self.grid_spacing)
-        self.shader_parameters.SetUniformf("disp_scale", self.exaggeration)
+        self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
+        self.shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
 
-    def change_grid_spacing(self, new_value: float) -> None:
-        self.shader_parameters.SetUniformf("glyph_scale", new_value)
+    def change_grid_spacing(self, _=None) -> None:
+        self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
+
+    def change_exaggeration(self, _=None) -> None:
+        self.shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
 
     def change_clipping_extents(self, extents: tuple[float]) -> None:
         extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
 
         self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
         self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
-
-    def change_exaggeration(self, new_value: float) -> None:
-        self.shader_parameters.SetUniformf("disp_scale", new_value)
 
     def update_dataset(self, _=None) -> None:
         clim = self.polydata.get_data_range(self.dataset)

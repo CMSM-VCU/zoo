@@ -14,8 +14,8 @@ class H5Model(qtc.QAbstractItemModel):
 
     loaded_file = qtc.Signal(bool)
     changed_timestep = qtc.Signal(str)  # intended for a socket expecting a str, not int
-    changed_grid_spacing = qtc.Signal(float)
-    changed_exaggeration = qtc.Signal(float)
+    changed_grid_spacing = qtc.Signal(list)
+    changed_exaggeration = qtc.Signal(list)
     changed_dataset = qtc.Signal(str)
     changed_clipping_extents = qtc.Signal(tuple)
 
@@ -23,8 +23,8 @@ class H5Model(qtc.QAbstractItemModel):
     datasets: tuple[str] = (None,)
 
     _timestep_index: int = 0
-    _grid_spacing: float = 0.005
-    _exaggeration: float = 0.0
+    _grid_spacing: list[float] = [0.005, 0.005, 0.005]
+    _exaggeration: list[float] = [0.0, 0.0, 0.0]
     _clipping_extents: tuple[float] = (None,) * 6
     _original_extents: tuple[float] = (None,) * 6
 
@@ -64,23 +64,31 @@ class H5Model(qtc.QAbstractItemModel):
         self.changed_timestep.emit(str(self.timestep))
 
     @property
-    def grid_spacing(self) -> float:
-        return self._grid_spacing
+    def grid_spacing(self) -> tuple[float]:
+        return tuple(self._grid_spacing)
 
     @grid_spacing.setter
-    def grid_spacing(self, value: float) -> None:
-        if value > 0.0:
-            self._grid_spacing = value
+    def grid_spacing(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
+        if isinstance(value, typing.Iterable) and len(value) == 3:
+            self._grid_spacing = list(value)
+        elif isinstance(value, float):
+            self._grid_spacing = list([value, value, value])
+        else:
+            return None
         self.changed_grid_spacing.emit(self._grid_spacing)
 
     @property
-    def exaggeration(self) -> float:
+    def exaggeration(self) -> tuple[float]:
         return self._exaggeration
 
     @exaggeration.setter
-    def exaggeration(self, value: float) -> None:
-        if value >= 0.0:
-            self._exaggeration = value
+    def exaggeration(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
+        if isinstance(value, typing.Iterable) and len(value) == 3:
+            self._exaggeration = list(value)
+        elif isinstance(value, float):
+            self._exaggeration = list([value, value, value])
+        else:
+            return None
         self.changed_exaggeration.emit(self._exaggeration)
 
     @property
