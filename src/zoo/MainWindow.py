@@ -43,10 +43,11 @@ class MainWindow(qtw.QMainWindow):
         self.ui.prevTimeStep.clicked.connect(self.decrement_timestep)
         self.ui.timeStepSelector.activated.connect(self.set_timestep)
 
-        self.ui.xgsSpinBox.valueChanged.connect(self.set_xgrid_spacing)
-        self.ui.ygsSpinBox.valueChanged.connect(self.set_ygrid_spacing)
-        self.ui.zgsSpinBox.valueChanged.connect(self.set_zgrid_spacing)
-        self.ui.xexagSpinBox.valueChanged.connect(self.set_xexaggeration)
+        self.ui.gsLockButton.toggled.connect(self.toggle_uniform_gs)
+        self.ui.xgsSpinBox.valueChanged.connect(self.set_all_grid_spacing)
+
+        self.ui.exagLockButton.toggled.connect(self.toggle_uniform_exag)
+        self.ui.xexagSpinBox.valueChanged.connect(self.set_all_exaggeration)
         self.ui.yexagSpinBox.valueChanged.connect(self.set_yexaggeration)
         self.ui.zexagSpinBox.valueChanged.connect(self.set_zexaggeration)
 
@@ -92,6 +93,38 @@ class MainWindow(qtw.QMainWindow):
             self.ui.xclipCheckBox.setChecked(enable)
             self.ui.yclipCheckBox.setChecked(enable)
             self.ui.zclipCheckBox.setChecked(enable)
+
+    def toggle_uniform_gs(self, enable: bool) -> None:
+        if enable:
+            self.ui.xgsSpinBox.valueChanged.connect(self.set_all_grid_spacing)
+            self.ui.ygsSpinBox.valueChanged.disconnect()
+            self.ui.zgsSpinBox.valueChanged.disconnect()
+        else:
+            self.ui.ygsSpinBox.setValue(self.ui.xgsSpinBox.value())
+            self.ui.zgsSpinBox.setValue(self.ui.xgsSpinBox.value())
+
+            self.ui.xgsSpinBox.valueChanged.connect(self.set_xgrid_spacing)
+            self.ui.ygsSpinBox.valueChanged.connect(self.set_ygrid_spacing)
+            self.ui.zgsSpinBox.valueChanged.connect(self.set_zgrid_spacing)
+
+        self.ui.ygsSpinBox.setVisible(not enable)
+        self.ui.zgsSpinBox.setVisible(not enable)
+
+    def toggle_uniform_exag(self, enable: bool) -> None:
+        if enable:
+            self.ui.xexagSpinBox.valueChanged.connect(self.set_all_exaggeration)
+            self.ui.yexagSpinBox.valueChanged.disconnect()
+            self.ui.zexagSpinBox.valueChanged.disconnect()
+        else:
+            self.ui.yexagSpinBox.setValue(self.ui.xexagSpinBox.value())
+            self.ui.zexagSpinBox.setValue(self.ui.xexagSpinBox.value())
+
+            self.ui.xexagSpinBox.valueChanged.connect(self.set_xexaggeration)
+            self.ui.yexagSpinBox.valueChanged.connect(self.set_yexaggeration)
+            self.ui.zexagSpinBox.valueChanged.connect(self.set_zexaggeration)
+
+        self.ui.yexagSpinBox.setVisible(not enable)
+        self.ui.zexagSpinBox.setVisible(not enable)
 
     def update_extents_boxes(self, extents: tuple[float]) -> None:
         self.ui.xminSpinBox.setValue(extents[0])
@@ -147,6 +180,7 @@ class MainWindow(qtw.QMainWindow):
         new_gs[index] = value
         self.model.grid_spacing = new_gs
 
+    set_all_grid_spacing = partialmethod(set_grid_spacing, 0)
     set_xgrid_spacing = partialmethod(set_grid_spacing, 0)
     set_ygrid_spacing = partialmethod(set_grid_spacing, 1)
     set_zgrid_spacing = partialmethod(set_grid_spacing, 2)
@@ -165,6 +199,7 @@ class MainWindow(qtw.QMainWindow):
         new_exag[index] = value
         self.model.exaggeration = new_exag
 
+    set_all_exaggeration = partialmethod(set_exaggeration, 0)
     set_xexaggeration = partialmethod(set_exaggeration, 0)
     set_yexaggeration = partialmethod(set_exaggeration, 1)
     set_zexaggeration = partialmethod(set_exaggeration, 2)
