@@ -74,17 +74,7 @@ class MainWindow(qtw.QMainWindow):
             self.model.load_file(filename)
 
     def toggle_control_pane(self, enable: bool):
-        self.ui.timeStepSelector.setEnabled(enable)
-        self.ui.nextTimeStep.setEnabled(enable)
-        self.ui.prevTimeStep.setEnabled(enable)
-        self.ui.gsSpinBox.setEnabled(enable)
-        self.ui.exagSpinBox.setEnabled(enable)
-        self.ui.datasetSelector.setEnabled(enable)
-        self.ui.colorCheckBox.setEnabled(enable)
-        self.ui.maskCheckBox.setEnabled(enable)
-        self.ui.xclipCheckBox.setEnabled(enable)
-        self.ui.yclipCheckBox.setEnabled(enable)
-        self.ui.zclipCheckBox.setEnabled(enable)
+        self.ui.controlPane.setEnabled(enable)
         self.ui.menuView.setEnabled(enable)
         if enable:
             self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
