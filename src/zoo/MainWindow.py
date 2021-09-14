@@ -1,6 +1,6 @@
 import os
 import sys
-from functools import partialmethod
+from functools import partial
 from pathlib import Path
 
 from PyVistaH5Model import PyVistaH5Model
@@ -25,6 +25,8 @@ class MainWindow(qtw.QMainWindow):
         self.model.plotter.setParent(self.ui.viewport)
         self.ui.viewport.layout().addWidget(self.model.plotter.interactor)
 
+        self._generate_method_lists()
+        self.organize_widgets()
         self.hook_up_signals()
         self.toggle_control_pane(enable=False)
 
@@ -33,6 +35,26 @@ class MainWindow(qtw.QMainWindow):
 
         if file_to_load is not None:
             self.model.load_file(file_to_load)
+
+    def organize_widgets(self):
+        self.actions = {"open": self.ui.actionOpen, "exit": self.ui.actionExit}
+
+        self.gs_spinboxes = (self.ui.xgsSpinBox, self.ui.ygsSpinBox, self.ui.zgsSpinBox)
+        self.exag_spinboxes = (
+            self.ui.xexagSpinBox,
+            self.ui.yexagSpinBox,
+            self.ui.zexagSpinBox,
+        )
+        self.color_spinboxes = (self.ui.colorminSpinBox, self.ui.colormaxSpinBox)
+        self.mask_spinboxes = (self.ui.maskminSpinBox, self.ui.maskmaxSpinBox)
+        self.clip_spinboxes = (
+            self.ui.xminSpinBox,
+            self.ui.xmaxSpinBox,
+            self.ui.yminSpinBox,
+            self.ui.ymaxSpinBox,
+            self.ui.zminSpinBox,
+            self.ui.zmaxSpinBox,
+        )
 
     def hook_up_signals(self):
         self.ui.actionOpen.triggered.connect(self.open_file)
@@ -44,12 +66,10 @@ class MainWindow(qtw.QMainWindow):
         self.ui.timeStepSelector.activated.connect(self.set_timestep)
 
         self.ui.gsLockButton.toggled.connect(self.toggle_uniform_gs)
-        self.ui.xgsSpinBox.valueChanged.connect(self.set_all_grid_spacing)
+        self.ui.xgsSpinBox.valueChanged.connect(self.set_grid_spacing_uniform)
 
         self.ui.exagLockButton.toggled.connect(self.toggle_uniform_exag)
-        self.ui.xexagSpinBox.valueChanged.connect(self.set_all_exaggeration)
-        self.ui.yexagSpinBox.valueChanged.connect(self.set_yexaggeration)
-        self.ui.zexagSpinBox.valueChanged.connect(self.set_zexaggeration)
+        self.ui.xexagSpinBox.valueChanged.connect(self.set_exaggeration_uniform)
 
         self.ui.datasetSelector.currentTextChanged.connect(self.select_dataset)
         self.ui.colorCheckBox.stateChanged.connect(self.toggle_color_controls)
@@ -62,12 +82,8 @@ class MainWindow(qtw.QMainWindow):
         self.ui.xclipCheckBox.stateChanged.connect(self.toggle_xclip_controls)
         self.ui.yclipCheckBox.stateChanged.connect(self.toggle_yclip_controls)
         self.ui.zclipCheckBox.stateChanged.connect(self.toggle_zclip_controls)
-        self.ui.xminSpinBox.editingFinished.connect(self.set_clip_xmin)
-        self.ui.xmaxSpinBox.editingFinished.connect(self.set_clip_xmax)
-        self.ui.yminSpinBox.editingFinished.connect(self.set_clip_ymin)
-        self.ui.ymaxSpinBox.editingFinished.connect(self.set_clip_ymax)
-        self.ui.zminSpinBox.editingFinished.connect(self.set_clip_zmin)
-        self.ui.zmaxSpinBox.editingFinished.connect(self.set_clip_zmax)
+        for i, box in enumerate(self.clip_spinboxes):
+            box.editingFinished.connect(self.set_clipping_extent[i])
 
         self.model.loaded_file.connect(self.toggle_control_pane)
         self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
@@ -96,43 +112,43 @@ class MainWindow(qtw.QMainWindow):
 
     def toggle_uniform_gs(self, enable: bool) -> None:
         if enable:
-            self.ui.xgsSpinBox.valueChanged.connect(self.set_all_grid_spacing)
+            self.ui.xgsSpinBox.valueChanged.disconnect()
             self.ui.ygsSpinBox.valueChanged.disconnect()
             self.ui.zgsSpinBox.valueChanged.disconnect()
+
+            self.ui.xgsSpinBox.valueChanged.connect(self.set_grid_spacing_uniform)
+            self.ui.xgsSpinBox.valueChanged.emit(self.ui.xgsSpinBox.value())
         else:
             self.ui.ygsSpinBox.setValue(self.ui.xgsSpinBox.value())
             self.ui.zgsSpinBox.setValue(self.ui.xgsSpinBox.value())
-
-            self.ui.xgsSpinBox.valueChanged.connect(self.set_xgrid_spacing)
-            self.ui.ygsSpinBox.valueChanged.connect(self.set_ygrid_spacing)
-            self.ui.zgsSpinBox.valueChanged.connect(self.set_zgrid_spacing)
+            self.ui.xgsSpinBox.valueChanged.disconnect()
+            for i, box in enumerate(self.gs_spinboxes):
+                box.valueChanged.connect(self.set_grid_spacing[i])
 
         self.ui.ygsSpinBox.setVisible(not enable)
         self.ui.zgsSpinBox.setVisible(not enable)
 
     def toggle_uniform_exag(self, enable: bool) -> None:
         if enable:
-            self.ui.xexagSpinBox.valueChanged.connect(self.set_all_exaggeration)
+            self.ui.xexagSpinBox.valueChanged.disconnect()
             self.ui.yexagSpinBox.valueChanged.disconnect()
             self.ui.zexagSpinBox.valueChanged.disconnect()
+
+            self.ui.xexagSpinBox.valueChanged.connect(self.set_exaggeration_uniform)
+            self.ui.xexagSpinBox.valueChanged.emit(self.ui.xexagSpinBox.value())
         else:
             self.ui.yexagSpinBox.setValue(self.ui.xexagSpinBox.value())
             self.ui.zexagSpinBox.setValue(self.ui.xexagSpinBox.value())
-
-            self.ui.xexagSpinBox.valueChanged.connect(self.set_xexaggeration)
-            self.ui.yexagSpinBox.valueChanged.connect(self.set_yexaggeration)
-            self.ui.zexagSpinBox.valueChanged.connect(self.set_zexaggeration)
+            self.ui.xexagSpinBox.valueChanged.disconnect()
+            for i, box in enumerate(self.exag_spinboxes):
+                box.valueChanged.connect(self.set_exaggeration[i])
 
         self.ui.yexagSpinBox.setVisible(not enable)
         self.ui.zexagSpinBox.setVisible(not enable)
 
     def update_extents_boxes(self, extents: tuple[float]) -> None:
-        self.ui.xminSpinBox.setValue(extents[0])
-        self.ui.xmaxSpinBox.setValue(extents[1])
-        self.ui.yminSpinBox.setValue(extents[2])
-        self.ui.ymaxSpinBox.setValue(extents[3])
-        self.ui.zminSpinBox.setValue(extents[4])
-        self.ui.zmaxSpinBox.setValue(extents[5])
+        for i, extent in enumerate(extents):
+            self.clip_spinboxes[i].setValue(extent)
 
     def toggle_color_controls(self, enable: bool):
         self.ui.colorminSpinBox.setEnabled(enable)
@@ -166,43 +182,23 @@ class MainWindow(qtw.QMainWindow):
     def set_timestep(self, new_timestep: str):
         self.model.timestep_index = int(new_timestep)
 
-    def set_grid_spacing(self, index):
-        print(index)
-        if index == 0:
-            value = self.ui.xgsSpinBox.value()
-        elif index == 1:
-            value = self.ui.ygsSpinBox.value()
-        elif index == 2:
-            value = self.ui.zgsSpinBox.value()
-        else:
-            return
-        new_gs = self.model.grid_spacing
-        new_gs[index] = value
-        self.model.grid_spacing = new_gs
+    @staticmethod
+    def set_grid_spacing_n(obj, index):
+        new_gs = obj.model.grid_spacing
+        new_gs[index] = obj.gs_spinboxes[index].value()
+        obj.model.grid_spacing = new_gs
 
-    set_all_grid_spacing = partialmethod(set_grid_spacing, 0)
-    set_xgrid_spacing = partialmethod(set_grid_spacing, 0)
-    set_ygrid_spacing = partialmethod(set_grid_spacing, 1)
-    set_zgrid_spacing = partialmethod(set_grid_spacing, 2)
+    def set_grid_spacing_uniform(self, new_gs: float) -> None:
+        self.model.grid_spacing = [new_gs] * 3
 
-    def set_exaggeration(self, index):
-        print(index)
-        if index == 0:
-            value = self.ui.xexagSpinBox.value()
-        elif index == 1:
-            value = self.ui.yexagSpinBox.value()
-        elif index == 2:
-            value = self.ui.zexagSpinBox.value()
-        else:
-            return
-        new_exag = self.model.exaggeration
-        new_exag[index] = value
-        self.model.exaggeration = new_exag
+    @staticmethod
+    def set_exaggeration_n(obj, index):
+        new_exag = obj.model.exaggeration
+        new_exag[index] = obj.exag_spinboxes[index].value()
+        obj.model.exaggeration = new_exag
 
-    set_all_exaggeration = partialmethod(set_exaggeration, 0)
-    set_xexaggeration = partialmethod(set_exaggeration, 0)
-    set_yexaggeration = partialmethod(set_exaggeration, 1)
-    set_zexaggeration = partialmethod(set_exaggeration, 2)
+    def set_exaggeration_uniform(self, new_exag: float) -> None:
+        self.model.exaggeration = [new_exag] * 3
 
     def select_dataset(self, new_dataset: str):
         self.model.dataset = new_dataset
@@ -219,34 +215,20 @@ class MainWindow(qtw.QMainWindow):
     def set_mask_max(self, value: float):
         print("set_mask_max", value)
 
-    def set_clip_xmin(self):
+    def set_clipping_extent_n(self, index: int):
         self.model.replace_clipping_extents(
-            indeces=[0], values=[self.ui.xminSpinBox.value()]
+            indeces=[index], values=[self.clip_spinboxes[index]]
         )
 
-    def set_clip_xmax(self):
-        self.model.replace_clipping_extents(
-            indeces=[1], values=[self.ui.xmaxSpinBox.value()]
+    def _generate_method_lists(self) -> None:
+        self.set_grid_spacing = tuple(
+            partial(self.set_grid_spacing_n, self, i) for i in range(3)
         )
-
-    def set_clip_ymin(self):
-        self.model.replace_clipping_extents(
-            indeces=[2], values=[self.ui.yminSpinBox.value()]
+        self.set_exaggeration = tuple(
+            partial(self.set_exaggeration_n, self, i) for i in range(3)
         )
-
-    def set_clip_ymax(self):
-        self.model.replace_clipping_extents(
-            indeces=[3], values=[self.ui.ymaxSpinBox.value()]
-        )
-
-    def set_clip_zmin(self):
-        self.model.replace_clipping_extents(
-            indeces=[4], values=[self.ui.zminSpinBox.value()]
-        )
-
-    def set_clip_zmax(self):
-        self.model.replace_clipping_extents(
-            indeces=[5], values=[self.ui.zmaxSpinBox.value()]
+        self.set_clipping_extent = tuple(
+            partial(self.set_clipping_extent_n, self, i) for i in range(6)
         )
 
 
