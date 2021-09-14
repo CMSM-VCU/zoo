@@ -64,8 +64,8 @@ class H5Model(qtc.QAbstractItemModel):
         self.changed_timestep.emit(str(self.timestep))
 
     @property
-    def grid_spacing(self) -> tuple[float]:
-        return tuple(self._grid_spacing)
+    def grid_spacing(self) -> list[float]:
+        return list(self._grid_spacing)
 
     @grid_spacing.setter
     def grid_spacing(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
@@ -78,8 +78,8 @@ class H5Model(qtc.QAbstractItemModel):
         self.changed_grid_spacing.emit(self._grid_spacing)
 
     @property
-    def exaggeration(self) -> tuple[float]:
-        return self._exaggeration
+    def exaggeration(self) -> list[float]:
+        return list(self._exaggeration)
 
     @exaggeration.setter
     def exaggeration(self, value: typing.Union[float, typing.Iterable[float]]) -> None:

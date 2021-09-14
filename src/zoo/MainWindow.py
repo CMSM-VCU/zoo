@@ -1,10 +1,11 @@
 import os
-from pathlib import Path
 import sys
+from functools import partialmethod
+from pathlib import Path
 
 from PyVistaH5Model import PyVistaH5Model
-from VTK_PVH5Model import VTK_PVH5Model
 from ui.zoo_ui import Ui_MainWindow
+from VTK_PVH5Model import VTK_PVH5Model
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -42,8 +43,12 @@ class MainWindow(qtw.QMainWindow):
         self.ui.prevTimeStep.clicked.connect(self.decrement_timestep)
         self.ui.timeStepSelector.activated.connect(self.set_timestep)
 
-        self.ui.gsSpinBox.valueChanged.connect(self.set_grid_spacing)
-        self.ui.exagSpinBox.valueChanged.connect(self.set_exaggeration)
+        self.ui.xgsSpinBox.valueChanged.connect(self.set_xgrid_spacing)
+        self.ui.ygsSpinBox.valueChanged.connect(self.set_ygrid_spacing)
+        self.ui.zgsSpinBox.valueChanged.connect(self.set_zgrid_spacing)
+        self.ui.xexagSpinBox.valueChanged.connect(self.set_xexaggeration)
+        self.ui.yexagSpinBox.valueChanged.connect(self.set_yexaggeration)
+        self.ui.zexagSpinBox.valueChanged.connect(self.set_zexaggeration)
 
         self.ui.datasetSelector.currentTextChanged.connect(self.select_dataset)
         self.ui.colorCheckBox.stateChanged.connect(self.toggle_color_controls)
@@ -79,8 +84,8 @@ class MainWindow(qtw.QMainWindow):
         if enable:
             self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
             self.ui.datasetSelector.addItems(self.model.datasets)
-            self.ui.gsSpinBox.setValue(self.model.grid_spacing[0])
-            self.ui.exagSpinBox.setValue(self.model.exaggeration[0])
+            self.ui.xgsSpinBox.setValue(self.model.grid_spacing[0])
+            self.ui.xexagSpinBox.setValue(self.model.exaggeration[0])
         else:
             self.ui.colorCheckBox.setChecked(enable)
             self.ui.maskCheckBox.setChecked(enable)
@@ -128,11 +133,41 @@ class MainWindow(qtw.QMainWindow):
     def set_timestep(self, new_timestep: str):
         self.model.timestep_index = int(new_timestep)
 
-    def set_grid_spacing(self):
-        self.model.grid_spacing = self.ui.gsSpinBox.value()
+    def set_grid_spacing(self, index):
+        print(index)
+        if index == 0:
+            value = self.ui.xgsSpinBox.value()
+        elif index == 1:
+            value = self.ui.ygsSpinBox.value()
+        elif index == 2:
+            value = self.ui.zgsSpinBox.value()
+        else:
+            return
+        new_gs = self.model.grid_spacing
+        new_gs[index] = value
+        self.model.grid_spacing = new_gs
 
-    def set_exaggeration(self):
-        self.model.exaggeration = self.ui.exagSpinBox.value()
+    set_xgrid_spacing = partialmethod(set_grid_spacing, 0)
+    set_ygrid_spacing = partialmethod(set_grid_spacing, 1)
+    set_zgrid_spacing = partialmethod(set_grid_spacing, 2)
+
+    def set_exaggeration(self, index):
+        print(index)
+        if index == 0:
+            value = self.ui.xexagSpinBox.value()
+        elif index == 1:
+            value = self.ui.yexagSpinBox.value()
+        elif index == 2:
+            value = self.ui.zexagSpinBox.value()
+        else:
+            return
+        new_exag = self.model.exaggeration
+        new_exag[index] = value
+        self.model.exaggeration = new_exag
+
+    set_xexaggeration = partialmethod(set_exaggeration, 0)
+    set_yexaggeration = partialmethod(set_exaggeration, 1)
+    set_zexaggeration = partialmethod(set_exaggeration, 2)
 
     def select_dataset(self, new_dataset: str):
         self.model.dataset = new_dataset
