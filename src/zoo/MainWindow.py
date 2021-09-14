@@ -77,8 +77,8 @@ class MainWindow(qtw.QMainWindow):
         self.ui.maskCheckBox.stateChanged.connect(self.toggle_mask_controls)
         self.ui.colorminSpinBox.editingFinished.connect(self.set_color_min)
         self.ui.colormaxSpinBox.editingFinished.connect(self.set_color_max)
-        self.ui.maskminSpinBox.editingFinished.connect(self.set_mask_min)
-        self.ui.maskmaxSpinBox.editingFinished.connect(self.set_mask_max)
+        self.ui.maskminSpinBox.valueChanged.connect(self.set_mask_min)
+        self.ui.maskmaxSpinBox.valueChanged.connect(self.set_mask_max)
 
         self.ui.xclipCheckBox.stateChanged.connect(self.toggle_xclip_controls)
         self.ui.yclipCheckBox.stateChanged.connect(self.toggle_yclip_controls)
@@ -162,6 +162,8 @@ class MainWindow(qtw.QMainWindow):
     def toggle_mask_controls(self, enable: bool):
         self.ui.maskminSpinBox.setEnabled(enable)
         self.ui.maskmaxSpinBox.setEnabled(enable)
+        if not enable:
+            self.model.contour_threshold = None
 
     def toggle_xclip_controls(self, enable: bool):
         self.ui.xminSpinBox.setEnabled(enable)
@@ -196,11 +198,17 @@ class MainWindow(qtw.QMainWindow):
     def set_color_max(self, value: float):
         print("set_color_max", value)
 
-    def set_mask_min(self, value: float):
-        print("set_mask_min", value)
+    def set_mask_min(self, _=None):
+        self.model.contour_threshold = [
+            self.mask_spinboxes[0].value(),
+            self.model.contour_threshold[1],
+        ]
 
-    def set_mask_max(self, value: float):
-        print("set_mask_max", value)
+    def set_mask_max(self, _=None):
+        self.model.contour_threshold = [
+            self.model.contour_threshold[0],
+            self.mask_spinboxes[1].value(),
+        ]
 
     def set_clipping_extent_n(self, index: int):
         self.model.replace_clipping_extents(

@@ -30,6 +30,7 @@ class VTK_PVH5Model(H5Model):
         self.changed_clipping_extents.connect(self.change_clipping_extents)
         self.changed_exaggeration.connect(self.change_exaggeration)
         self.changed_dataset.connect(self.update_dataset)
+        self.changed_contour_threshold.connect(self.change_contour_threshold)
 
     def load_mesh(self, _=None) -> None:
         coords = self.df.loc[self.timestep, ("x1", "x2", "x3")].values
@@ -91,7 +92,9 @@ class VTK_PVH5Model(H5Model):
             "//VTK::PositionVC::Dec\n"
             "out vec4 vertexMCVSOutput;\n"
             "in vec3 _disp;\n"
-            "out vec4 dispMCVSOutput;\n",
+            "out vec4 dispMCVSOutput;\n"
+            "in float _scalar;\n"
+            "out float scalarVSOutput;\n",
             False,
         )
         shader_property.AddShaderReplacement(
@@ -100,7 +103,8 @@ class VTK_PVH5Model(H5Model):
             True,
             "//VTK::PositionVC::Impl\n"
             "vertexMCVSOutput = vertexMC;\n"
-            "dispMCVSOutput = vec4(_disp, 0.0);\n",
+            "dispMCVSOutput = vec4(_disp, 0.0);\n"
+            "scalarVSOutput = _scalar;\n",
             False,
         )
         with open("src/zoo/cubeGS.glsl", "r") as f:
@@ -112,12 +116,16 @@ class VTK_PVH5Model(H5Model):
         self.shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
         self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
         self.shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
+        self.shader_parameters.SetUniform2f("contour_threshold", self.contour_threshold)
 
     def change_grid_spacing(self, _=None) -> None:
         self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
 
     def change_exaggeration(self, _=None) -> None:
         self.shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
+
+    def change_contour_threshold(self, _=None) -> None:
+        self.shader_parameters.SetUniform2f("contour_threshold", self.contour_threshold)
 
     def change_clipping_extents(self, extents: tuple[float]) -> None:
         extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
@@ -131,6 +139,10 @@ class VTK_PVH5Model(H5Model):
         self.plotter.scalar_bar.SetTitle(self.dataset)
         self.plotter.update_scalars(
             scalars=self.dataset, mesh=self.polydata, render=True
+        )
+
+        self.actor.GetMapper().MapDataArrayToVertexAttribute(
+            "_scalar", self.dataset, vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
         )
 
 

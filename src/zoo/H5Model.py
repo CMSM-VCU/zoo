@@ -4,6 +4,8 @@ import pandas as pd
 
 from qtpy import QtCore as qtc
 
+LARGE: float = 1e12
+
 
 class H5Model(qtc.QAbstractItemModel):
     plotter: "InteractorLike"  # e.g. QtInteractor, vtkInteractor
@@ -18,6 +20,7 @@ class H5Model(qtc.QAbstractItemModel):
     changed_exaggeration = qtc.Signal(list)
     changed_dataset = qtc.Signal(str)
     changed_clipping_extents = qtc.Signal(tuple)
+    changed_contour_threshold = qtc.Signal(list)
 
     timesteps: tuple[int] = (None,)
     datasets: tuple[str] = (None,)
@@ -27,6 +30,7 @@ class H5Model(qtc.QAbstractItemModel):
     _exaggeration: list[float] = [0.0, 0.0, 0.0]
     _clipping_extents: tuple[float] = (None,) * 6
     _original_extents: tuple[float] = (None,) * 6
+    _contour_threshold: list[float] = [-LARGE, LARGE]
 
     @abstractmethod
     def __init__(self) -> None:
@@ -119,3 +123,21 @@ class H5Model(qtc.QAbstractItemModel):
                 value if value is not None else self._original_extents[index]
             )
         self.clipping_extents = tuple(extents)
+
+    @property
+    def contour_threshold(self) -> list[float]:
+        return self._contour_threshold
+
+    @contour_threshold.setter
+    def contour_threshold(
+        self, value: typing.Union[float, typing.Iterable[float]]
+    ) -> None:
+        if isinstance(value, typing.Iterable) and len(value) == 2:
+            self._contour_threshold = list(value)
+        elif isinstance(value, float):
+            self._contour_threshold = list([value, value])
+        elif value == None:
+            self._contour_threshold = [-LARGE, LARGE]
+        else:
+            return None
+        self.changed_contour_threshold.emit(self._contour_threshold)
