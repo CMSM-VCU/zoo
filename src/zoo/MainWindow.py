@@ -2,6 +2,7 @@ import os
 import sys
 from functools import partial
 from pathlib import Path
+from typing import Callable
 
 from PyVistaH5Model import PyVistaH5Model
 from ui.zoo_ui import Ui_MainWindow
@@ -110,41 +111,45 @@ class MainWindow(qtw.QMainWindow):
             self.ui.yclipCheckBox.setChecked(enable)
             self.ui.zclipCheckBox.setChecked(enable)
 
-    def toggle_uniform_gs(self, enable: bool) -> None:
+    @staticmethod
+    def _template_toggle_uniform_vector_spinbox(
+        spinboxes: list,
+        component_funcs: list[Callable],
+        uniform_func: Callable,
+        enable: bool,
+    ) -> None:
         if enable:
-            self.ui.xgsSpinBox.valueChanged.disconnect()
-            self.ui.ygsSpinBox.valueChanged.disconnect()
-            self.ui.zgsSpinBox.valueChanged.disconnect()
+            for spinbox in spinboxes:
+                spinbox.valueChanged.disconnect()
 
-            self.ui.xgsSpinBox.valueChanged.connect(self.set_grid_spacing_uniform)
-            self.ui.xgsSpinBox.valueChanged.emit(self.ui.xgsSpinBox.value())
+            spinboxes[0].valueChanged.connect(uniform_func)
+            spinboxes[0].valueChanged.emit(spinboxes[0].value())
         else:
-            self.ui.ygsSpinBox.setValue(self.ui.xgsSpinBox.value())
-            self.ui.zgsSpinBox.setValue(self.ui.xgsSpinBox.value())
-            self.ui.xgsSpinBox.valueChanged.disconnect()
-            for i, box in enumerate(self.gs_spinboxes):
-                box.valueChanged.connect(self.set_grid_spacing[i])
+            for spinbox in spinboxes[1:]:
+                spinbox.setValue(spinboxes[0].value())
 
-        self.ui.ygsSpinBox.setVisible(not enable)
-        self.ui.zgsSpinBox.setVisible(not enable)
+            spinboxes[0].valueChanged.disconnect()
+            for i, box in enumerate(spinboxes):
+                box.valueChanged.connect(component_funcs[i])
+
+        for spinbox in spinboxes[1:]:
+            spinbox.setVisible(not enable)
+
+    def toggle_uniform_gs(self, enable: bool) -> None:
+        self._template_toggle_uniform_vector_spinbox(
+            spinboxes=self.gs_spinboxes,
+            component_funcs=self.set_grid_spacing,
+            uniform_func=self.set_grid_spacing_uniform,
+            enable=enable,
+        )
 
     def toggle_uniform_exag(self, enable: bool) -> None:
-        if enable:
-            self.ui.xexagSpinBox.valueChanged.disconnect()
-            self.ui.yexagSpinBox.valueChanged.disconnect()
-            self.ui.zexagSpinBox.valueChanged.disconnect()
-
-            self.ui.xexagSpinBox.valueChanged.connect(self.set_exaggeration_uniform)
-            self.ui.xexagSpinBox.valueChanged.emit(self.ui.xexagSpinBox.value())
-        else:
-            self.ui.yexagSpinBox.setValue(self.ui.xexagSpinBox.value())
-            self.ui.zexagSpinBox.setValue(self.ui.xexagSpinBox.value())
-            self.ui.xexagSpinBox.valueChanged.disconnect()
-            for i, box in enumerate(self.exag_spinboxes):
-                box.valueChanged.connect(self.set_exaggeration[i])
-
-        self.ui.yexagSpinBox.setVisible(not enable)
-        self.ui.zexagSpinBox.setVisible(not enable)
+        self._template_toggle_uniform_vector_spinbox(
+            spinboxes=self.exag_spinboxes,
+            component_funcs=self.set_exaggeration,
+            uniform_func=self.set_exaggeration_uniform,
+            enable=enable,
+        )
 
     def update_extents_boxes(self, extents: tuple[float]) -> None:
         for i, extent in enumerate(extents):
@@ -182,24 +187,6 @@ class MainWindow(qtw.QMainWindow):
     def set_timestep(self, new_timestep: str):
         self.model.timestep_index = int(new_timestep)
 
-    @staticmethod
-    def set_grid_spacing_n(obj, index):
-        new_gs = obj.model.grid_spacing
-        new_gs[index] = obj.gs_spinboxes[index].value()
-        obj.model.grid_spacing = new_gs
-
-    def set_grid_spacing_uniform(self, new_gs: float) -> None:
-        self.model.grid_spacing = [new_gs] * 3
-
-    @staticmethod
-    def set_exaggeration_n(obj, index):
-        new_exag = obj.model.exaggeration
-        new_exag[index] = obj.exag_spinboxes[index].value()
-        obj.model.exaggeration = new_exag
-
-    def set_exaggeration_uniform(self, new_exag: float) -> None:
-        self.model.exaggeration = [new_exag] * 3
-
     def select_dataset(self, new_dataset: str):
         self.model.dataset = new_dataset
 
@@ -219,6 +206,24 @@ class MainWindow(qtw.QMainWindow):
         self.model.replace_clipping_extents(
             indeces=[index], values=[self.clip_spinboxes[index]]
         )
+
+    @staticmethod
+    def set_grid_spacing_n(obj, index):
+        new_gs = obj.model.grid_spacing
+        new_gs[index] = obj.gs_spinboxes[index].value()
+        obj.model.grid_spacing = new_gs
+
+    def set_grid_spacing_uniform(self, new_gs: float) -> None:
+        self.model.grid_spacing = [new_gs] * 3
+
+    @staticmethod
+    def set_exaggeration_n(obj, index):
+        new_exag = obj.model.exaggeration
+        new_exag[index] = obj.exag_spinboxes[index].value()
+        obj.model.exaggeration = new_exag
+
+    def set_exaggeration_uniform(self, new_exag: float) -> None:
+        self.model.exaggeration = [new_exag] * 3
 
     def _generate_method_lists(self) -> None:
         self.set_grid_spacing = tuple(
