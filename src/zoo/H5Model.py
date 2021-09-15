@@ -129,14 +129,10 @@ class H5Model(qtc.QAbstractItemModel):
         return self._contour_threshold
 
     @contour_threshold.setter
-    def contour_threshold(
-        self, value: typing.Union[float, typing.Iterable[float]]
-    ) -> None:
+    def contour_threshold(self, value: typing.Iterable[float]) -> None:
         if isinstance(value, typing.Iterable) and len(value) == 2:
             self._contour_threshold = list(value)
-        elif isinstance(value, float):
-            self._contour_threshold = list([value, value])
-        elif value == None:
+        elif value is None:
             self._contour_threshold = [-LARGE, LARGE]
         else:
             return None
