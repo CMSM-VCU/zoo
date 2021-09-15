@@ -21,6 +21,7 @@ class H5Model(qtc.QAbstractItemModel):
     changed_dataset = qtc.Signal(str)
     changed_clipping_extents = qtc.Signal(tuple)
     changed_contour_threshold = qtc.Signal(list)
+    changed_colorbar_limits = qtc.Signal(list)
 
     timesteps: tuple[int] = (None,)
     datasets: tuple[str] = (None,)
@@ -31,6 +32,8 @@ class H5Model(qtc.QAbstractItemModel):
     _clipping_extents: tuple[float] = (None,) * 6
     _original_extents: tuple[float] = (None,) * 6
     _contour_threshold: list[float] = [-LARGE, LARGE]
+    _colorbar_limits: list[float] = [-LARGE, LARGE]
+    _dataset_limits: list[float] = [-LARGE, LARGE]
 
     @abstractmethod
     def __init__(self) -> None:
@@ -137,3 +140,17 @@ class H5Model(qtc.QAbstractItemModel):
         else:
             return None
         self.changed_contour_threshold.emit(self._contour_threshold)
+
+    @property
+    def colorbar_limits(self) -> list[float]:
+        return self._colorbar_limits
+
+    @colorbar_limits.setter
+    def colorbar_limits(self, value: typing.Iterable[float]) -> None:
+        if isinstance(value, typing.Iterable) and len(value) == 2:
+            self._colorbar_limits = list(value)
+        elif value is None:
+            self._colorbar_limits = self._dataset_limits
+        else:
+            return None
+        self.changed_colorbar_limits.emit(self._colorbar_limits)

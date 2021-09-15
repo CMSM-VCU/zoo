@@ -31,6 +31,7 @@ class VTK_PVH5Model(H5Model):
         self.changed_exaggeration.connect(self.change_exaggeration)
         self.changed_dataset.connect(self.update_dataset)
         self.changed_contour_threshold.connect(self.change_contour_threshold)
+        self.changed_colorbar_limits.connect(self.change_colorbar_limits)
 
     def load_mesh(self, _=None) -> None:
         coords = self.df.loc[self.timestep, ("x1", "x2", "x3")].values
@@ -63,7 +64,7 @@ class VTK_PVH5Model(H5Model):
         mapper.SetInputConnection(vertexGlyphFilter.GetOutputPort())
         lut = vtk.vtkLookupTable()
         lut.SetNumberOfColors(256)
-        lut.SetHueRange(0.0, 0.667)
+        lut.SetHueRange([0.0, 0.667][::-1])  # Reverse indexing to reverse colorbar
         lut.Build()
         mapper.SetLookupTable(lut)
 
@@ -134,8 +135,8 @@ class VTK_PVH5Model(H5Model):
         self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
 
     def update_dataset(self, _=None) -> None:
-        clim = self.polydata.get_data_range(self.dataset)
-        self.plotter.update_scalar_bar_range(clim)
+        self._dataset_limits = list(self.polydata.get_data_range(self.dataset))
+        self.colorbar_limits = self._dataset_limits
         self.plotter.scalar_bar.SetTitle(self.dataset)
         self.plotter.update_scalars(
             scalars=self.dataset, mesh=self.polydata, render=True
@@ -144,6 +145,9 @@ class VTK_PVH5Model(H5Model):
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
             "_scalar", self.dataset, vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
         )
+
+    def change_colorbar_limits(self, _=None) -> None:
+        self.plotter.update_scalar_bar_range(self.colorbar_limits)
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):

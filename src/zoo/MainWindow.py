@@ -75,8 +75,8 @@ class MainWindow(qtw.QMainWindow):
         self.ui.datasetSelector.currentTextChanged.connect(self.select_dataset)
         self.ui.colorCheckBox.stateChanged.connect(self.toggle_color_controls)
         self.ui.maskCheckBox.stateChanged.connect(self.toggle_mask_controls)
-        self.ui.colorminSpinBox.editingFinished.connect(self.set_color_min)
-        self.ui.colormaxSpinBox.editingFinished.connect(self.set_color_max)
+        self.ui.colorminSpinBox.valueChanged.connect(self.set_color_min)
+        self.ui.colormaxSpinBox.valueChanged.connect(self.set_color_max)
         self.ui.maskminSpinBox.valueChanged.connect(self.set_mask_min)
         self.ui.maskmaxSpinBox.valueChanged.connect(self.set_mask_max)
 
@@ -158,6 +158,8 @@ class MainWindow(qtw.QMainWindow):
     def toggle_color_controls(self, enable: bool):
         self.ui.colorminSpinBox.setEnabled(enable)
         self.ui.colormaxSpinBox.setEnabled(enable)
+        if not enable:
+            self.model.colorbar_limits = None
 
     def toggle_mask_controls(self, enable: bool):
         self.ui.maskminSpinBox.setEnabled(enable)
@@ -192,11 +194,17 @@ class MainWindow(qtw.QMainWindow):
     def select_dataset(self, new_dataset: str):
         self.model.dataset = new_dataset
 
-    def set_color_min(self, value: float):
-        print("set_color_min", value)
+    def set_color_min(self, _=None):
+        self.model.colorbar_limits = [
+            self.color_spinboxes[0].value(),
+            self.model.colorbar_limits[1],
+        ]
 
-    def set_color_max(self, value: float):
-        print("set_color_max", value)
+    def set_color_max(self, _=None):
+        self.model.colorbar_limits = [
+            self.model.colorbar_limits[0],
+            self.color_spinboxes[1].value(),
+        ]
 
     def set_mask_min(self, _=None):
         self.model.contour_threshold = [
