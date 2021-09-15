@@ -1,5 +1,5 @@
 {% set name = "zoo" %}
-{% set version = "0.0.1" %}
+{% set version = "0.0.2" %}
 
 package:
     name: "{{ name|lower }}"
@@ -32,6 +32,10 @@ requirements:
         - pyvistaqt
         - pyqt
         - python
+
+test:
+    imports:
+        - zoo
 
 about:
     home: "https://github.com/CMSM-VCU/zoo"
