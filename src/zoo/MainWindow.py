@@ -4,7 +4,6 @@ from functools import partial
 from pathlib import Path
 from typing import Callable
 
-from PyVistaH5Model import PyVistaH5Model
 from ui.zoo_ui import Ui_MainWindow
 from VTK_PVH5Model import VTK_PVH5Model
 
@@ -21,7 +20,6 @@ class MainWindow(qtw.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # self.model = PyVistaH5Model()
         self.model = VTK_PVH5Model()
         self.model.plotter.setParent(self.ui.viewport)
         self.ui.viewport.layout().addWidget(self.model.plotter.interactor)
@@ -60,7 +58,6 @@ class MainWindow(qtw.QMainWindow):
     def hook_up_signals(self):
         self.ui.actionOpen.triggered.connect(self.open_file)
         self.ui.actionExit.triggered.connect(self.close)
-        # self.ui.actionShow_Grid.triggered.connect(self.model.add_filters)
 
         self.ui.nextTimeStep.clicked.connect(self.increment_timestep)
         self.ui.prevTimeStep.clicked.connect(self.decrement_timestep)
