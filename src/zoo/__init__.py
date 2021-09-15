@@ -1,1 +1,3 @@
-from zoo.zoo import run
+import sys
+
+sys.path.append(".")

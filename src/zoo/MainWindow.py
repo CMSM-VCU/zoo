@@ -4,8 +4,8 @@ from functools import partial
 from pathlib import Path
 from typing import Callable
 
-from zoo.ui.zoo_ui import Ui_MainWindow
-from zoo.VTK_PVH5Model import VTK_PVH5Model
+from ui.zoo_ui import Ui_MainWindow
+from VTK_PVH5Model import VTK_PVH5Model
 
 os.environ["QT_API"] = "pyqt5"
 

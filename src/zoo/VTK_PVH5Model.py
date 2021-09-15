@@ -10,7 +10,7 @@ from qtpy import QtCore as qtc
 from pyvista.plotting.mapper import make_mapper
 from pyvista.utilities import wrap
 
-from zoo.H5Model import H5Model
+from H5Model import H5Model
 
 
 class VTK_PVH5Model(H5Model):

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from qtpy import QtWidgets
 
-from zoo.MainWindow import MainWindow
+from MainWindow import MainWindow
 
 
 def run():
