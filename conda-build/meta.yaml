@@ -1,0 +1,40 @@
+{% set name = "zoo" %}
+{% set version = "0.0.1" %}
+
+package:
+    name: "{{ name|lower }}"
+    version: "{{ version }}"
+
+source:
+    git_rev: "{{ version }}"
+    git_url: https://github.com/CMSM-VCU/zoo.git
+
+build:
+    script: python setup.py install --single-version-externally-managed --record=record.txt
+    noarch: python
+    entry_points:
+        - zoo = zoo:run
+
+requirements:
+    build:
+        - pandas
+        - pytables
+        - pyvista
+        - pyvistaqt
+        - pyqt
+        - python
+        - setuptools
+
+    run:
+        - pandas
+        - pytables
+        - pyvista
+        - pyvistaqt
+        - pyqt
+        - python
+
+about:
+    home: "https://github.com/CMSM-VCU/zoo"
+    license: MIT
+    license_family: MIT
+    summary: "A tool for visualizing Peridynamic simulation results"

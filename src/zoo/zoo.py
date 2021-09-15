@@ -6,7 +6,7 @@ from qtpy import QtWidgets
 from MainWindow import MainWindow
 
 
-def main():
+def run():
     app = QtWidgets.QApplication(sys.argv)
     try:
         file_to_load = Path(sys.argv[1])
@@ -22,4 +22,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run()
