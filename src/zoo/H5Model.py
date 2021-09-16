@@ -23,17 +23,17 @@ class H5Model(qtc.QAbstractItemModel):
     changed_contour_threshold = qtc.Signal(list)
     changed_colorbar_limits = qtc.Signal(list)
 
-    timesteps: tuple[int] = (None,)
-    datasets: tuple[str] = (None,)
+    timesteps: typing.Tuple[int] = (None,)
+    datasets: typing.Tuple[str] = (None,)
 
     _timestep_index: int = 0
-    _grid_spacing: list[float] = [0.005, 0.005, 0.005]
-    _exaggeration: list[float] = [0.0, 0.0, 0.0]
-    _clipping_extents: tuple[float] = (None,) * 6
-    _original_extents: tuple[float] = (None,) * 6
-    _contour_threshold: list[float] = [-LARGE, LARGE]
-    _colorbar_limits: list[float] = [-LARGE, LARGE]
-    _dataset_limits: list[float] = [-LARGE, LARGE]
+    _grid_spacing: typing.List[float] = [0.005, 0.005, 0.005]
+    _exaggeration: typing.List[float] = [0.0, 0.0, 0.0]
+    _clipping_extents: typing.Tuple[float] = (None,) * 6
+    _original_extents: typing.Tuple[float] = (None,) * 6
+    _contour_threshold: typing.List[float] = [-LARGE, LARGE]
+    _colorbar_limits: typing.List[float] = [-LARGE, LARGE]
+    _dataset_limits: typing.List[float] = [-LARGE, LARGE]
 
     @abstractmethod
     def __init__(self) -> None:
@@ -71,7 +71,7 @@ class H5Model(qtc.QAbstractItemModel):
         self.changed_timestep.emit(str(self.timestep))
 
     @property
-    def grid_spacing(self) -> list[float]:
+    def grid_spacing(self) -> typing.List[float]:
         return list(self._grid_spacing)
 
     @grid_spacing.setter
@@ -85,7 +85,7 @@ class H5Model(qtc.QAbstractItemModel):
         self.changed_grid_spacing.emit(self._grid_spacing)
 
     @property
-    def exaggeration(self) -> list[float]:
+    def exaggeration(self) -> typing.List[float]:
         return list(self._exaggeration)
 
     @exaggeration.setter
@@ -109,7 +109,7 @@ class H5Model(qtc.QAbstractItemModel):
         self.changed_dataset.emit(self._dataset)
 
     @property
-    def clipping_extents(self) -> tuple[float]:
+    def clipping_extents(self) -> typing.Tuple[float]:
         return self._clipping_extents
 
     @clipping_extents.setter
@@ -128,7 +128,7 @@ class H5Model(qtc.QAbstractItemModel):
         self.clipping_extents = tuple(extents)
 
     @property
-    def contour_threshold(self) -> list[float]:
+    def contour_threshold(self) -> typing.List[float]:
         return self._contour_threshold
 
     @contour_threshold.setter
@@ -142,7 +142,7 @@ class H5Model(qtc.QAbstractItemModel):
         self.changed_contour_threshold.emit(self._contour_threshold)
 
     @property
-    def colorbar_limits(self) -> list[float]:
+    def colorbar_limits(self) -> typing.List[float]:
         return self._colorbar_limits
 
     @colorbar_limits.setter

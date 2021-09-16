@@ -1,8 +1,6 @@
 import os
-import sys
 from functools import partial
-from pathlib import Path
-from typing import Callable
+import typing
 
 from .ui.zoo_ui import Ui_MainWindow
 from .VTK_PVH5Model import VTK_PVH5Model
@@ -110,9 +108,9 @@ class MainWindow(qtw.QMainWindow):
 
     @staticmethod
     def _template_toggle_uniform_vector_spinbox(
-        spinboxes: list,
-        component_funcs: list[Callable],
-        uniform_func: Callable,
+        spinboxes: typing.List,
+        component_funcs: typing.List[typing.Callable],
+        uniform_func: typing.Callable,
         enable: bool,
     ) -> None:
         if enable:
@@ -148,7 +146,7 @@ class MainWindow(qtw.QMainWindow):
             enable=enable,
         )
 
-    def update_extents_boxes(self, extents: tuple[float]) -> None:
+    def update_extents_boxes(self, extents: typing.Tuple[float]) -> None:
         for i, extent in enumerate(extents):
             self.clip_spinboxes[i].setValue(extent)
 

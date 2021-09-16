@@ -1,8 +1,7 @@
+import typing
 from importlib import resources
 
 import numpy as np
-import pandas as pd
-import pyvista as pv
 import pyvistaqt
 import vtk
 from pyvista.plotting.mapper import make_mapper
@@ -127,7 +126,7 @@ class VTK_PVH5Model(H5Model):
     def change_contour_threshold(self, _=None) -> None:
         self.shader_parameters.SetUniform2f("contour_threshold", self.contour_threshold)
 
-    def change_clipping_extents(self, extents: tuple[float]) -> None:
+    def change_clipping_extents(self, extents: typing.Tuple[float]) -> None:
         extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
 
         self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
