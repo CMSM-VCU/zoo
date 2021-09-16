@@ -23,5 +23,5 @@ setuptools.setup(
     ],
     python_requires=">=3.9",
     install_requires=["pandas", "tables", "pyvista", "pyvistaqt", "pyqt5"],
-    entry_points={"console_scripts": ["zoo = zoo.zoo:run"]},
+    entry_points={"console_scripts": ["zoo = zoo:run"]},
 )
