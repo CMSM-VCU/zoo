@@ -1,14 +1,14 @@
-from PIL.Image import new
+from importlib import resources
+
 import numpy as np
 import pandas as pd
 import pyvista as pv
 import pyvistaqt
 import vtk
-from vtk.numpy_interface import dataset_adapter as dsa
-
-from qtpy import QtCore as qtc
 from pyvista.plotting.mapper import make_mapper
 from pyvista.utilities import wrap
+from qtpy import QtCore as qtc
+from vtk.numpy_interface import dataset_adapter as dsa
 
 from .H5Model import H5Model
 
@@ -108,8 +108,7 @@ class VTK_PVH5Model(H5Model):
             "scalarVSOutput = _scalar;\n",
             False,
         )
-        with open("./cubeGS.glsl", "r") as f:
-            srcGS = f.read()
+        srcGS = resources.read_text(__package__, "cubeGS.glsl")
         shader_property.SetGeometryShaderCode(srcGS)
 
         self.shader_parameters = shader_property.GetGeometryCustomUniforms()
@@ -166,6 +165,7 @@ def bbox_to_model_coordinates(bbox_bounds, base_bounds):
 
 if __name__ == "__main__":
     import sys
+
     from qtpy import QtWidgets as qtw
 
     app = qtw.QApplication(sys.argv)
