@@ -16,6 +16,8 @@ setuptools.setup(
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
     py_modules=[Path(path).stem() for path in Path(".").glob("src/*.py")],
+    include_package_data=True,
+    package_data={"": ["*.glsl"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
