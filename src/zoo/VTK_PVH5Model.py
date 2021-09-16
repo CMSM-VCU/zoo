@@ -108,7 +108,7 @@ class VTK_PVH5Model(H5Model):
             "scalarVSOutput = _scalar;\n",
             False,
         )
-        with open("src/zoo/cubeGS.glsl", "r") as f:
+        with open("./cubeGS.glsl", "r") as f:
             srcGS = f.read()
         shader_property.SetGeometryShaderCode(srcGS)
 
