@@ -9,8 +9,10 @@ Peridynamics data visualization tool
 Conda:
 
 ``` plaintext
-conda install -c hallrc zoo
+conda install -c conda-forge -c hallrc zoo
 ```
+
+(`conda-forge` must be included for dependencies.)
 
 Zoo is not currently available through PIP.
 
@@ -26,6 +28,13 @@ At which point, a file can be opened through the usual *File > Open* menu or wit
 
 ``` plaintext
 zoo path/to/file.h5
+```
+
+If you want to, Zoo can be opened from within Python with
+
+``` python
+import zoo
+zoo.run()
 ```
 
 Zoo expects an hdf5 file that has been written using the Pandas "table" format under the field "data". i.e. A file created with
