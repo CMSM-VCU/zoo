@@ -24,6 +24,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.7",
-    install_requires=["pandas", "tables", "pyvista", "pyvistaqt", "pyqt5"],
+    install_requires=["tables","pandas", "pyqt5", "pyvista", "pyvistaqt"],
     entry_points={"console_scripts": ["zoo = zoo:run"]},
 )

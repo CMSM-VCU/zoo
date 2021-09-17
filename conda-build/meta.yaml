@@ -17,21 +17,21 @@ build:
 
 requirements:
     build:
-        - pandas
-        - pytables
-        - pyvista
-        - pyvistaqt
-        - pyqt
         - python
         - setuptools
-
-    run:
-        - pandas
         - pytables
+        - pandas
+        - pyqt
         - pyvista
         - pyvistaqt
-        - pyqt
+
+    run:
         - python
+        - pytables
+        - pandas
+        - pyqt
+        - pyvista
+        - pyvistaqt
 
 test:
     imports:
