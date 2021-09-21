@@ -22,6 +22,7 @@ class VTK_PVH5Model(H5Model):
         self.mesh = None
 
         self.plotter = pyvistaqt.QtInteractor()
+        self.camera = self.plotter.camera
 
         self.loaded_file.connect(self.load_mesh)
         self.changed_timestep.connect(self.load_mesh)
@@ -73,6 +74,12 @@ class VTK_PVH5Model(H5Model):
 
         self.actor = vtk.vtkActor()
         self.actor.SetMapper(mapper)
+        self.plotter.AddObserver(vtk.vtkCommand.InteractionEvent, self.test_callback)
+        self.plotter.add_axes(interactive=False, box=False)
+        # # vtkCameraOrientationWidget is not available for some reason?
+        # cam_orient_manipulator = vtk.vtkCameraOrientationWidget()
+        # cam_orient_manipulator.SetParentRenderer(self.plotter.renderer)
+        # cam_orient_manipulator.On()
 
         self.apply_shaders()
         self.plotter.add_actor(self.actor, name="primary", render=False)
@@ -81,6 +88,13 @@ class VTK_PVH5Model(H5Model):
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self.clipping_extents = self._original_extents
         self.update_dataset()
+
+    def test_callback(self, *args):
+        print(
+            self.plotter.camera.elevation,
+            self.plotter.camera.azimuth,
+            self.plotter.camera.roll,
+        )
 
     def apply_shaders(self):
         shader_property = self.actor.GetShaderProperty()

@@ -22,6 +22,7 @@ class H5Model(qtc.QAbstractItemModel):
     changed_clipping_extents = qtc.Signal(tuple)
     changed_contour_threshold = qtc.Signal(list)
     changed_colorbar_limits = qtc.Signal(list)
+    moved_camera = qtc.Signal()
 
     timesteps: typing.Tuple[int] = (None,)
     datasets: typing.Tuple[str] = (None,)
@@ -154,3 +155,33 @@ class H5Model(qtc.QAbstractItemModel):
         else:
             return None
         self.changed_colorbar_limits.emit(self._colorbar_limits)
+
+    @property
+    def camera_elevation(self) -> float:
+        return self.camera.elevation
+
+    @camera_elevation.setter
+    def camera_elevation(self, value: float) -> None:
+        self.camera.elevation = value
+        self.plotter.render()
+        self.moved_camera.emit()
+
+    @property
+    def camera_aximuth(self) -> float:
+        return self.camera.aximuth
+
+    @camera_aximuth.setter
+    def camera_aximuth(self, value: float) -> None:
+        self.camera.aximuth = value
+        self.plotter.render()
+        self.moved_camera.emit()
+
+    @property
+    def camera_roll(self) -> float:
+        return self.camera.roll
+
+    @camera_roll.setter
+    def camera_roll(self, value: float) -> None:
+        self.camera.roll = value
+        self.plotter.render()
+        self.moved_camera.emit()

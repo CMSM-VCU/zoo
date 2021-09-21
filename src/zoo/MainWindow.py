@@ -81,6 +81,10 @@ class MainWindow(qtw.QMainWindow):
         for i, box in enumerate(self.clip_spinboxes):
             box.editingFinished.connect(self.set_clipping_extent[i])
 
+        self.ui.pitchSlider.valueChanged.connect(self.set_camera_pitch)
+        self.ui.yawSlider.valueChanged.connect(self.set_camera_yaw)
+        self.ui.rollSlider.valueChanged.connect(self.set_camera_roll)
+
         self.model.loaded_file.connect(self.toggle_control_pane)
         self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
         self.model.changed_clipping_extents.connect(self.update_extents_boxes)
@@ -246,3 +250,12 @@ class MainWindow(qtw.QMainWindow):
         self.set_clipping_extent = tuple(
             partial(self.set_clipping_extent_n, self, i) for i in range(6)
         )
+
+    def set_camera_pitch(self, _=None):
+        self.model.camera_elevation = self.ui.pitchSlider.value() / 10.0
+
+    def set_camera_yaw(self, _=None):
+        self.model.camera_azimuth = self.ui.yawSlider.value() / 10.0
+
+    def set_camera_roll(self, _=None):
+        self.model.camera_roll = self.ui.rollSlider.value() / 10.0
