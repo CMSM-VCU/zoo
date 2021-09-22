@@ -76,7 +76,7 @@ class VTK_PVH5Model(H5Model):
         self.actor.SetMapper(mapper)
         self.plotter.AddObserver(vtk.vtkCommand.InteractionEvent, self.test_callback)
         self.plotter.add_axes(interactive=False, box=False)
-        # # vtkCameraOrientationWidget is not available for some reason?
+        # vtkCameraOrientationWidget is not available for some reason?
         # cam_orient_manipulator = vtk.vtkCameraOrientationWidget()
         # cam_orient_manipulator.SetParentRenderer(self.plotter.renderer)
         # cam_orient_manipulator.On()
@@ -90,11 +90,9 @@ class VTK_PVH5Model(H5Model):
         self.update_dataset()
 
     def test_callback(self, *args):
-        print(
-            self.plotter.camera.elevation,
-            self.plotter.camera.azimuth,
-            self.plotter.camera.roll,
-        )
+        print(self.camera.elevation, self.camera.azimuth, self.camera.roll)
+        print(self.camera.position)
+        print(self.camera.up)
 
     def apply_shaders(self):
         shader_property = self.actor.GetShaderProperty()

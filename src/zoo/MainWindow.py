@@ -255,7 +255,7 @@ class MainWindow(qtw.QMainWindow):
         self.model.camera_elevation = self.ui.pitchSlider.value() / 10.0
 
     def set_camera_yaw(self, _=None):
-        self.model.camera_azimuth = self.ui.yawSlider.value() / 10.0
+        self.model.camera_azimuth = self.ui.yawSlider.value()
 
     def set_camera_roll(self, _=None):
-        self.model.camera_roll = self.ui.rollSlider.value() / 10.0
+        self.model.camera_roll = self.ui.rollSlider.value()

@@ -164,16 +164,22 @@ class H5Model(qtc.QAbstractItemModel):
     def camera_elevation(self, value: float) -> None:
         self.camera.elevation = value
         self.plotter.render()
+        print(self.camera.elevation, self.camera.azimuth, self.camera.roll)
+        print(self.camera.position)
+        print(self.camera.up)
         self.moved_camera.emit()
 
     @property
-    def camera_aximuth(self) -> float:
-        return self.camera.aximuth
+    def camera_azimuth(self) -> float:
+        return self.camera.azimuth
 
-    @camera_aximuth.setter
-    def camera_aximuth(self, value: float) -> None:
-        self.camera.aximuth = value
+    @camera_azimuth.setter
+    def camera_azimuth(self, value: float) -> None:
+        self.camera.azimuth = value
         self.plotter.render()
+        print(self.camera.elevation, self.camera.azimuth, self.camera.roll)
+        print(self.camera.position)
+        print(self.camera.up)
         self.moved_camera.emit()
 
     @property
@@ -184,4 +190,7 @@ class H5Model(qtc.QAbstractItemModel):
     def camera_roll(self, value: float) -> None:
         self.camera.roll = value
         self.plotter.render()
+        print(self.camera.elevation, self.camera.azimuth, self.camera.roll)
+        print(self.camera.position)
+        print(self.camera.up)
         self.moved_camera.emit()
