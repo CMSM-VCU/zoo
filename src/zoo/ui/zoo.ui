@@ -518,14 +518,14 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
-                  <property name="visible">
-                   <bool>false</bool>
-                  </property>
                   <property name="font">
                    <font>
                     <family>Consolas</family>
                     <pointsize>9</pointsize>
                    </font>
+                  </property>
+                  <property name="visible">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>5</number>
@@ -549,14 +549,14 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
-                  <property name="visible">
-                   <bool>false</bool>
-                  </property>
                   <property name="font">
                    <font>
                     <family>Consolas</family>
                     <pointsize>9</pointsize>
                    </font>
+                  </property>
+                  <property name="visible">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>5</number>
@@ -683,14 +683,14 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
-                  <property name="visible">
-                   <bool>false</bool>
-                  </property>
                   <property name="font">
                    <font>
                     <family>Consolas</family>
                     <pointsize>9</pointsize>
                    </font>
+                  </property>
+                  <property name="visible">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>1</number>
@@ -708,14 +708,14 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
-                  <property name="visible">
-                   <bool>false</bool>
-                  </property>
                   <property name="font">
                    <font>
                     <family>Consolas</family>
                     <pointsize>9</pointsize>
                    </font>
+                  </property>
+                  <property name="visible">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>1</number>
@@ -1030,6 +1030,132 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="cameraLocationGroup">
+             <property name="title">
+              <string>Camera Location</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <property name="leftMargin">
+               <number>4</number>
+              </property>
+              <property name="topMargin">
+               <number>4</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>4</number>
+              </property>
+              <property name="spacing">
+               <number>2</number>
+              </property>
+              <item row="0" column="1">
+               <widget class="QLabel" name="positionValue">
+                <property name="font">
+                 <font>
+                  <family>Consolas</family>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="focalLabel">
+                <property name="maximumSize">
+                 <size>
+                  <width>65</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>9</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Focal point:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="positionLabel">
+                <property name="maximumSize">
+                 <size>
+                  <width>65</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>9</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Position:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="viewupLabel">
+                <property name="maximumSize">
+                 <size>
+                  <width>65</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>9</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>View-up:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="focalValue">
+                <property name="font">
+                 <font>
+                  <family>Consolas</family>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="viewupValue">
+                <property name="font">
+                 <font>
+                  <family>Consolas</family>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </item>
           </layout>
          </item>

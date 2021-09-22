@@ -22,6 +22,7 @@ class H5Model(qtc.QAbstractItemModel):
     changed_clipping_extents = qtc.Signal(tuple)
     changed_contour_threshold = qtc.Signal(list)
     changed_colorbar_limits = qtc.Signal(list)
+    moved_camera = qtc.Signal(list)
 
     timesteps: typing.Tuple[int] = (None,)
     datasets: typing.Tuple[str] = (None,)

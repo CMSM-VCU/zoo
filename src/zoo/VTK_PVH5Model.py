@@ -73,6 +73,9 @@ class VTK_PVH5Model(H5Model):
 
         self.actor = vtk.vtkActor()
         self.actor.SetMapper(mapper)
+        self.plotter.AddObserver(
+            vtk.vtkCommand.InteractionEvent, self.emit_moved_camera
+        )
 
         self.apply_shaders()
         self.plotter.add_actor(self.actor, name="primary", render=False)
@@ -146,6 +149,12 @@ class VTK_PVH5Model(H5Model):
 
     def change_colorbar_limits(self, _=None) -> None:
         self.plotter.update_scalar_bar_range(self.colorbar_limits)
+
+    def emit_moved_camera(self, *args) -> None:
+        """A method wrapping the signal emit is needed because the vtkInteractionEvent
+        passes two arguments, and a signal can only handle one argument.
+        """
+        self.moved_camera.emit(list(self.plotter.camera_position))
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):

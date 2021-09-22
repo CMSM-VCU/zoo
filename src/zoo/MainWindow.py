@@ -84,6 +84,7 @@ class MainWindow(qtw.QMainWindow):
         self.model.loaded_file.connect(self.toggle_control_pane)
         self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
         self.model.changed_clipping_extents.connect(self.update_extents_boxes)
+        self.model.moved_camera.connect(self.update_camera_readout)
 
     def open_file(self):
         # stackoverflow.com/a/44076057/13130795
@@ -246,3 +247,11 @@ class MainWindow(qtw.QMainWindow):
         self.set_clipping_extent = tuple(
             partial(self.set_clipping_extent_n, self, i) for i in range(6)
         )
+
+    def update_camera_readout(self, data: typing.List) -> None:
+        pos = data[0]
+        foc = data[1]
+        up = data[2]
+        self.ui.positionValue.setText(f"{pos[0]:.2f}, {pos[1]:.2f}, {pos[2]:.2f}")
+        self.ui.focalValue.setText(f"{foc[0]:.2f}, {foc[1]:.2f}, {foc[2]:.2f}")
+        self.ui.viewupValue.setText(f"{up[0]:.2f}, {up[1]:.2f}, {up[2]:.2f}")
