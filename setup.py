@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zoo",
-    version="0.0.8",
+    version="0.0.9",
     author="Riley Hall",
     author_email="riley.hall.va@gmail.com",
     description="A tool for visualizing Peridynamic simulation results",
@@ -24,6 +24,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.7",
-    install_requires=["tables","pandas", "pyqt5", "pyvista", "pyvistaqt"],
+    install_requires=["tables", "pandas", "pyqt5", "pyvista", "pyvistaqt", "pyperclip"],
     entry_points={"console_scripts": ["zoo = zoo:run"]},
 )

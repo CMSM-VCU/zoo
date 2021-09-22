@@ -1,5 +1,5 @@
 {% set name = "zoo" %}
-{% set version = "0.0.8" %}
+{% set version = "0.0.9" %}
 
 package:
     name: "{{ name|lower }}"
@@ -24,6 +24,7 @@ requirements:
         - pyqt
         - pyvista
         - pyvistaqt
+        - pyperclip
 
     run:
         - python
@@ -32,6 +33,7 @@ requirements:
         - pyqt
         - pyvista
         - pyvistaqt
+        - pyperclip
 
 test:
     imports:
