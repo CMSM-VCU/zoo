@@ -1,6 +1,8 @@
 import os
-from functools import partial
 import typing
+from functools import partial
+
+import pyperclip
 
 from .ui.zoo_ui import Ui_MainWindow
 from .VTK_PVH5Model import VTK_PVH5Model
@@ -80,6 +82,10 @@ class MainWindow(qtw.QMainWindow):
         self.ui.zclipCheckBox.stateChanged.connect(self.toggle_zclip_controls)
         for i, box in enumerate(self.clip_spinboxes):
             box.editingFinished.connect(self.set_clipping_extent[i])
+
+        # QGroupBox only emits clicked signal if it is checkable. Bypass this by
+        # binding directly to the mousePressEvent.
+        self.ui.cameraLocationGroup.mousePressEvent = self.copy_camera_location
 
         self.model.loaded_file.connect(self.toggle_control_pane)
         self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
@@ -255,3 +261,7 @@ class MainWindow(qtw.QMainWindow):
         self.ui.positionValue.setText(f"{pos[0]:.2f}, {pos[1]:.2f}, {pos[2]:.2f}")
         self.ui.focalValue.setText(f"{foc[0]:.2f}, {foc[1]:.2f}, {foc[2]:.2f}")
         self.ui.viewupValue.setText(f"{up[0]:.2f}, {up[1]:.2f}, {up[2]:.2f}")
+
+    def copy_camera_location(self, _=None) -> None:
+        print("Copied!")
+        pyperclip.copy(str(self.model.plotter.camera_position))

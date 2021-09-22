@@ -1033,6 +1033,12 @@
            </item>
            <item>
             <widget class="QGroupBox" name="cameraLocationGroup">
+             <property name="cursor">
+              <cursorShape>WhatsThisCursor</cursorShape>
+             </property>
+             <property name="contextMenuPolicy">
+              <enum>Qt::ActionsContextMenu</enum>
+             </property>
              <property name="title">
               <string>Camera Location</string>
              </property>

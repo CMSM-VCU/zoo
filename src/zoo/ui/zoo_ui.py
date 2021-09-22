@@ -494,6 +494,7 @@ class Ui_MainWindow(object):
         spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.controls.addItem(spacerItem4)
         self.cameraLocationGroup = QtWidgets.QGroupBox(self.controlPane)
+        self.cameraLocationGroup.setCursor(QtGui.QCursor(QtCore.Qt.WhatsThisCursor))
         self.cameraLocationGroup.setObjectName("cameraLocationGroup")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.cameraLocationGroup)
         self.gridLayout_3.setContentsMargins(4, 4, 0, 4)
