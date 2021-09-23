@@ -234,28 +234,32 @@ class MainWindow(qtw.QMainWindow):
             self.select_mask_dataset()
 
     def set_color_min(self, _=None):
-        self.model.colorbar_limits = [
-            self.color_spinboxes[0].value(),
-            self.model.colorbar_limits[1],
-        ]
+        if self.ui.colorCheckBox.isChecked():
+            self.model.colorbar_limits = [
+                self.color_spinboxes[0].value(),
+                self.model.colorbar_limits[1],
+            ]
 
     def set_color_max(self, _=None):
-        self.model.colorbar_limits = [
-            self.model.colorbar_limits[0],
-            self.color_spinboxes[1].value(),
-        ]
+        if self.ui.colorCheckBox.isChecked():
+            self.model.colorbar_limits = [
+                self.model.colorbar_limits[0],
+                self.color_spinboxes[1].value(),
+            ]
 
     def set_mask_min(self, _=None):
-        self.model.mask_limits = [
-            self.mask_spinboxes[0].value(),
-            self.model.mask_limits[1],
-        ]
+        if self.ui.maskCheckBox.isChecked():
+            self.model.mask_limits = [
+                self.mask_spinboxes[0].value(),
+                self.model.mask_limits[1],
+            ]
 
     def set_mask_max(self, _=None):
-        self.model.mask_limits = [
-            self.model.mask_limits[0],
-            self.mask_spinboxes[1].value(),
-        ]
+        if self.ui.maskCheckBox.isChecked():
+            self.model.mask_limits = [
+                self.model.mask_limits[0],
+                self.mask_spinboxes[1].value(),
+            ]
 
     def set_clipping_extent_n(self, index: int):
         self.model.replace_clipping_extents(
