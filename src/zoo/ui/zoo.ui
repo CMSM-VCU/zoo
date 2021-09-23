@@ -419,6 +419,9 @@
                     <pointsize>11</pointsize>
                    </font>
                   </property>
+                  <property name="toolTip">
+                   <string>Toggle separate mask and plot datasets</string>
+                  </property>
                   <property name="text">
                    <string></string>
                   </property>
@@ -545,6 +548,9 @@
                     <family>Segoe MDL2 Assets</family>
                     <pointsize>11</pointsize>
                    </font>
+                  </property>
+                  <property name="toolTip">
+                   <string>Toggle uniform/non-uniform grid spacing</string>
                   </property>
                   <property name="text">
                    <string></string>
@@ -791,6 +797,9 @@
                     <family>Segoe MDL2 Assets</family>
                     <pointsize>11</pointsize>
                    </font>
+                  </property>
+                  <property name="toolTip">
+                   <string>Toggle uniform/non-uniform exaggeration</string>
                   </property>
                   <property name="text">
                    <string></string>
