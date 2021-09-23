@@ -155,3 +155,6 @@ class H5Model(qtc.QAbstractItemModel):
         else:
             return None
         self.changed_colorbar_limits.emit(self._colorbar_limits)
+
+    def save_image(self, filename) -> None:
+        self.plotter.screenshot(filename=filename)

@@ -57,6 +57,7 @@ class MainWindow(qtw.QMainWindow):
 
     def hook_up_signals(self):
         self.ui.actionOpen.triggered.connect(self.open_file)
+        self.ui.actionSave_Image.triggered.connect(self.save_image)
         self.ui.actionExit.triggered.connect(self.close)
 
         self.ui.nextTimeStep.clicked.connect(self.increment_timestep)
@@ -265,3 +266,8 @@ class MainWindow(qtw.QMainWindow):
     def copy_camera_location(self, _=None) -> None:
         print("Copied!")
         pyperclip.copy(str(self.model.plotter.camera_position))
+
+    def save_image(self, _=None) -> None:
+        filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
+        if filename:
+            self.model.save_image(filename)
