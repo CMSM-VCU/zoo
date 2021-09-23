@@ -11,6 +11,7 @@ in vec4 vertexMCVSOutput[];
 
 in vec4 dispMCVSOutput[];
 in float scalarVSOutput[];
+in float maskscalarVSOutput[];
 
 out vec4 vertexVCGSOutput;
 out vec3 normalVCGSOutput;
@@ -84,7 +85,7 @@ void main()
 
     vec4 center = gl_in[0].gl_Position; // i.e. vertexDCVSOutput - display coordinates
 
-    if (scalarVSOutput[0] < mask_limits[0] || scalarVSOutput[0] > mask_limits[1]) {
+    if (maskscalarVSOutput[0] < mask_limits[0] || maskscalarVSOutput[0] > mask_limits[1]) {
         // vertexColorGSOutput = vec4(255,0.0,0.0,1.0);
         return;
     }

@@ -29,6 +29,7 @@ class VTK_PVH5Model(H5Model):
         self.changed_clipping_extents.connect(self.change_clipping_extents)
         self.changed_exaggeration.connect(self.change_exaggeration)
         self.changed_plot_dataset.connect(self.update_plot_dataset)
+        self.changed_mask_dataset.connect(self.update_mask_dataset)
         self.changed_mask_limits.connect(self.change_mask_limits)
         self.changed_colorbar_limits.connect(self.change_colorbar_limits)
 
@@ -88,6 +89,7 @@ class VTK_PVH5Model(H5Model):
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self.clipping_extents = self._original_extents
         self.update_plot_dataset()
+        self.update_mask_dataset()
 
     def apply_shaders(self):
         shader_property = self.actor.GetShaderProperty()
@@ -101,7 +103,9 @@ class VTK_PVH5Model(H5Model):
             "in vec3 _disp;\n"
             "out vec4 dispMCVSOutput;\n"
             "in float _scalar;\n"
-            "out float scalarVSOutput;\n",
+            "in float _mask_scalar;\n"
+            "out float scalarVSOutput;\n"
+            "out float maskscalarVSOutput;\n",
             False,
         )
         shader_property.AddShaderReplacement(
@@ -111,7 +115,8 @@ class VTK_PVH5Model(H5Model):
             "//VTK::PositionVC::Impl\n"
             "vertexMCVSOutput = vertexMC;\n"
             "dispMCVSOutput = vec4(_disp, 0.0);\n"
-            "scalarVSOutput = _scalar;\n",
+            "scalarVSOutput = _scalar;\n"
+            "maskscalarVSOutput = _mask_scalar;\n",
             False,
         )
         srcGS = resources.read_text(__package__, "cubeGS.glsl")
@@ -151,6 +156,18 @@ class VTK_PVH5Model(H5Model):
 
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
             "_scalar", self.plot_dataset, vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
+        )
+
+    def update_mask_dataset(self, _=None) -> None:
+        self._mask_dataset_limits = list(
+            self.polydata.get_data_range(self.mask_dataset)
+        )
+        self.mask_limits = self._mask_dataset_limits
+        self.actor.GetMapper().MapDataArrayToVertexAttribute(
+            "_mask_scalar",
+            self.mask_dataset,
+            vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS,
+            -1,
         )
 
     def change_colorbar_limits(self, _=None) -> None:

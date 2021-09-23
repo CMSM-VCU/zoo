@@ -55,6 +55,7 @@ class H5Model(qtc.QAbstractItemModel):
             self.timesteps = tuple(self.df.index.levels[0])
 
             self._plot_dataset = self.datasets[0]
+            self._mask_dataset = self._plot_dataset
             self.loaded_file.emit(True)
 
     @property
@@ -113,6 +114,8 @@ class H5Model(qtc.QAbstractItemModel):
         if name in self.datasets:
             self._plot_dataset = name
         self.changed_plot_dataset.emit(self._plot_dataset)
+        if self.plot_and_mask_same_dataset:
+            self.mask_dataset = name
 
     @property
     def mask_dataset(self) -> str:
