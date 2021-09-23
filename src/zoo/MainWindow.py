@@ -70,11 +70,14 @@ class MainWindow(qtw.QMainWindow):
         self.ui.exagLockButton.toggled.connect(self.toggle_uniform_exag)
         self.ui.xexagSpinBox.valueChanged.connect(self.set_exaggeration_uniform)
 
-        self.ui.datasetSelector.currentTextChanged.connect(self.select_dataset)
+        self.ui.plotdatasetSelector.activated.connect(self.select_plot_dataset)
         self.ui.colorCheckBox.stateChanged.connect(self.toggle_color_controls)
-        self.ui.maskCheckBox.stateChanged.connect(self.toggle_mask_controls)
         self.ui.colorminSpinBox.valueChanged.connect(self.set_color_min)
         self.ui.colormaxSpinBox.valueChanged.connect(self.set_color_max)
+
+        self.ui.maskdatasetLockButton.toggled.connect(self.toggle_maskplot_lock)
+        self.ui.maskdatasetSelector.activated.connect(self.select_mask_dataset)
+        self.ui.maskCheckBox.stateChanged.connect(self.toggle_mask_controls)
         self.ui.maskminSpinBox.valueChanged.connect(self.set_mask_min)
         self.ui.maskmaxSpinBox.valueChanged.connect(self.set_mask_max)
 
@@ -90,7 +93,12 @@ class MainWindow(qtw.QMainWindow):
 
         self.model.loaded_file.connect(self.toggle_control_pane)
         self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
+        self.model.changed_mask_dataset.connect(
+            self.ui.maskdatasetSelector.setCurrentText
+        )
         self.model.changed_clipping_extents.connect(self.update_extents_boxes)
+        self.model.changed_colorbar_limits.connect(self.update_colorlimit_boxes)
+        self.model.changed_mask_limits.connect(self.update_masklimit_boxes)
         self.model.moved_camera.connect(self.update_camera_readout)
 
     def open_file(self):
@@ -104,7 +112,8 @@ class MainWindow(qtw.QMainWindow):
         self.ui.menuView.setEnabled(enable)
         if enable:
             self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
-            self.ui.datasetSelector.addItems(self.model.datasets)
+            self.ui.plotdatasetSelector.addItems(self.model.datasets)
+            self.ui.maskdatasetSelector.addItems(self.model.datasets)
             self.ui.xgsSpinBox.setValue(self.model.grid_spacing[0])
             self.ui.xexagSpinBox.setValue(self.model.exaggeration[0])
         else:
@@ -158,6 +167,14 @@ class MainWindow(qtw.QMainWindow):
         for i, extent in enumerate(extents):
             self.clip_spinboxes[i].setValue(extent)
 
+    def update_colorlimit_boxes(self, limits: typing.Tuple[float]) -> None:
+        self.ui.colorminSpinBox.setValue(limits[0])
+        self.ui.colormaxSpinBox.setValue(limits[1])
+
+    def update_masklimit_boxes(self, limits: typing.Tuple[float]) -> None:
+        self.ui.maskminSpinBox.setValue(limits[0])
+        self.ui.maskmaxSpinBox.setValue(limits[1])
+
     def toggle_color_controls(self, enable: bool):
         self.ui.colorminSpinBox.setEnabled(enable)
         self.ui.colormaxSpinBox.setEnabled(enable)
@@ -194,8 +211,27 @@ class MainWindow(qtw.QMainWindow):
     def set_timestep(self, new_timestep: str):
         self.model.timestep_index = int(new_timestep)
 
-    def select_dataset(self, new_dataset: str):
-        self.model.plot_dataset = new_dataset
+    def select_plot_dataset(self, _=None, *, override: str = None):
+        self.model.plot_dataset = (
+            override
+            if override is not None
+            else self.ui.plotdatasetSelector.currentText()
+        )
+
+    def select_mask_dataset(self, _=None, *, override: str = None):
+        self.model.mask_dataset = (
+            override
+            if override is not None
+            else self.ui.maskdatasetSelector.currentText()
+        )
+
+    def toggle_maskplot_lock(self, enable: bool):
+        self.ui.maskdatasetSelector.setEnabled(not enable)
+        self.model.plot_and_mask_same_dataset = enable
+        if enable:
+            self.select_mask_dataset(override=self.ui.plotdatasetSelector.currentText())
+        else:
+            self.select_mask_dataset()
 
     def set_color_min(self, _=None):
         self.model.colorbar_limits = [

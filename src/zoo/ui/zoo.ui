@@ -292,26 +292,26 @@
                <number>4</number>
               </property>
               <item>
-               <widget class="QComboBox" name="datasetSelector">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="colorlimitLabel">
+               <widget class="QLabel" name="colorLabel">
                 <property name="font">
                  <font>
                   <pointsize>8</pointsize>
                  </font>
                 </property>
                 <property name="text">
-                 <string>Color Limits</string>
+                 <string>Color</string>
                 </property>
                 <property name="buddy">
                  <cstring>colorminSpinBox</cstring>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="plotdatasetSelector">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
                 </property>
                </widget>
               </item>
@@ -378,12 +378,59 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Masking Thresholds</string>
+                 <string>Masking</string>
                 </property>
                 <property name="buddy">
                  <cstring>maskminSpinBox</cstring>
                 </property>
                </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QComboBox" name="maskdatasetSelector">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                   </font>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="maskdatasetLockButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>24</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Segoe MDL2 Assets</family>
+                    <pointsize>11</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string></string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -479,8 +526,39 @@
               </property>
               <item>
                <layout class="QGridLayout" name="gridLayout_5">
-                <item row="0" column="0">
-                 <widget class="QDoubleSpinBox" name="xgsSpinBox">
+                <item row="0" column="1">
+                 <widget class="QPushButton" name="gsLockButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>24</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Segoe MDL2 Assets</family>
+                    <pointsize>11</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string></string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QDoubleSpinBox" name="zgsSpinBox">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
                     <horstretch>0</horstretch>
@@ -493,8 +571,8 @@
                     <pointsize>9</pointsize>
                    </font>
                   </property>
-                  <property name="suffix">
-                   <string/>
+                  <property name="visible">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>5</number>
@@ -541,8 +619,8 @@
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="0">
-                 <widget class="QDoubleSpinBox" name="zgsSpinBox">
+                <item row="0" column="0">
+                 <widget class="QDoubleSpinBox" name="xgsSpinBox">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
                     <horstretch>0</horstretch>
@@ -555,8 +633,8 @@
                     <pointsize>9</pointsize>
                    </font>
                   </property>
-                  <property name="visible">
-                   <bool>false</bool>
+                  <property name="suffix">
+                   <string/>
                   </property>
                   <property name="decimals">
                    <number>5</number>
@@ -569,37 +647,6 @@
                   </property>
                   <property name="value">
                    <double>0.005000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QPushButton" name="gsLockButton">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>24</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Segoe MDL2 Assets</family>
-                    <pointsize>11</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string></string>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -1245,7 +1292,7 @@
   <tabstop>prevTimeStep</tabstop>
   <tabstop>timeStepSelector</tabstop>
   <tabstop>nextTimeStep</tabstop>
-  <tabstop>datasetSelector</tabstop>
+  <tabstop>plotdatasetSelector</tabstop>
   <tabstop>colorminSpinBox</tabstop>
   <tabstop>colormaxSpinBox</tabstop>
   <tabstop>maskminSpinBox</tabstop>
