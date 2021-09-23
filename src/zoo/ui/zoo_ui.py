@@ -613,6 +613,7 @@ class Ui_MainWindow(object):
         self.zLabel.setText(_translate("MainWindow", "Z"))
         self.xLabel.setText(_translate("MainWindow", "X"))
         self.yLabel.setText(_translate("MainWindow", "Y"))
+        self.cameraLocationGroup.setToolTip(_translate("MainWindow", "Click to copy camera location to clipboard"))
         self.cameraLocationGroup.setTitle(_translate("MainWindow", "Camera Location"))
         self.positionValue.setText(_translate("MainWindow", "TextLabel"))
         self.focalLabel.setText(_translate("MainWindow", "Focal point:"))

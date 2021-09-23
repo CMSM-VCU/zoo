@@ -1036,8 +1036,8 @@
              <property name="cursor">
               <cursorShape>WhatsThisCursor</cursorShape>
              </property>
-             <property name="contextMenuPolicy">
-              <enum>Qt::ActionsContextMenu</enum>
+             <property name="toolTip">
+              <string>Click to copy camera location to clipboard</string>
              </property>
              <property name="title">
               <string>Camera Location</string>
