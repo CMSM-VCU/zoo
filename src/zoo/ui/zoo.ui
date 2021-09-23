@@ -335,6 +335,9 @@
                     <pointsize>8</pointsize>
                    </font>
                   </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
+                  </property>
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -356,6 +359,9 @@
                     <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
+                  </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>3</number>
@@ -455,6 +461,9 @@
                     <pointsize>8</pointsize>
                    </font>
                   </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
+                  </property>
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -476,6 +485,9 @@
                     <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
+                  </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>3</number>
@@ -639,6 +651,9 @@
                     <pointsize>9</pointsize>
                    </font>
                   </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
+                  </property>
                   <property name="suffix">
                    <string/>
                   </property>
@@ -716,6 +731,9 @@
                     <family>Consolas</family>
                     <pointsize>9</pointsize>
                    </font>
+                  </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
                   </property>
                   <property name="suffix">
                    <string/>
@@ -864,6 +882,9 @@
                     <pointsize>8</pointsize>
                    </font>
                   </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
+                  </property>
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -906,6 +927,9 @@
                     <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
+                  </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>3</number>
@@ -950,6 +974,9 @@
                     <pointsize>8</pointsize>
                    </font>
                   </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
+                  </property>
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -971,6 +998,9 @@
                     <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
+                  </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>3</number>
@@ -994,6 +1024,9 @@
                     <pointsize>8</pointsize>
                    </font>
                   </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
+                  </property>
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -1015,6 +1048,9 @@
                     <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
+                  </property>
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
                   </property>
                   <property name="decimals">
                    <number>3</number>
