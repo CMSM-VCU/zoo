@@ -84,7 +84,7 @@ void main()
 
     vec4 center = gl_in[0].gl_Position; // i.e. vertexDCVSOutput - display coordinates
 
-    if (scalarVSOutput[0] < contour_threshold[0] || scalarVSOutput[0] > contour_threshold[1]) {
+    if (scalarVSOutput[0] < mask_limits[0] || scalarVSOutput[0] > mask_limits[1]) {
         // vertexColorGSOutput = vec4(255,0.0,0.0,1.0);
         return;
     }

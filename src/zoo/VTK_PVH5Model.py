@@ -28,8 +28,8 @@ class VTK_PVH5Model(H5Model):
         self.changed_grid_spacing.connect(self.change_grid_spacing)
         self.changed_clipping_extents.connect(self.change_clipping_extents)
         self.changed_exaggeration.connect(self.change_exaggeration)
-        self.changed_dataset.connect(self.update_dataset)
-        self.changed_contour_threshold.connect(self.change_contour_threshold)
+        self.changed_plot_dataset.connect(self.update_plot_dataset)
+        self.changed_mask_limits.connect(self.change_mask_limits)
         self.changed_colorbar_limits.connect(self.change_colorbar_limits)
 
     @property
@@ -87,7 +87,7 @@ class VTK_PVH5Model(H5Model):
         self.plotter.add_scalar_bar(render=False)
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self.clipping_extents = self._original_extents
-        self.update_dataset()
+        self.update_plot_dataset()
 
     def apply_shaders(self):
         shader_property = self.actor.GetShaderProperty()
@@ -122,7 +122,7 @@ class VTK_PVH5Model(H5Model):
         self.shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
         self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
         self.shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
-        self.shader_parameters.SetUniform2f("contour_threshold", self.contour_threshold)
+        self.shader_parameters.SetUniform2f("mask_limits", self.mask_limits)
 
     def change_grid_spacing(self, _=None) -> None:
         self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
@@ -130,8 +130,8 @@ class VTK_PVH5Model(H5Model):
     def change_exaggeration(self, _=None) -> None:
         self.shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
 
-    def change_contour_threshold(self, _=None) -> None:
-        self.shader_parameters.SetUniform2f("contour_threshold", self.contour_threshold)
+    def change_mask_limits(self, _=None) -> None:
+        self.shader_parameters.SetUniform2f("mask_limits", self.mask_limits)
 
     def change_clipping_extents(self, extents: typing.Tuple[float]) -> None:
         extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
@@ -139,16 +139,18 @@ class VTK_PVH5Model(H5Model):
         self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
         self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
 
-    def update_dataset(self, _=None) -> None:
-        self._dataset_limits = list(self.polydata.get_data_range(self.dataset))
-        self.colorbar_limits = self._dataset_limits
-        self.plotter.scalar_bar.SetTitle(self.dataset)
+    def update_plot_dataset(self, _=None) -> None:
+        self._plot_dataset_limits = list(
+            self.polydata.get_data_range(self.plot_dataset)
+        )
+        self.colorbar_limits = self._plot_dataset_limits
+        self.plotter.scalar_bar.SetTitle(self.plot_dataset)
         self.plotter.update_scalars(
-            scalars=self.dataset, mesh=self.polydata, render=True
+            scalars=self.plot_dataset, mesh=self.polydata, render=True
         )
 
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
-            "_scalar", self.dataset, vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
+            "_scalar", self.plot_dataset, vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
         )
 
     def change_colorbar_limits(self, _=None) -> None:

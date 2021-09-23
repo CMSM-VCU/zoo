@@ -168,7 +168,7 @@ class MainWindow(qtw.QMainWindow):
         self.ui.maskminSpinBox.setEnabled(enable)
         self.ui.maskmaxSpinBox.setEnabled(enable)
         if not enable:
-            self.model.contour_threshold = None
+            self.model.mask_limits = None
 
     def toggle_xclip_controls(self, enable: bool):
         self.ui.xminSpinBox.setEnabled(enable)
@@ -195,7 +195,7 @@ class MainWindow(qtw.QMainWindow):
         self.model.timestep_index = int(new_timestep)
 
     def select_dataset(self, new_dataset: str):
-        self.model.dataset = new_dataset
+        self.model.plot_dataset = new_dataset
 
     def set_color_min(self, _=None):
         self.model.colorbar_limits = [
@@ -210,14 +210,14 @@ class MainWindow(qtw.QMainWindow):
         ]
 
     def set_mask_min(self, _=None):
-        self.model.contour_threshold = [
+        self.model.mask_limits = [
             self.mask_spinboxes[0].value(),
-            self.model.contour_threshold[1],
+            self.model.mask_limits[1],
         ]
 
     def set_mask_max(self, _=None):
-        self.model.contour_threshold = [
-            self.model.contour_threshold[0],
+        self.model.mask_limits = [
+            self.model.mask_limits[0],
             self.mask_spinboxes[1].value(),
         ]
 
