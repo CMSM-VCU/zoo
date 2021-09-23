@@ -54,6 +54,11 @@ class MainWindow(qtw.QMainWindow):
             self.ui.zminSpinBox,
             self.ui.zmaxSpinBox,
         )
+        self.clip_checkboxes = (
+            self.ui.xclipCheckBox,
+            self.ui.yclipCheckBox,
+            self.ui.zclipCheckBox,
+        )
 
     def hook_up_signals(self):
         self.ui.actionOpen.triggered.connect(self.open_file)
@@ -261,10 +266,12 @@ class MainWindow(qtw.QMainWindow):
                 self.mask_spinboxes[1].value(),
             ]
 
-    def set_clipping_extent_n(self, index: int):
-        self.model.replace_clipping_extents(
-            indeces=[index], values=[self.clip_spinboxes[index]]
-        )
+    @staticmethod
+    def set_clipping_extent_n(obj, index: int):
+        if obj.clip_checkboxes[index // 2].isChecked():
+            obj.model.replace_clipping_extents(
+                indeces=[index], values=[obj.clip_spinboxes[index].value()]
+            )
 
     @staticmethod
     def set_grid_spacing_n(obj, index):
