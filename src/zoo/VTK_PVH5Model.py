@@ -32,6 +32,10 @@ class VTK_PVH5Model(H5Model):
         self.changed_contour_threshold.connect(self.change_contour_threshold)
         self.changed_colorbar_limits.connect(self.change_colorbar_limits)
 
+    @property
+    def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
+        return self.plotter.camera_position
+
     def load_mesh(self, _=None) -> None:
         coords = self.df.loc[self.timestep, ("x1", "x2", "x3")].values
         points = vtk.vtkPoints()

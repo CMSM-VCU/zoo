@@ -156,5 +156,10 @@ class H5Model(qtc.QAbstractItemModel):
             return None
         self.changed_colorbar_limits.emit(self._colorbar_limits)
 
+    @property
+    @abstractmethod
+    def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
+        ...
+
     def save_image(self, filename) -> None:
         self.plotter.screenshot(filename=filename)

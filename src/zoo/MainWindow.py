@@ -265,7 +265,7 @@ class MainWindow(qtw.QMainWindow):
 
     def copy_camera_location(self, _=None) -> None:
         print("Copied!")
-        pyperclip.copy(str(self.model.plotter.camera_position))
+        pyperclip.copy(str(self.model.camera_location))
 
     def save_image(self, _=None) -> None:
         filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
