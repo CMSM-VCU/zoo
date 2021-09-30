@@ -38,21 +38,25 @@ class MainWindow(qtw.QMainWindow):
     def organize_widgets(self):
         self.actions = {"open": self.ui.actionOpen, "exit": self.ui.actionExit}
 
-        self.gs_spinboxes = (self.ui.xgsSpinBox, self.ui.ygsSpinBox, self.ui.zgsSpinBox)
+        self.gs_lineedits = (
+            self.ui.xgsLineEdit,
+            self.ui.ygsLineEdit,
+            self.ui.zgsLineEdit,
+        )
         self.exag_spinboxes = (
             self.ui.xexagSpinBox,
             self.ui.yexagSpinBox,
             self.ui.zexagSpinBox,
         )
-        self.color_spinboxes = (self.ui.colorminSpinBox, self.ui.colormaxSpinBox)
-        self.mask_spinboxes = (self.ui.maskminSpinBox, self.ui.maskmaxSpinBox)
-        self.clip_spinboxes = (
-            self.ui.xminSpinBox,
-            self.ui.xmaxSpinBox,
-            self.ui.yminSpinBox,
-            self.ui.ymaxSpinBox,
-            self.ui.zminSpinBox,
-            self.ui.zmaxSpinBox,
+        self.color_lineedits = (self.ui.colorminLineEdit, self.ui.colormaxLineEdit)
+        self.mask_lineedits = (self.ui.maskminLineEdit, self.ui.maskmaxLineEdit)
+        self.clip_lineedits = (
+            self.ui.xminLineEdit,
+            self.ui.xmaxLineEdit,
+            self.ui.yminLineEdit,
+            self.ui.ymaxLineEdit,
+            self.ui.zminLineEdit,
+            self.ui.zmaxLineEdit,
         )
         self.clip_checkboxes = (
             self.ui.xclipCheckBox,
@@ -70,26 +74,26 @@ class MainWindow(qtw.QMainWindow):
         self.ui.timeStepSelector.activated.connect(self.set_timestep)
 
         self.ui.gsLockButton.toggled.connect(self.toggle_uniform_gs)
-        self.ui.xgsSpinBox.valueChanged.connect(self.set_grid_spacing_uniform)
+        self.ui.xgsLineEdit.textEdited.connect(self.set_grid_spacing_uniform)
 
         self.ui.exagLockButton.toggled.connect(self.toggle_uniform_exag)
         self.ui.xexagSpinBox.valueChanged.connect(self.set_exaggeration_uniform)
 
         self.ui.plotdatasetSelector.activated.connect(self.select_plot_dataset)
         self.ui.colorCheckBox.stateChanged.connect(self.toggle_color_controls)
-        self.ui.colorminSpinBox.valueChanged.connect(self.set_color_min)
-        self.ui.colormaxSpinBox.valueChanged.connect(self.set_color_max)
+        self.ui.colorminLineEdit.textEdited.connect(self.set_color_min)
+        self.ui.colormaxLineEdit.textEdited.connect(self.set_color_max)
 
         self.ui.maskdatasetLockButton.toggled.connect(self.toggle_maskplot_lock)
         self.ui.maskdatasetSelector.activated.connect(self.select_mask_dataset)
         self.ui.maskCheckBox.stateChanged.connect(self.toggle_mask_controls)
-        self.ui.maskminSpinBox.valueChanged.connect(self.set_mask_min)
-        self.ui.maskmaxSpinBox.valueChanged.connect(self.set_mask_max)
+        self.ui.maskminLineEdit.textEdited.connect(self.set_mask_min)
+        self.ui.maskmaxLineEdit.textEdited.connect(self.set_mask_max)
 
         self.ui.xclipCheckBox.stateChanged.connect(self.toggle_xclip_controls)
         self.ui.yclipCheckBox.stateChanged.connect(self.toggle_yclip_controls)
         self.ui.zclipCheckBox.stateChanged.connect(self.toggle_zclip_controls)
-        for i, box in enumerate(self.clip_spinboxes):
+        for i, box in enumerate(self.clip_lineedits):
             box.editingFinished.connect(self.set_clipping_extent[i])
 
         # QGroupBox only emits clicked signal if it is checkable. Bypass this by
@@ -105,6 +109,13 @@ class MainWindow(qtw.QMainWindow):
         self.model.changed_colorbar_limits.connect(self.update_colorlimit_boxes)
         self.model.changed_mask_limits.connect(self.update_masklimit_boxes)
         self.model.moved_camera.connect(self.update_camera_readout)
+
+        self.ui.xgsLineEdit.setValidator(qtg.QDoubleValidator())
+        self.ui.ygsLineEdit.setValidator(qtg.QDoubleValidator())
+        self.ui.zgsLineEdit.setValidator(qtg.QDoubleValidator())
+
+        self.ui.ygsLineEdit.setVisible(False)
+        self.ui.zgsLineEdit.setVisible(False)
 
         self.ui.yexagSpinBox.setVisible(False)
         self.ui.zexagSpinBox.setVisible(False)
@@ -122,7 +133,7 @@ class MainWindow(qtw.QMainWindow):
             self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
             self.ui.plotdatasetSelector.addItems(self.model.datasets)
             self.ui.maskdatasetSelector.addItems(self.model.datasets)
-            self.ui.xgsSpinBox.setValue(self.model.grid_spacing[0])
+            self.ui.xgsLineEdit.setText(str(self.model.grid_spacing[0]))
             self.ui.xexagSpinBox.setValue(self.model.exaggeration[0])
         else:
             self.ui.colorCheckBox.setChecked(enable)
@@ -155,9 +166,33 @@ class MainWindow(qtw.QMainWindow):
         for spinbox in spinboxes[1:]:
             spinbox.setVisible(not enable)
 
+    @staticmethod
+    def _template_toggle_uniform_vector_lineedit(
+        lineedits: typing.List,
+        component_funcs: typing.List[typing.Callable],
+        uniform_func: typing.Callable,
+        enable: bool,
+    ) -> None:
+        if enable:
+            for lineedit in lineedits:
+                lineedit.textEdited.disconnect()
+
+            lineedits[0].textEdited.connect(uniform_func)
+            lineedits[0].textEdited.emit(lineedits[0].text())
+        else:
+            for lineedit in lineedits[1:]:
+                lineedit.setText(lineedits[0].text())
+
+            lineedits[0].textEdited.disconnect()
+            for i, box in enumerate(lineedits):
+                box.textEdited.connect(component_funcs[i])
+
+        for lineedit in lineedits[1:]:
+            lineedit.setVisible(not enable)
+
     def toggle_uniform_gs(self, enable: bool) -> None:
-        self._template_toggle_uniform_vector_spinbox(
-            spinboxes=self.gs_spinboxes,
+        self._template_toggle_uniform_vector_lineedit(
+            lineedits=self.gs_lineedits,
             component_funcs=self.set_grid_spacing,
             uniform_func=self.set_grid_spacing_uniform,
             enable=enable,
@@ -173,41 +208,41 @@ class MainWindow(qtw.QMainWindow):
 
     def update_extents_boxes(self, extents: typing.Tuple[float]) -> None:
         for i, extent in enumerate(extents):
-            self.clip_spinboxes[i].setValue(extent)
+            self.clip_lineedits[i].setText(str(extent))
 
     def update_colorlimit_boxes(self, limits: typing.Tuple[float]) -> None:
-        self.ui.colorminSpinBox.setValue(limits[0])
-        self.ui.colormaxSpinBox.setValue(limits[1])
+        self.ui.colorminLineEdit.setText(str(limits[0]))
+        self.ui.colormaxLineEdit.setText(str(limits[1]))
 
     def update_masklimit_boxes(self, limits: typing.Tuple[float]) -> None:
-        self.ui.maskminSpinBox.setValue(limits[0])
-        self.ui.maskmaxSpinBox.setValue(limits[1])
+        self.ui.maskminLineEdit.setText(str(limits[0]))
+        self.ui.maskmaxLineEdit.setText(str(limits[1]))
 
     def toggle_color_controls(self, enable: bool):
-        self.ui.colorminSpinBox.setEnabled(enable)
-        self.ui.colormaxSpinBox.setEnabled(enable)
+        self.ui.colorminLineEdit.setEnabled(enable)
+        self.ui.colormaxLineEdit.setEnabled(enable)
         if not enable:
             self.model.colorbar_limits = None
 
     def toggle_mask_controls(self, enable: bool):
-        self.ui.maskminSpinBox.setEnabled(enable)
-        self.ui.maskmaxSpinBox.setEnabled(enable)
+        self.ui.maskminLineEdit.setEnabled(enable)
+        self.ui.maskmaxLineEdit.setEnabled(enable)
         if not enable:
             self.model.mask_limits = None
 
     def toggle_xclip_controls(self, enable: bool):
-        self.ui.xminSpinBox.setEnabled(enable)
-        self.ui.xmaxSpinBox.setEnabled(enable)
+        self.ui.xminLineEdit.setEnabled(enable)
+        self.ui.xmaxLineEdit.setEnabled(enable)
         self.model.replace_clipping_extents(indeces=[0, 1], values=[None, None])
 
     def toggle_yclip_controls(self, enable: bool):
-        self.ui.yminSpinBox.setEnabled(enable)
-        self.ui.ymaxSpinBox.setEnabled(enable)
+        self.ui.yminLineEdit.setEnabled(enable)
+        self.ui.ymaxLineEdit.setEnabled(enable)
         self.model.replace_clipping_extents(indeces=[2, 3], values=[None, None])
 
     def toggle_zclip_controls(self, enable: bool):
-        self.ui.zminSpinBox.setEnabled(enable)
-        self.ui.zmaxSpinBox.setEnabled(enable)
+        self.ui.zminLineEdit.setEnabled(enable)
+        self.ui.zmaxLineEdit.setEnabled(enable)
         self.model.replace_clipping_extents(indeces=[4, 5], values=[None, None])
 
     def increment_timestep(self):
@@ -244,7 +279,7 @@ class MainWindow(qtw.QMainWindow):
     def set_color_min(self, _=None):
         if self.ui.colorCheckBox.isChecked():
             self.model.colorbar_limits = [
-                self.color_spinboxes[0].value(),
+                float_or_zero(self.color_lineedits[0].text()),
                 self.model.colorbar_limits[1],
             ]
 
@@ -252,13 +287,13 @@ class MainWindow(qtw.QMainWindow):
         if self.ui.colorCheckBox.isChecked():
             self.model.colorbar_limits = [
                 self.model.colorbar_limits[0],
-                self.color_spinboxes[1].value(),
+                float_or_zero(self.color_lineedits[1].text()),
             ]
 
     def set_mask_min(self, _=None):
         if self.ui.maskCheckBox.isChecked():
             self.model.mask_limits = [
-                self.mask_spinboxes[0].value(),
+                float_or_zero(self.mask_lineedits[0].text()),
                 self.model.mask_limits[1],
             ]
 
@@ -266,24 +301,25 @@ class MainWindow(qtw.QMainWindow):
         if self.ui.maskCheckBox.isChecked():
             self.model.mask_limits = [
                 self.model.mask_limits[0],
-                self.mask_spinboxes[1].value(),
+                float_or_zero(self.mask_lineedits[1].text()),
             ]
 
     @staticmethod
     def set_clipping_extent_n(obj, index: int):
         if obj.clip_checkboxes[index // 2].isChecked():
             obj.model.replace_clipping_extents(
-                indeces=[index], values=[obj.clip_spinboxes[index].value()]
+                indeces=[index],
+                values=[float_or_zero(obj.clip_lineedits[index].text())],
             )
 
     @staticmethod
     def set_grid_spacing_n(obj, index):
-        new_gs = obj.model.grid_spacing
-        new_gs[index] = obj.gs_spinboxes[index].value()
-        obj.model.grid_spacing = new_gs
+        gs_vector = obj.model.grid_spacing
+        gs_vector[index] = float_or_zero(obj.gs_lineedits[index].text())
+        obj.model.grid_spacing = gs_vector
 
-    def set_grid_spacing_uniform(self, new_gs: float) -> None:
-        self.model.grid_spacing = [new_gs] * 3
+    def set_grid_spacing_uniform(self, new_gs: str) -> None:
+        self.model.grid_spacing = [float_or_zero(new_gs)] * 3
 
     @staticmethod
     def set_exaggeration_n(obj, index):
@@ -321,3 +357,12 @@ class MainWindow(qtw.QMainWindow):
         filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
         if filename:
             self.model.save_image(filename)
+
+
+def float_or_zero(string: str) -> float:
+    try:
+        return float(string)
+    except ValueError:
+        return 0.0
+    except Exception as err:
+        raise err

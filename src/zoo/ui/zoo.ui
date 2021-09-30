@@ -301,9 +301,6 @@
                 <property name="text">
                  <string>Color</string>
                 </property>
-                <property name="buddy">
-                 <cstring>colorminSpinBox</cstring>
-                </property>
                </widget>
               </item>
               <item>
@@ -325,7 +322,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="colorminSpinBox">
+                 <widget class="QLineEdit" name="colorminLineEdit">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -334,23 +331,11 @@
                     <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
-                  </property>
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="colormaxSpinBox">
+                 <widget class="QLineEdit" name="colormaxLineEdit">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -359,18 +344,6 @@
                     <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
-                  </property>
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
                   </property>
                  </widget>
                 </item>
@@ -385,9 +358,6 @@
                 </property>
                 <property name="text">
                  <string>Masking</string>
-                </property>
-                <property name="buddy">
-                 <cstring>maskminSpinBox</cstring>
                 </property>
                </widget>
               </item>
@@ -451,7 +421,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="maskminSpinBox">
+                 <widget class="QLineEdit" name="maskminLineEdit">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -460,23 +430,11 @@
                     <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
-                  </property>
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="maskmaxSpinBox">
+                 <widget class="QLineEdit" name="maskmaxLineEdit">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -485,18 +443,6 @@
                     <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
-                  </property>
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
                   </property>
                  </widget>
                 </item>
@@ -541,7 +487,37 @@
               </property>
               <item>
                <layout class="QGridLayout" name="gridLayout_5">
-                <item row="0" column="1">
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="xgsLineEdit">
+                  <property name="font">
+                   <font>
+                    <family>Consolas</family>
+                    <pointsize>9</pointsize>
+                   </font>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="ygsLineEdit">
+                  <property name="font">
+                   <font>
+                    <family>Consolas</family>
+                    <pointsize>9</pointsize>
+                   </font>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QLineEdit" name="zgsLineEdit">
+                  <property name="font">
+                   <font>
+                    <family>Consolas</family>
+                    <pointsize>9</pointsize>
+                   </font>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
                  <widget class="QPushButton" name="gsLockButton">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -572,102 +548,6 @@
                   </property>
                   <property name="checked">
                    <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QDoubleSpinBox" name="zgsSpinBox">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Consolas</family>
-                    <pointsize>9</pointsize>
-                   </font>
-                  </property>
-                  <property name="visible">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>5</number>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.001000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>0.005000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QDoubleSpinBox" name="ygsSpinBox">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Consolas</family>
-                    <pointsize>9</pointsize>
-                   </font>
-                  </property>
-                  <property name="visible">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>5</number>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.001000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>0.005000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QDoubleSpinBox" name="xgsSpinBox">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Consolas</family>
-                    <pointsize>9</pointsize>
-                   </font>
-                  </property>
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="suffix">
-                   <string/>
-                  </property>
-                  <property name="decimals">
-                   <number>5</number>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.001000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>0.005000000000000</double>
                   </property>
                  </widget>
                 </item>
@@ -865,8 +745,8 @@
               </property>
               <item>
                <layout class="QGridLayout" name="gridLayout_2">
-                <item row="3" column="2">
-                 <widget class="QDoubleSpinBox" name="zminSpinBox">
+                <item row="0" column="2">
+                 <widget class="QLineEdit" name="xminLineEdit">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -876,43 +756,49 @@
                     <pointsize>8</pointsize>
                    </font>
                   </property>
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
-                  </property>
                  </widget>
                 </item>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="zLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
+                <item row="2" column="2">
+                 <widget class="QLineEdit" name="yminLineEdit">
+                  <property name="enabled">
+                   <bool>false</bool>
                   </property>
                   <property name="font">
                    <font>
+                    <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
                   </property>
-                  <property name="text">
-                   <string>Z</string>
-                  </property>
-                  <property name="scaledContents">
+                 </widget>
+                </item>
+                <item row="3" column="2">
+                 <widget class="QLineEdit" name="zminLineEdit">
+                  <property name="enabled">
                    <bool>false</bool>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Consolas</family>
+                    <pointsize>8</pointsize>
+                   </font>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QLineEdit" name="xmaxLineEdit">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Consolas</family>
+                    <pointsize>8</pointsize>
+                   </font>
                   </property>
                  </widget>
                 </item>
                 <item row="2" column="3">
-                 <widget class="QDoubleSpinBox" name="ymaxSpinBox">
+                 <widget class="QLineEdit" name="ymaxLineEdit">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -922,17 +808,18 @@
                     <pointsize>8</pointsize>
                    </font>
                   </property>
-                  <property name="keyboardTracking">
+                 </widget>
+                </item>
+                <item row="3" column="3">
+                 <widget class="QLineEdit" name="zmaxLineEdit">
+                  <property name="enabled">
                    <bool>false</bool>
                   </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
+                  <property name="font">
+                   <font>
+                    <family>Consolas</family>
+                    <pointsize>8</pointsize>
+                   </font>
                   </property>
                  </widget>
                 </item>
@@ -957,103 +844,31 @@
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="3">
-                 <widget class="QDoubleSpinBox" name="zmaxSpinBox">
-                  <property name="enabled">
-                   <bool>false</bool>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="zLabel">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
                   </property>
                   <property name="font">
                    <font>
-                    <family>Consolas</family>
                     <pointsize>8</pointsize>
                    </font>
                   </property>
-                  <property name="keyboardTracking">
+                  <property name="text">
+                   <string>Z</string>
+                  </property>
+                  <property name="scaledContents">
                    <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="3">
-                 <widget class="QDoubleSpinBox" name="xmaxSpinBox">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Consolas</family>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="2">
-                 <widget class="QDoubleSpinBox" name="yminSpinBox">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Consolas</family>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QDoubleSpinBox" name="xminSpinBox">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Consolas</family>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-99999999999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>99999999999.000000000000000</double>
+                <item row="3" column="1">
+                 <widget class="QCheckBox" name="zclipCheckBox">
+                  <property name="text">
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -1075,13 +890,6 @@
                   </property>
                   <property name="scaledContents">
                    <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QCheckBox" name="zclipCheckBox">
-                  <property name="text">
-                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -1332,16 +1140,6 @@
   <tabstop>timeStepSelector</tabstop>
   <tabstop>nextTimeStep</tabstop>
   <tabstop>plotdatasetSelector</tabstop>
-  <tabstop>colorminSpinBox</tabstop>
-  <tabstop>colormaxSpinBox</tabstop>
-  <tabstop>maskminSpinBox</tabstop>
-  <tabstop>maskmaxSpinBox</tabstop>
-  <tabstop>xminSpinBox</tabstop>
-  <tabstop>xmaxSpinBox</tabstop>
-  <tabstop>yminSpinBox</tabstop>
-  <tabstop>ymaxSpinBox</tabstop>
-  <tabstop>zminSpinBox</tabstop>
-  <tabstop>zmaxSpinBox</tabstop>
  </tabstops>
  <resources/>
  <connections/>
