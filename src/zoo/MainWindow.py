@@ -106,6 +106,9 @@ class MainWindow(qtw.QMainWindow):
         self.model.changed_mask_limits.connect(self.update_masklimit_boxes)
         self.model.moved_camera.connect(self.update_camera_readout)
 
+        self.ui.yexagSpinBox.setVisible(False)
+        self.ui.zexagSpinBox.setVisible(False)
+
     def open_file(self):
         # stackoverflow.com/a/44076057/13130795
         filename, _ = qtw.QFileDialog.getOpenFileName(self)
