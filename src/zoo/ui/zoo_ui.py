@@ -556,7 +556,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Zoo"))
         self.timeStepGroup.setTitle(_translate("MainWindow", "Time Step"))
         self.prevTimeStep.setText(_translate("MainWindow", ""))
         self.prevTimeStep.setShortcut(_translate("MainWindow", "Ctrl+Left"))

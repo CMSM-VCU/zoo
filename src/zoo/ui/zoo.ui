@@ -19,7 +19,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Zoo</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="enabled">
