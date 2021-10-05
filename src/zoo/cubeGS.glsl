@@ -32,6 +32,9 @@ uniform mat4 MCVCMatrix;
 layout(points) in;
 layout(triangle_strip, max_vertices = 24) out;
 
+#define epsilon 1.0e-7
+uniform vec3 eps_vector = vec3(epsilon);
+
 uniform vec4 cube_strip[] = {
     // front
     vec4(-1.f,  1.f,  1.f, 0.f),
@@ -89,7 +92,7 @@ void main()
         // vertexColorGSOutput = vec4(255,0.0,0.0,1.0);
         return;
     }
-    if (insideBox3D(vertexMCVSOutput[0], bottomLeft, topRight) == 0.0) {
+    if (insideBox3D(vertexMCVSOutput[0], bottomLeft-eps_vector, topRight+eps_vector) == 0.0) {
         // vertexColorGSOutput = vec4(255,0.0,0.0,1.0);
         return;
     }
