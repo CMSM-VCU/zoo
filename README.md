@@ -8,6 +8,14 @@ Peridynamics data visualization tool
 
 Conda:
 
+The full set of dependencies for Zoo is quite complex. It's recommended that you create a new environment for Zoo to avoid any conflicts. This can be done with
+
+``` plaintext
+conda create -n zoo -c conda-forge -c hallrc zoo
+```
+
+You can install the Zoo package in the standard way with
+
 ``` plaintext
 conda install -c conda-forge -c hallrc zoo
 ```
@@ -18,7 +26,7 @@ Zoo is not currently available through PIP.
 
 ## Usage
 
-Open Zoo from the command line with
+After activating the relevant environment, open Zoo from the command line with
 
 ``` plaintext
 zoo
