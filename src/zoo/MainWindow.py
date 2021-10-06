@@ -1,6 +1,7 @@
 import os
 import typing
 from functools import partial
+from pathlib import Path
 
 import pyperclip
 
@@ -34,6 +35,7 @@ class MainWindow(qtw.QMainWindow):
 
         if file_to_load is not None:
             self.model.load_file(file_to_load)
+            self.setWindowTitle(f"{Path(file_to_load).name} - {self.windowTitle()}")
 
     def organize_widgets(self):
         self.actions = {"open": self.ui.actionOpen, "exit": self.ui.actionExit}
@@ -125,6 +127,7 @@ class MainWindow(qtw.QMainWindow):
         filename, _ = qtw.QFileDialog.getOpenFileName(self)
         if filename:
             self.model.load_file(filename)
+            self.setWindowTitle(f"{Path(filename).name} - {self.windowTitle()}")
 
     def toggle_control_pane(self, enable: bool):
         self.ui.controlPane.setEnabled(enable)
