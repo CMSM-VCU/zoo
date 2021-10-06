@@ -104,6 +104,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.model.loaded_file.connect(self.toggle_control_pane)
         self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
+        self.model.changed_timestep.connect(self.update_time_value)
         self.model.changed_mask_dataset.connect(
             self.ui.maskdatasetSelector.setCurrentText
         )
@@ -351,6 +352,14 @@ class MainWindow(qtw.QMainWindow):
         self.ui.positionValue.setText(f"{pos[0]:.2f}, {pos[1]:.2f}, {pos[2]:.2f}")
         self.ui.focalValue.setText(f"{foc[0]:.2f}, {foc[1]:.2f}, {foc[2]:.2f}")
         self.ui.viewupValue.setText(f"{up[0]:.2f}, {up[1]:.2f}, {up[2]:.2f}")
+
+    def update_time_value(self, _=None) -> None:
+        try:
+            time = self.model.time
+            self.ui.timeLabel.setText(f"{time:.3e}")
+            self.ui.timeLabel.setToolTip(f"{time:.8e}")
+        except TypeError:
+            self.ui.timeLabel.setText("not found")
 
     def copy_camera_location(self, _=None) -> None:
         print("Copied!")

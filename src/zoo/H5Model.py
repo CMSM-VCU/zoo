@@ -78,6 +78,14 @@ class H5Model(qtc.QAbstractItemModel):
         self.changed_timestep.emit(str(self.timestep))
 
     @property
+    def time(self) -> float:
+        # TODO: Expand the list of possible time column names
+        if "timex" in self.datasets:
+            return self.df.loc[self.timestep, "timex"].values[0]
+        else:
+            return None
+
+    @property
     def grid_spacing(self) -> typing.List[float]:
         return list(self._grid_spacing)
 
