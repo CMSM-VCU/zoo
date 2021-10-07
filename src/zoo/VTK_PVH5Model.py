@@ -22,8 +22,8 @@ class VTK_PVH5Model(H5Model):
 
         self.plotter = pyvistaqt.QtInteractor()
 
-        self.loaded_file.connect(self.load_mesh)
-        self.changed_timestep.connect(self.load_mesh)
+        self.loaded_file.connect(self.construct_plot_at_timestep)
+        self.changed_timestep.connect(self.construct_plot_at_timestep)
         self.changed_grid_spacing.connect(self.change_grid_spacing)
         self.changed_clipping_extents.connect(self.change_clipping_extents)
         self.changed_exaggeration.connect(self.change_exaggeration)
@@ -36,31 +36,34 @@ class VTK_PVH5Model(H5Model):
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
         return self.plotter.camera_position
 
-    def load_mesh(self, _=None) -> None:
+    def construct_timestep_data(self) -> pv.PolyData:
         coords = self.df.loc[self.timestep, ("x1", "x2", "x3")].values
         points = vtk.vtkPoints()
         points.SetData(dsa.numpyTovtkDataArray(coords))
-        self.polydata = vtk.vtkPolyData()
-        self.polydata.SetPoints(points)
-        self.polydata.GetPointData().SetNormals(
+        polydata = vtk.vtkPolyData()
+        polydata.SetPoints(points)
+
+        polydata.GetPointData().SetNormals(
             dsa.numpyTovtkDataArray(np.empty_like(coords))
         )  # Assign dummy normals to trick VTK into enabling (specular?) lighting
         for dataset in self.datasets:
-            self.polydata.GetPointData().AddArray(
+            polydata.GetPointData().AddArray(
                 dsa.numpyTovtkDataArray(
                     self.df.loc[self.timestep, dataset].values, name=dataset
                 )
             )
-        self.polydata.GetPointData().AddArray(
+        polydata.GetPointData().AddArray(
             dsa.numpyTovtkDataArray(
                 self.df.loc[self.timestep, ("u1", "u2", "u3")].values,
                 name="_displacement",
             )
         )
-        self.polydata.GetPointData().SetActiveScalars(self.datasets[0])
-        self.polydata = pv.utilities.wrap(self.polydata)
+        polydata.GetPointData().SetActiveScalars(self.datasets[0])
+        return pv.utilities.wrap(polydata)
+
+    def construct_data_mapper(self, polydata: pv.PolyData) -> "MapperHelper":
         vertexGlyphFilter = vtk.vtkVertexGlyphFilter()
-        vertexGlyphFilter.AddInputDataObject(self.polydata)
+        vertexGlyphFilter.AddInputDataObject(polydata)
         vertexGlyphFilter.Update()
 
         mapper = pv.mapper.make_mapper(vtk.vtkPolyDataMapper)
@@ -75,13 +78,20 @@ class VTK_PVH5Model(H5Model):
             "_disp", "_displacement", vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
         )
 
+        return mapper
+
+    def construct_plot_at_timestep(self, _=None) -> None:
+        self.polydata = self.construct_timestep_data()
+        mapper = self.construct_data_mapper(self.polydata)
+
         self.actor = vtk.vtkActor()
         self.actor.SetMapper(mapper)
+
+        self.shader_parameters = self.apply_shaders(self.actor)
+
         self.plotter.AddObserver(
             vtk.vtkCommand.InteractionEvent, self.emit_moved_camera
         )
-
-        self.apply_shaders()
         self.plotter.add_actor(self.actor, name="primary", render=False)
         self.plotter.mapper = mapper
         self.plotter.add_scalar_bar(render=False)
@@ -90,8 +100,8 @@ class VTK_PVH5Model(H5Model):
         self.update_plot_dataset()
         self.update_mask_dataset()
 
-    def apply_shaders(self):
-        shader_property = self.actor.GetShaderProperty()
+    def apply_shaders(self, actor: vtk.vtkActor):
+        shader_property = actor.GetShaderProperty()
 
         shader_property.AddShaderReplacement(
             vtk.vtkShader.Vertex,
@@ -121,12 +131,13 @@ class VTK_PVH5Model(H5Model):
         srcGS = resources.read_text(__package__, "cubeGS.glsl")
         shader_property.SetGeometryShaderCode(srcGS)
 
-        self.shader_parameters = shader_property.GetGeometryCustomUniforms()
-        self.shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
-        self.shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
-        self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
-        self.shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
-        self.shader_parameters.SetUniform2f("mask_limits", self.mask_limits)
+        shader_parameters = shader_property.GetGeometryCustomUniforms()
+        shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
+        shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
+        shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
+        shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
+        shader_parameters.SetUniform2f("mask_limits", self.mask_limits)
+        return shader_parameters
 
     def change_grid_spacing(self, _=None) -> None:
         self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
@@ -202,7 +213,7 @@ if __name__ == "__main__":
 
     model = VTK_PVH5Model()
     model.load_file("./test_data/kylesheartest1.h5")
-    model.load_mesh()
+    model.construct_plot_at_timestep()
     print(model.mesh)
     print(model.actor)
     print(model.actor.GetShaderProperty())
