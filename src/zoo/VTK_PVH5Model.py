@@ -2,10 +2,9 @@ import typing
 from importlib import resources
 
 import numpy as np
+import pyvista as pv
 import pyvistaqt
 import vtk
-from pyvista.plotting.mapper import make_mapper
-from pyvista.utilities import wrap
 from qtpy import QtCore as qtc
 from vtk.numpy_interface import dataset_adapter as dsa
 
@@ -59,12 +58,12 @@ class VTK_PVH5Model(H5Model):
             )
         )
         self.polydata.GetPointData().SetActiveScalars(self.datasets[0])
-        self.polydata = wrap(self.polydata)
+        self.polydata = pv.utilities.wrap(self.polydata)
         vertexGlyphFilter = vtk.vtkVertexGlyphFilter()
         vertexGlyphFilter.AddInputDataObject(self.polydata)
         vertexGlyphFilter.Update()
 
-        mapper = make_mapper(vtk.vtkPolyDataMapper)
+        mapper = pv.mapper.make_mapper(vtk.vtkPolyDataMapper)
         mapper.SetInputConnection(vertexGlyphFilter.GetOutputPort())
         lut = vtk.vtkLookupTable()
         lut.SetNumberOfColors(256)
