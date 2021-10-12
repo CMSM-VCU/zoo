@@ -16,14 +16,12 @@ from qtpy import QtWidgets as qtw
 
 
 class MainWindow(qtw.QMainWindow):
+    _model: VTK_PVH5Model = None
+
     def __init__(self, parent=None, show=True, file_to_load=None) -> None:
         super().__init__(parent=parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
-        self.model = VTK_PVH5Model()
-        self.model.plotter.setParent(self.ui.viewport)
-        self.ui.viewport.layout().addWidget(self.model.plotter.interactor)
 
         self._generate_method_lists()
         self.organize_widgets()
@@ -36,6 +34,30 @@ class MainWindow(qtw.QMainWindow):
         if file_to_load is not None:
             self.open_file(override=file_to_load)
 
+    @property
+    def model(self) -> VTK_PVH5Model:
+        return self._model
+
+    @model.setter
+    def model(self, model: VTK_PVH5Model) -> None:
+        if self._model:
+            del self._model
+        self._model = model
+
+        model.plotter.setParent(self.ui.viewport)
+        if self.ui.viewport.layout().count() != 0:
+            old = self.ui.viewport.layout().takeAt(0)
+            del old
+        self.ui.viewport.layout().addWidget(model.plotter.interactor)
+
+        model.loaded_file.connect(self.toggle_control_pane)
+        model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
+        model.changed_timestep.connect(self.update_time_value)
+        model.changed_mask_dataset.connect(self.ui.maskdatasetSelector.setCurrentText)
+        model.changed_clipping_extents.connect(self.update_extents_boxes)
+        model.changed_colorbar_limits.connect(self.update_colorlimit_boxes)
+        model.changed_mask_limits.connect(self.update_masklimit_boxes)
+        model.moved_camera.connect(self.update_camera_readout)
 
     def organize_widgets(self):
         self.actions = {"open": self.ui.actionOpen, "exit": self.ui.actionExit}
@@ -102,17 +124,6 @@ class MainWindow(qtw.QMainWindow):
         # binding directly to the mousePressEvent.
         self.ui.cameraLocationGroup.mousePressEvent = self.copy_camera_location
 
-        self.model.loaded_file.connect(self.toggle_control_pane)
-        self.model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
-        self.model.changed_timestep.connect(self.update_time_value)
-        self.model.changed_mask_dataset.connect(
-            self.ui.maskdatasetSelector.setCurrentText
-        )
-        self.model.changed_clipping_extents.connect(self.update_extents_boxes)
-        self.model.changed_colorbar_limits.connect(self.update_colorlimit_boxes)
-        self.model.changed_mask_limits.connect(self.update_masklimit_boxes)
-        self.model.moved_camera.connect(self.update_camera_readout)
-
         self.ui.xgsLineEdit.setValidator(qtg.QDoubleValidator())
         self.ui.ygsLineEdit.setValidator(qtg.QDoubleValidator())
         self.ui.zgsLineEdit.setValidator(qtg.QDoubleValidator())
@@ -138,9 +149,15 @@ class MainWindow(qtw.QMainWindow):
         self.ui.controlPane.setEnabled(enable)
         self.ui.menuView.setEnabled(enable)
         if enable:
+            self.ui.timeStepSelector.clear()
             self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
+            self.update_time_value()
+
+            self.ui.plotdatasetSelector.clear()
             self.ui.plotdatasetSelector.addItems(self.model.datasets)
+            self.ui.maskdatasetSelector.clear()
             self.ui.maskdatasetSelector.addItems(self.model.datasets)
+
             self.ui.xgsLineEdit.setText(str(self.model.grid_spacing[0]))
             self.ui.xexagSpinBox.setValue(self.model.exaggeration[0])
         else:
