@@ -34,8 +34,8 @@ class MainWindow(qtw.QMainWindow):
             self.show()
 
         if file_to_load is not None:
-            self.model.load_file(file_to_load)
-            self.setWindowTitle(f"{Path(file_to_load).name} - {self.windowTitle()}")
+            self.open_file(override=file_to_load)
+
 
     def organize_widgets(self):
         self.actions = {"open": self.ui.actionOpen, "exit": self.ui.actionExit}
@@ -123,11 +123,15 @@ class MainWindow(qtw.QMainWindow):
         self.ui.yexagSpinBox.setVisible(False)
         self.ui.zexagSpinBox.setVisible(False)
 
-    def open_file(self):
+    def open_file(self, *, override=None):
         # stackoverflow.com/a/44076057/13130795
-        filename, _ = qtw.QFileDialog.getOpenFileName(self)
+        if not override:
+            filename, _ = qtw.QFileDialog.getOpenFileName(self)
+        else:
+            filename = override
         if filename:
-            self.model.load_file(filename)
+            self.model = VTK_PVH5Model()
+            self.model.load_file(Path(filename))
             self.setWindowTitle(f"{Path(filename).name} - {self.windowTitle()}")
 
     def toggle_control_pane(self, enable: bool):
