@@ -1,8 +1,10 @@
-from abc import abstractmethod
 import typing
-import pandas as pd
+from abc import abstractmethod
 
+import pandas as pd
 from qtpy import QtCore as qtc
+from scipy.spatial import cKDTree
+from scipy.stats import mode
 
 LARGE: float = 1e12
 H5_FILE_EXTENSIONS = (".h5", ".hdf5")
@@ -34,7 +36,7 @@ class H5Model(qtc.QAbstractItemModel):
     datasets: typing.Tuple[str] = (None,)
 
     _timestep_index: int = 0
-    _grid_spacing: typing.List[float] = [0.005, 0.005, 0.005]
+    _grid_spacing: typing.List[float] = [None, None, None]
     _exaggeration: typing.List[float] = [0.0, 0.0, 0.0]
     _clipping_extents: typing.Tuple[float] = (None,) * 6
     _original_extents: typing.Tuple[float] = (None,) * 6
@@ -83,6 +85,7 @@ class H5Model(qtc.QAbstractItemModel):
 
         self._plot_dataset = self.datasets[0]
         self._mask_dataset = self._plot_dataset
+        self._grid_spacing = self.guess_grid_spacing()
         self.loaded_file.emit(True)
 
     @property
@@ -216,3 +219,9 @@ class H5Model(qtc.QAbstractItemModel):
 
     def save_image(self, filename) -> None:
         self.plotter.screenshot(filename=filename)
+
+    def guess_grid_spacing(self) -> typing.Tuple[float, float, float]:
+        coords = self.df.loc[self.timesteps[0], ["x1", "x2", "x3"]]
+        tree = cKDTree(coords)
+        distances = tree.query(coords, k=2, workers=-1)[0][:, 1]
+        return (mode(distances)[0][0],) * 3
