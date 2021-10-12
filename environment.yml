@@ -9,4 +9,5 @@ dependencies:
     - pyqt
     - pyvista
     - pyvistaqt
+    - scipy
     - pyperclip

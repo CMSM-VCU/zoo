@@ -24,6 +24,7 @@ requirements:
         - pyqt
         - pyvista
         - pyvistaqt
+        - scipy
         - pyperclip
 
     run:
@@ -33,6 +34,7 @@ requirements:
         - pyqt
         - pyvista
         - pyvistaqt
+        - scipy
         - pyperclip
 
 test:
