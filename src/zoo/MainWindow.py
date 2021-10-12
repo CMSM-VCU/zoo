@@ -119,7 +119,7 @@ class MainWindow(qtw.QMainWindow):
         self.ui.yclipCheckBox.stateChanged.connect(self.toggle_yclip_controls)
         self.ui.zclipCheckBox.stateChanged.connect(self.toggle_zclip_controls)
         for i, box in enumerate(self.clip_lineedits):
-            box.editingFinished.connect(self.set_clipping_extent[i])
+            box.textEdited.connect(self.set_clipping_extent[i])
 
         # QGroupBox only emits clicked signal if it is checkable. Bypass this by
         # binding directly to the mousePressEvent.
