@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug Quick",
+            "type": "python",
+            "request": "launch",
+            // "program": "${workspaceFolder}/src/zoo",
+            "console": "integratedTerminal",
+            "module": "zoo.zoo",
+            "cwd": "${workspaceFolder}/src",
+            "args": ["${workspaceFolder}/test_data/kylesheartest1.h5"]
+        },
+        {
+            "name": "Debug Blank",
+            "type": "python",
+            "request": "launch",
+            // "program": "${workspaceFolder}/src/zoo",
+            "console": "integratedTerminal",
+            "module": "zoo.zoo",
+            "cwd": "${workspaceFolder}/src",
+            "args": []
+        }
+    ]
+}
