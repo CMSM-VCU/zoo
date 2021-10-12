@@ -95,6 +95,7 @@ class VTK_PVH5Model(H5Model):
         self.plotter.add_actor(self.actor, name="primary", render=False)
         self.plotter.mapper = mapper
         self.plotter.add_axes()
+        self.plotter.reset_camera()
         self.plotter.add_scalar_bar(render=False)
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self.clipping_extents = self._original_extents
