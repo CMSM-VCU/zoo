@@ -5,6 +5,8 @@ import pandas as pd
 from qtpy import QtCore as qtc
 
 LARGE: float = 1e12
+H5_FILE_EXTENSIONS = (".h5", ".hdf5")
+GRID_FILE_EXTENSIONS = (".csv", ".grid")
 
 
 class H5Model(qtc.QAbstractItemModel):
@@ -46,17 +48,35 @@ class H5Model(qtc.QAbstractItemModel):
         super().__init__()
 
     def load_file(self, filename) -> None:
-        try:
-            self.df = pd.read_hdf(filename, key="data", mode="r")
-        except Exception as err:
-            raise err
+        if filename.suffix in H5_FILE_EXTENSIONS:
+            try:
+                self.df = pd.read_hdf(filename, key="data", mode="r")
+            except Exception as err:
+                raise err
+        elif filename.suffix in GRID_FILE_EXTENSIONS:
+            try:
+                grid = pd.read_csv(
+                    filename, skiprows=1, names=["x1", "x2", "x3", "material"]
+                )
+                grid["iter"] = 0
+                grid["m_global"] = grid.index
+                grid.set_index(["iter", "m_global"], inplace=True)
+                grid["u1"] = 0
+                grid["u2"] = 0
+                grid["u3"] = 0
+                self.df = grid
+            except Exception as err:
+                raise err
         else:
-            self.datasets = tuple(self.df.columns)
-            self.timesteps = tuple(self.df.index.levels[0])
+            print(f"Unrecognized file extension: {filename.suffix}")
+            return
 
-            self._plot_dataset = self.datasets[0]
-            self._mask_dataset = self._plot_dataset
-            self.loaded_file.emit(True)
+        self.datasets = tuple(self.df.columns)
+        self.timesteps = tuple(self.df.index.levels[0])
+
+        self._plot_dataset = self.datasets[0]
+        self._mask_dataset = self._plot_dataset
+        self.loaded_file.emit(True)
 
     @property
     def timestep_index(self) -> int:
