@@ -234,15 +234,18 @@ class MainWindow(qtw.QMainWindow):
 
     def update_extents_boxes(self, extents: typing.Tuple[float]) -> None:
         for i, extent in enumerate(extents):
-            self.clip_lineedits[i].setText(str(extent))
+            if not self.clip_checkboxes[i // 2].isChecked():
+                self.clip_lineedits[i].setText(str(extent))
 
     def update_colorlimit_boxes(self, limits: typing.Tuple[float]) -> None:
-        self.ui.colorminLineEdit.setText(str(limits[0]))
-        self.ui.colormaxLineEdit.setText(str(limits[1]))
+        if not self.ui.colorCheckBox.isChecked():
+            self.ui.colorminLineEdit.setText(str(limits[0]))
+            self.ui.colormaxLineEdit.setText(str(limits[1]))
 
     def update_masklimit_boxes(self, limits: typing.Tuple[float]) -> None:
-        self.ui.maskminLineEdit.setText(str(limits[0]))
-        self.ui.maskmaxLineEdit.setText(str(limits[1]))
+        if not self.ui.maskCheckBox.isChecked():
+            self.ui.maskminLineEdit.setText(str(limits[0]))
+            self.ui.maskmaxLineEdit.setText(str(limits[1]))
 
     def toggle_color_controls(self, enable: bool):
         self.ui.colorminLineEdit.setEnabled(enable)
