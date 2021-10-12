@@ -56,17 +56,23 @@ class H5Model(qtc.QAbstractItemModel):
         elif filename.suffix in GRID_FILE_EXTENSIONS:
             try:
                 grid = pd.read_csv(
-                    filename, skiprows=1, names=["x1", "x2", "x3", "material"]
+                    filename,
+                    skiprows=1,
+                    names=["x1", "x2", "x3", "material"],
+                    sep=None,
+                    skipinitialspace=True,
                 )
+            except Exception as err:
+                raise err
+            else:
                 grid["iter"] = 0
                 grid["m_global"] = grid.index
                 grid.set_index(["iter", "m_global"], inplace=True)
-                grid["u1"] = 0
-                grid["u2"] = 0
-                grid["u3"] = 0
+                grid["u1"] = 0.0
+                grid["u2"] = 0.0
+                grid["u3"] = 0.0
                 self.df = grid
-            except Exception as err:
-                raise err
+
         else:
             print(f"Unrecognized file extension: {filename.suffix}")
             return
