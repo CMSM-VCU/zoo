@@ -22,6 +22,7 @@ class MainWindow(qtw.QMainWindow):
         super().__init__(parent=parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self._base_window_title = self.windowTitle()
 
         self._generate_method_lists()
         self.organize_widgets()
@@ -143,7 +144,7 @@ class MainWindow(qtw.QMainWindow):
         if filename:
             self.model = VTK_PVH5Model()
             self.model.load_file(Path(filename))
-            self.setWindowTitle(f"{Path(filename).name} - {self.windowTitle()}")
+            self.setWindowTitle(f"{Path(filename).name} - {self._base_window_title}")
 
     def toggle_control_pane(self, enable: bool):
         self.ui.controlPane.setEnabled(enable)
