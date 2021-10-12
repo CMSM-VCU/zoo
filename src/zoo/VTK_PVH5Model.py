@@ -188,7 +188,8 @@ class VTK_PVH5Model(H5Model):
         )
 
     def change_colorbar_limits(self, _=None) -> None:
-        self.plotter.update_scalar_bar_range(self.colorbar_limits)
+        if self.colorbar_limits[0] <= self.colorbar_limits[1]:
+            self.plotter.update_scalar_bar_range(self.colorbar_limits)
 
     def emit_moved_camera(self, *args) -> None:
         """A method wrapping the signal emit is needed because the vtkInteractionEvent
