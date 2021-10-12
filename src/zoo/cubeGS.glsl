@@ -98,12 +98,12 @@ void main()
     }
 
     for (int i = 0; i<24; i++) {
-        gl_Position = center + MCDCMatrix * (
+        gl_Position = center + MCDCMatrix * ((
             dispMCVSOutput[0] * disp_scale + cube_strip[i] * glyph_scale/2
-        );
-        vertexVCGSOutput = vertexVCVSOutput[0] + MCVCMatrix * (
+        )/modelSize);
+        vertexVCGSOutput = vertexVCVSOutput[0] + MCVCMatrix * ((
             dispMCVSOutput[0] * disp_scale + cube_strip[i] * glyph_scale/2
-        );
+        )/modelSize);
         normalVCGSOutput = mat3(MCVCMatrix) * face_normals[i/(24/6)];
         EmitVertex();
 

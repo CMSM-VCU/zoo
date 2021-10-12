@@ -82,9 +82,14 @@ class VTK_PVH5Model(H5Model):
 
     def construct_plot_at_timestep(self, _=None) -> None:
         self.polydata = self.construct_timestep_data()
-        mapper = self.construct_data_mapper(self.polydata)
+        self._original_extents = self.polydata.GetPoints().GetBounds()
+        self._model_size = list(
+            np.array(self._original_extents[1::2])
+            - np.array(self._original_extents[0::2])
+        )
 
         self.actor = vtk.vtkActor()
+        mapper = self.construct_data_mapper(self.polydata)
         self.actor.SetMapper(mapper)
 
         self.shader_parameters = self.apply_shaders(self.actor)
@@ -97,7 +102,6 @@ class VTK_PVH5Model(H5Model):
         self.plotter.add_axes()
         self.plotter.reset_camera()
         self.plotter.add_scalar_bar(render=False)
-        self._original_extents = self.polydata.GetPoints().GetBounds()
         self.clipping_extents = self._original_extents
         self.update_plot_dataset()
         self.update_mask_dataset()
@@ -134,6 +138,7 @@ class VTK_PVH5Model(H5Model):
         shader_property.SetGeometryShaderCode(srcGS)
 
         shader_parameters = shader_property.GetGeometryCustomUniforms()
+        shader_parameters.SetUniform4f("modelSize", [*self._model_size, 1.0])
         shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
         shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
         shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
