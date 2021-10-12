@@ -196,9 +196,9 @@ def bbox_to_model_coordinates(bbox_bounds, base_bounds):
     base_bottom_left = np.array(base_bounds[0::2])
     base_top_right = np.array(base_bounds[1::2])
     bbox_mc_bl = (
-        (np.array(bbox_bounds[0::2]) + base_bottom_left)
+        (np.array(bbox_bounds[0::2]) - base_bottom_left)
         / (base_top_right - base_bottom_left)
-    ) + 0.5
+    ) - 0.5
     bbox_mc_tr = (
         (np.array(bbox_bounds[1::2]) - base_top_right)
         / (base_top_right - base_bottom_left)
