@@ -102,7 +102,7 @@ class VTK_PVH5Model(H5Model):
         self.plotter.add_axes()
         self.plotter.reset_camera()
         self.plotter.add_scalar_bar(render=False)
-        self.clipping_extents = self._original_extents
+        self._set_clipping_extents(self._original_extents)
         self.update_plot_dataset()
         self.update_mask_dataset()
 
@@ -165,7 +165,7 @@ class VTK_PVH5Model(H5Model):
         self._plot_dataset_limits = list(
             self.polydata.get_data_range(self.plot_dataset)
         )
-        self.colorbar_limits = self._plot_dataset_limits
+        self._set_colorbar_limits(self._plot_dataset_limits)
         self.plotter.scalar_bar.SetTitle(self.plot_dataset)
         self.plotter.update_scalars(
             scalars=self.plot_dataset, mesh=self.polydata, render=True
@@ -179,7 +179,7 @@ class VTK_PVH5Model(H5Model):
         self._mask_dataset_limits = list(
             self.polydata.get_data_range(self.mask_dataset)
         )
-        self.mask_limits = self._mask_dataset_limits
+        self._set_mask_limits(self._mask_dataset_limits)
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
             "_mask_scalar",
             self.mask_dataset,

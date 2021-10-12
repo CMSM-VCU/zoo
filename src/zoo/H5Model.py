@@ -30,6 +30,9 @@ class H5Model(qtc.QAbstractItemModel):
     changed_clipping_extents = qtc.Signal(tuple)
     changed_mask_limits = qtc.Signal(list)
     changed_colorbar_limits = qtc.Signal(list)
+    program_changed_clipping_extents = qtc.Signal(tuple)
+    program_changed_mask_limits = qtc.Signal(list)
+    program_changed_colorbar_limits = qtc.Signal(list)
     moved_camera = qtc.Signal(list)
 
     timesteps: typing.Tuple[int] = (None,)
@@ -171,8 +174,15 @@ class H5Model(qtc.QAbstractItemModel):
 
     @clipping_extents.setter
     def clipping_extents(self, extents: typing.Sequence[float]) -> None:
+        self._set_clipping_extents(extents=extents, external=True)
+
+    def _set_clipping_extents(
+        self, extents: typing.Sequence[float], external: bool = False
+    ) -> None:
         self._clipping_extents = tuple(extents)
         self.changed_clipping_extents.emit(self._clipping_extents)
+        if not external:
+            self.program_changed_clipping_extents.emit(self._clipping_extents)
 
     def replace_clipping_extents(
         self, indeces: typing.Sequence[int], values: typing.Sequence[float]
@@ -190,6 +200,11 @@ class H5Model(qtc.QAbstractItemModel):
 
     @mask_limits.setter
     def mask_limits(self, value: typing.Iterable[float]) -> None:
+        self._set_mask_limits(value=value, external=True)
+
+    def _set_mask_limits(
+        self, value: typing.Iterable[float], external: bool = False
+    ) -> None:
         if isinstance(value, typing.Iterable) and len(value) == 2:
             self._mask_limits = list(value)
         elif value is None:
@@ -197,6 +212,8 @@ class H5Model(qtc.QAbstractItemModel):
         else:
             return None
         self.changed_mask_limits.emit(self._mask_limits)
+        if not external:
+            self.program_changed_mask_limits.emit(self._mask_limits)
 
     @property
     def colorbar_limits(self) -> typing.List[float]:
@@ -204,6 +221,11 @@ class H5Model(qtc.QAbstractItemModel):
 
     @colorbar_limits.setter
     def colorbar_limits(self, value: typing.Iterable[float]) -> None:
+        self._set_colorbar_limits(value=value, external=True)
+
+    def _set_colorbar_limits(
+        self, value: typing.Iterable[float], external: bool = False
+    ) -> None:
         if isinstance(value, typing.Iterable) and len(value) == 2:
             self._colorbar_limits = list(value)
         elif value is None:
@@ -211,6 +233,8 @@ class H5Model(qtc.QAbstractItemModel):
         else:
             return None
         self.changed_colorbar_limits.emit(self._colorbar_limits)
+        if not external:
+            self.program_changed_colorbar_limits.emit(self._colorbar_limits)
 
     @property
     @abstractmethod

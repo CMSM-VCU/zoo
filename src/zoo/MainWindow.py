@@ -55,9 +55,9 @@ class MainWindow(qtw.QMainWindow):
         model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
         model.changed_timestep.connect(self.update_time_value)
         model.changed_mask_dataset.connect(self.ui.maskdatasetSelector.setCurrentText)
-        model.changed_clipping_extents.connect(self.update_extents_boxes)
-        model.changed_colorbar_limits.connect(self.update_colorlimit_boxes)
-        model.changed_mask_limits.connect(self.update_masklimit_boxes)
+        model.program_changed_clipping_extents.connect(self.update_extents_boxes)
+        model.program_changed_colorbar_limits.connect(self.update_colorlimit_boxes)
+        model.program_changed_mask_limits.connect(self.update_masklimit_boxes)
         model.moved_camera.connect(self.update_camera_readout)
 
     def organize_widgets(self):
