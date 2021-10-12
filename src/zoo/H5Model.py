@@ -61,6 +61,7 @@ class H5Model(qtc.QAbstractItemModel):
                     names=["x1", "x2", "x3", "material"],
                     sep=None,
                     skipinitialspace=True,
+                    engine="python",
                 )
             except Exception as err:
                 raise err
