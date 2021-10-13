@@ -260,27 +260,45 @@ class MainWindow(qtw.QMainWindow):
         self.ui.colormaxLineEdit.setEnabled(enable)
         if not enable:
             self.model.colorbar_limits = None
+        else:
+            self.set_color_min()
+            self.set_color_max()
 
     def toggle_mask_controls(self, enable: bool):
         self.ui.maskminLineEdit.setEnabled(enable)
         self.ui.maskmaxLineEdit.setEnabled(enable)
         if not enable:
             self.model.mask_limits = None
+        else:
+            self.set_mask_min()
+            self.set_mask_max()
 
     def toggle_xclip_controls(self, enable: bool):
         self.ui.xminLineEdit.setEnabled(enable)
         self.ui.xmaxLineEdit.setEnabled(enable)
-        self.model.replace_clipping_extents(indeces=[0, 1], values=[None, None])
+        if not enable:
+            self.model.replace_clipping_extents(indeces=[0, 1], values=[None, None])
+        else:
+            self.set_clipping_extent[0]()
+            self.set_clipping_extent[1]()
 
     def toggle_yclip_controls(self, enable: bool):
         self.ui.yminLineEdit.setEnabled(enable)
         self.ui.ymaxLineEdit.setEnabled(enable)
-        self.model.replace_clipping_extents(indeces=[2, 3], values=[None, None])
+        if not enable:
+            self.model.replace_clipping_extents(indeces=[2, 3], values=[None, None])
+        else:
+            self.set_clipping_extent[2]()
+            self.set_clipping_extent[3]()
 
     def toggle_zclip_controls(self, enable: bool):
         self.ui.zminLineEdit.setEnabled(enable)
         self.ui.zmaxLineEdit.setEnabled(enable)
-        self.model.replace_clipping_extents(indeces=[4, 5], values=[None, None])
+        if not enable:
+            self.model.replace_clipping_extents(indeces=[4, 5], values=[None, None])
+        else:
+            self.set_clipping_extent[4]()
+            self.set_clipping_extent[5]()
 
     def increment_timestep(self):
         self.model.timestep_index += 1
