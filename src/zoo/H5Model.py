@@ -85,7 +85,10 @@ class H5Model(qtc.QAbstractItemModel):
             return
 
         self.datasets = tuple(self.df.columns)
-        self.timesteps = tuple(self.df.index.levels[0])
+        try:
+            self.timesteps = tuple(self.df.index.levels[0])
+        except:
+            self.timesteps = tuple(self.df.index.unique())
 
         self._plot_dataset = self.datasets[0]
         self._mask_dataset = self._plot_dataset
