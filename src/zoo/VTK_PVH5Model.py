@@ -156,10 +156,12 @@ class VTK_PVH5Model(H5Model):
         self.shader_parameters.SetUniform2f("mask_limits", self.mask_limits)
 
     def change_clipping_extents(self, extents: typing.Tuple[float]) -> None:
-        extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
+        if extents != self._applied_extents:
+            extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
 
-        self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
-        self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
+            self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
+            self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
+            self._applied_extents = extents
 
     def update_plot_dataset(self, _=None) -> None:
         self._plot_dataset_limits = list(

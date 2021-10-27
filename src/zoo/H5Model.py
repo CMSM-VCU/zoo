@@ -43,6 +43,7 @@ class H5Model(qtc.QAbstractItemModel):
     _exaggeration: typing.List[float] = [0.0, 0.0, 0.0]
     _clipping_extents: typing.Tuple[float] = (None,) * 6
     _original_extents: typing.Tuple[float] = (None,) * 6
+    _applied_extents: typing.Tuple[float] = (None,) * 6
     _mask_limits: typing.List[float] = [-LARGE, LARGE]
     _colorbar_limits: typing.List[float] = [-LARGE, LARGE]
     _plot_dataset_limits: typing.List[float] = [-LARGE, LARGE]
