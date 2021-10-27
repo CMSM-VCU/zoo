@@ -21,6 +21,10 @@ class VTK_PVH5Model(H5Model):
         self.mesh = None
 
         self.plotter = pyvistaqt.QtInteractor()
+        self.plotter.AddObserver(
+            vtk.vtkCommand.InteractionEvent, self.emit_moved_camera
+        )
+        self.plotter.add_axes()
 
         self.loaded_file.connect(self.construct_plot_at_timestep)
         self.changed_timestep.connect(self.construct_plot_at_timestep)
@@ -94,13 +98,9 @@ class VTK_PVH5Model(H5Model):
 
         self.shader_parameters = self.apply_shaders(self.actor)
 
-        self.plotter.AddObserver(
-            vtk.vtkCommand.InteractionEvent, self.emit_moved_camera
-        )
         self.plotter.add_actor(self.actor, name="primary", render=False)
         self.plotter.mapper = mapper
-        self.plotter.add_axes()
-        self.plotter.reset_camera()
+        self.plotter.reset_camera(render=False)
         self.plotter.add_scalar_bar(render=False)
         self._set_clipping_extents(self._original_extents)
         self.update_plot_dataset()
