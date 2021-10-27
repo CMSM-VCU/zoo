@@ -85,7 +85,7 @@ class VTK_PVH5Model(H5Model):
         return mapper
 
     def construct_plot_at_timestep(self, _=None) -> None:
-        self.polydata = self.construct_timestep_data()
+        self.polydata.GetPointData().SetActiveScalars(self.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self._model_size = list(
             np.array(self._original_extents[1::2])
