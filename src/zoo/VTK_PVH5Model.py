@@ -1,4 +1,5 @@
 import typing
+from functools import lru_cache
 from importlib import resources
 
 import numpy as np
@@ -40,8 +41,9 @@ class VTK_PVH5Model(H5Model):
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
         return self.plotter.camera_position
 
-    def construct_timestep_data(self) -> pv.PolyData:
-        coords = self.df.loc[self.timestep, ("x1", "x2", "x3")].values
+    @lru_cache(maxsize=8)
+    def construct_timestep_data(self, timestep: int) -> pv.PolyData:
+        coords = self.df.loc[timestep, ("x1", "x2", "x3")].values
         points = vtk.vtkPoints()
         points.SetData(dsa.numpyTovtkDataArray(coords))
         polydata = vtk.vtkPolyData()
@@ -53,13 +55,12 @@ class VTK_PVH5Model(H5Model):
         for dataset in self.datasets:
             polydata.GetPointData().AddArray(
                 dsa.numpyTovtkDataArray(
-                    self.df.loc[self.timestep, dataset].values, name=dataset
+                    self.df.loc[timestep, dataset].values, name=dataset
                 )
             )
         polydata.GetPointData().AddArray(
             dsa.numpyTovtkDataArray(
-                self.df.loc[self.timestep, ("u1", "u2", "u3")].values,
-                name="_displacement",
+                self.df.loc[timestep, ("u1", "u2", "u3")].values, name="_displacement",
             )
         )
         polydata.GetPointData().SetActiveScalars(self.datasets[0])
@@ -85,6 +86,7 @@ class VTK_PVH5Model(H5Model):
         return mapper
 
     def construct_plot_at_timestep(self, _=None) -> None:
+        self.polydata = self.construct_timestep_data(self.timestep)
         self.polydata.GetPointData().SetActiveScalars(self.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self._model_size = list(
