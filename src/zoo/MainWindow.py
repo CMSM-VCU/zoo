@@ -29,6 +29,10 @@ class MainWindow(qtw.QMainWindow):
         self.hook_up_signals()
         self.toggle_control_pane(enable=False)
 
+        self.ui.viewport.setAcceptDrops(True)
+        self.ui.viewport.dragEnterEvent = self._dragEnterEvent
+        self.ui.viewport.dropEvent = self._dropEvent
+
         if show:
             self.show()
 
@@ -420,6 +424,21 @@ class MainWindow(qtw.QMainWindow):
         filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
         if filename:
             self.model.save_image(filename)
+
+    def _dragEnterEvent(self, event):
+        # Based on https://stackoverflow.com/a/4176083/13130795
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+
+    def _dropEvent(self, event):
+        if event.mimeData().hasUrls():
+            # Local file path is just one thing that counts as a URL
+            if event.mimeData().urls()[0].toLocalFile():
+                self.open_file(override=Path(event.mimeData().urls()[0].toLocalFile()))
+        else:
+            event.ignore()
 
 
 def float_or_zero(string: str) -> float:
