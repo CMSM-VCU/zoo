@@ -146,6 +146,7 @@ class MainWindow(qtw.QMainWindow):
         else:
             filename = override
         if filename:
+            self.setWindowTitle(f"Opening {Path(filename).name}...")
             self.model = VTK_PVH5Model()
             self.model.load_file(Path(filename))
             self.setWindowTitle(f"{Path(filename).name} - {self._base_window_title}")
