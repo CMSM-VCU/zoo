@@ -14,6 +14,7 @@ from .H5Model import H5Model
 
 class VTK_PVH5Model(H5Model):
     raw_mesh_cache: dict = {}
+    shown_first_plot: bool = False
 
     def __init__(self) -> None:
         super().__init__()
@@ -102,7 +103,9 @@ class VTK_PVH5Model(H5Model):
 
         self.plotter.add_actor(self.actor, name="primary", render=False)
         self.plotter.mapper = mapper
-        self.plotter.reset_camera(render=False)
+        if not self.shown_first_plot:
+            self.plotter.reset_camera(render=False)
+            self.shown_first_plot = True
         self.plotter.add_scalar_bar(render=False)
         self._set_clipping_extents(self._original_extents)
         self.update_plot_dataset()
