@@ -1,12 +1,13 @@
 import sys
 from pathlib import Path
 
-from qtpy import QtWidgets
+from qtpy import QtWidgets, QtCore
 
 from .MainWindow import MainWindow
 
 
 def run():
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, on=True)
     app = QtWidgets.QApplication(sys.argv)
     try:
         file_to_load = Path(sys.argv[1])
