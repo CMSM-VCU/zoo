@@ -60,14 +60,20 @@ class H5Model(qtc.QAbstractItemModel):
             except Exception as err:
                 raise err
         elif filename.suffix in GRID_FILE_EXTENSIONS:
+            # Increase robustness by pre-determining delimiter
+            # Currently limited to comma or whitespace
+            with open(filename, mode="r") as f:
+                _ = f.readline()
+                sep = (
+                    "," if "," in f.readline() else "\s+"
+                )  # stackoverflow.com/a/59327911/13130795
             try:
                 grid = pd.read_csv(
                     filename,
                     skiprows=1,
                     names=["x1", "x2", "x3", "material"],
-                    sep=None,
+                    sep=sep,
                     skipinitialspace=True,
-                    engine="python",
                 )
             except Exception as err:
                 raise err
