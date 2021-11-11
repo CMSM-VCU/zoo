@@ -26,7 +26,7 @@ class VTK_PVH5Model(H5Model):
         self.plotter.AddObserver(
             vtk.vtkCommand.InteractionEvent, self.emit_moved_camera
         )
-        self.plotter.add_axes()
+        self.create_camera_control_widget()
 
         self.loaded_file.connect(self.construct_plot_at_timestep)
         self.changed_timestep.connect(self.construct_plot_at_timestep)
@@ -203,6 +203,14 @@ class VTK_PVH5Model(H5Model):
         passes two arguments, and a signal can only handle one argument.
         """
         self.moved_camera.emit(list(self.plotter.camera_position))
+
+    def create_camera_control_widget(self) -> None:
+        camera_widget = vtk.vtkCameraOrientationWidget()
+        camera_widget.SetParentRenderer(self.plotter.renderers[0])
+        camera_widget.GetRepresentation().AnchorToLowerLeft()
+        camera_widget.On()
+
+        self.plotter.camera_widget = camera_widget
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):
