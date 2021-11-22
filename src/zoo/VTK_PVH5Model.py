@@ -5,9 +5,13 @@ from importlib import resources
 import numpy as np
 import pyvista as pv
 import pyvistaqt
-import vtk
-from qtpy import QtCore as qtc
 from vtk.numpy_interface import dataset_adapter as dsa
+from vtkmodules.vtkCommonCore import vtkCommand, vtkLookupTable, vtkPoints
+from vtkmodules.vtkCommonDataModel import vtkDataObject, vtkPolyData
+from vtkmodules.vtkFiltersGeneral import vtkVertexGlyphFilter
+from vtkmodules.vtkInteractionWidgets import vtkCameraOrientationWidget
+from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
+from vtkmodules.vtkRenderingOpenGL2 import vtkShader
 
 from .H5Model import H5Model
 
@@ -23,9 +27,7 @@ class VTK_PVH5Model(H5Model):
         self.mesh = None
 
         self.plotter = pyvistaqt.QtInteractor()
-        self.plotter.AddObserver(
-            vtk.vtkCommand.InteractionEvent, self.emit_moved_camera
-        )
+        self.plotter.AddObserver(vtkCommand.InteractionEvent, self.emit_moved_camera)
         self.create_camera_control_widget()
 
         self.loaded_file.connect(self.construct_plot_at_timestep)
@@ -45,9 +47,9 @@ class VTK_PVH5Model(H5Model):
     @lru_cache(maxsize=8)
     def construct_timestep_data(self, timestep: int) -> pv.PolyData:
         coords = self.df.loc[timestep, ("x1", "x2", "x3")].values
-        points = vtk.vtkPoints()
+        points = vtkPoints()
         points.SetData(dsa.numpyTovtkDataArray(coords))
-        polydata = vtk.vtkPolyData()
+        polydata = vtkPolyData()
         polydata.SetPoints(points)
 
         polydata.GetPointData().SetNormals(
@@ -68,20 +70,20 @@ class VTK_PVH5Model(H5Model):
         return pv.utilities.wrap(polydata)
 
     def construct_data_mapper(self, polydata: pv.PolyData) -> "MapperHelper":
-        vertexGlyphFilter = vtk.vtkVertexGlyphFilter()
+        vertexGlyphFilter = vtkVertexGlyphFilter()
         vertexGlyphFilter.AddInputDataObject(polydata)
         vertexGlyphFilter.Update()
 
-        mapper = pv.mapper.make_mapper(vtk.vtkPolyDataMapper)
+        mapper = pv.mapper.make_mapper(vtkPolyDataMapper)
         mapper.SetInputConnection(vertexGlyphFilter.GetOutputPort())
-        lut = vtk.vtkLookupTable()
+        lut = vtkLookupTable()
         lut.SetNumberOfColors(256)
         lut.SetHueRange([0.0, 0.667][::-1])  # Reverse indexing to reverse colorbar
         lut.Build()
         mapper.SetLookupTable(lut)
 
         mapper.MapDataArrayToVertexAttribute(
-            "_disp", "_displacement", vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
+            "_disp", "_displacement", vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
         )
 
         return mapper
@@ -95,7 +97,7 @@ class VTK_PVH5Model(H5Model):
             - np.array(self._original_extents[0::2])
         )
 
-        self.actor = vtk.vtkActor()
+        self.actor = vtkActor()
         mapper = self.construct_data_mapper(self.polydata)
         self.actor.SetMapper(mapper)
 
@@ -111,11 +113,11 @@ class VTK_PVH5Model(H5Model):
         self.update_plot_dataset()
         self.update_mask_dataset()
 
-    def apply_shaders(self, actor: vtk.vtkActor):
+    def apply_shaders(self, actor: vtkActor):
         shader_property = actor.GetShaderProperty()
 
         shader_property.AddShaderReplacement(
-            vtk.vtkShader.Vertex,
+            vtkShader.Vertex,
             "//VTK::PositionVC::Dec",
             True,
             "//VTK::PositionVC::Dec\n"
@@ -129,7 +131,7 @@ class VTK_PVH5Model(H5Model):
             False,
         )
         shader_property.AddShaderReplacement(
-            vtk.vtkShader.Vertex,
+            vtkShader.Vertex,
             "//VTK::PositionVC::Impl",
             True,
             "//VTK::PositionVC::Impl\n"
@@ -179,7 +181,7 @@ class VTK_PVH5Model(H5Model):
         )
 
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
-            "_scalar", self.plot_dataset, vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
+            "_scalar", self.plot_dataset, vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
         )
 
     def update_mask_dataset(self, _=None) -> None:
@@ -190,7 +192,7 @@ class VTK_PVH5Model(H5Model):
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
             "_mask_scalar",
             self.mask_dataset,
-            vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS,
+            vtkDataObject.FIELD_ASSOCIATION_POINTS,
             -1,
         )
 
@@ -205,7 +207,7 @@ class VTK_PVH5Model(H5Model):
         self.moved_camera.emit(list(self.plotter.camera_position))
 
     def create_camera_control_widget(self) -> None:
-        camera_widget = vtk.vtkCameraOrientationWidget()
+        camera_widget = vtkCameraOrientationWidget()
         camera_widget.SetParentRenderer(self.plotter.renderers[0])
         camera_widget.GetRepresentation().AnchorToLowerLeft()
         camera_widget.On()
