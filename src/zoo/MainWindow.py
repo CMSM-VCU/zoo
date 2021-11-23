@@ -1,15 +1,18 @@
+from io import BytesIO
 import os
 import typing
 from functools import partial
 from pathlib import Path
 
 import pyperclip
+import win32clipboard
 
 from .ui.zoo_ui import Ui_MainWindow
 from .VTK_PVH5Model import VTK_PVH5Model
 
 os.environ["QT_API"] = "pyqt5"
 
+from PIL import Image
 from qtpy import QtCore as qtc
 from qtpy import QtGui as qtg
 from qtpy import QtWidgets as qtw
@@ -96,6 +99,7 @@ class MainWindow(qtw.QMainWindow):
     def hook_up_signals(self):
         self.ui.actionOpen.triggered.connect(self.open_file)
         self.ui.actionSave_Image.triggered.connect(self.save_image)
+        self.ui.actionCopy_Image.triggered.connect(self.copy_image)
         self.ui.actionExit.triggered.connect(self.close)
 
         self.ui.nextTimeStep.clicked.connect(self.increment_timestep)
@@ -425,6 +429,18 @@ class MainWindow(qtw.QMainWindow):
         filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
         if filename:
             self.model.save_image(filename)
+
+    def copy_image(self, _=None) -> None:
+        image = Image.fromarray(self.model.plotter.image)
+        output = BytesIO()
+        image.convert("RGB").save(output, "BMP")
+        data = output.getvalue()[14:]
+        output.close()
+
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+        win32clipboard.CloseClipboard()
 
     def _dragEnterEvent(self, event):
         # Based on https://stackoverflow.com/a/4176083/13130795
