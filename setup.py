@@ -32,6 +32,7 @@ setuptools.setup(
         "pyvistaqt",
         "scipy",
         "pyperclip",
+        "pywin32",
     ],
     entry_points={"console_scripts": ["zoo = zoo:run"]},
 )
