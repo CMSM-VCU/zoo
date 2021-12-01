@@ -432,6 +432,7 @@ class MainWindow(qtw.QMainWindow):
 
     def copy_image(self, _=None) -> None:
         image = Image.fromarray(self.model.plotter.image)
+        # https://stackoverflow.com/a/61546024/13130795
         output = BytesIO()
         image.convert("RGB").save(output, "BMP")
         data = output.getvalue()[14:]
