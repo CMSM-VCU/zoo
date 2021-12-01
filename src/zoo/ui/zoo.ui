@@ -984,7 +984,8 @@
               <cursorShape>WhatsThisCursor</cursorShape>
              </property>
              <property name="toolTip">
-              <string>Click to copy camera location to clipboard</string>
+              <string>Left Click to copy camera location
+Right Click to paste</string>
              </property>
              <property name="title">
               <string>Camera Location</string>

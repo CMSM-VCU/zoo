@@ -44,6 +44,12 @@ class VTK_PVH5Model(H5Model):
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
         return self.plotter.camera_position
 
+    @camera_location.setter
+    def camera_location(
+        self, location: typing.List[typing.Tuple[float, float, float]]
+    ) -> None:
+        self.plotter.camera_position = location
+
     @lru_cache(maxsize=8)
     def construct_timestep_data(self, timestep: int) -> pv.PolyData:
         coords = self.df.loc[timestep, ("x1", "x2", "x3")].values

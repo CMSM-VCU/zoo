@@ -1,3 +1,4 @@
+import ast
 from io import BytesIO
 import os
 import typing
@@ -131,7 +132,7 @@ class MainWindow(qtw.QMainWindow):
 
         # QGroupBox only emits clicked signal if it is checkable. Bypass this by
         # binding directly to the mousePressEvent.
-        self.ui.cameraLocationGroup.mousePressEvent = self.copy_camera_location
+        self.ui.cameraLocationGroup.mousePressEvent = self.copypaste_camera_location
 
         self.ui.xgsLineEdit.setValidator(qtg.QDoubleValidator())
         self.ui.ygsLineEdit.setValidator(qtg.QDoubleValidator())
@@ -421,9 +422,28 @@ class MainWindow(qtw.QMainWindow):
         except TypeError:
             self.ui.timeLabel.setText("not found")
 
-    def copy_camera_location(self, _=None) -> None:
-        print("Copied!")
-        pyperclip.copy(str(self.model.camera_location))
+    def copypaste_camera_location(self, event=None) -> None:
+        if event.button() == 1:
+            print("Copied!")
+            pyperclip.copy(str(self.model.camera_location))
+        elif event.button() == 2:
+            try:
+                paste_data = ast.literal_eval(pyperclip.paste().strip())
+                assert (
+                    isinstance(paste_data, typing.Iterable) and len(paste_data) == 3
+                ), "Paste data must contain 3 items."
+                assert all(
+                    isinstance(item, typing.Iterable) and len(item) == 3
+                    for item in paste_data
+                ), "Each item in paste data must be a vector of length 3."
+            except SyntaxError:
+                print("Bad paste data - syntax")
+            except AssertionError as err:
+                print(err)
+            else:
+                self.model.camera_location = paste_data
+                self.update_camera_readout(data=paste_data)
+                print("Pasted!")
 
     def save_image(self, _=None) -> None:
         filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
