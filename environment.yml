@@ -7,6 +7,7 @@ dependencies:
     - pandas
     - pytables
     - pyqt
+    - vtk>=9.1.0
     - pyvista
     - pyvistaqt
     - scipy
