@@ -11,6 +11,7 @@ import win32clipboard
 
 from . import ui
 from .VTK_PVH5Model import VTK_PVH5Model
+from .ControlPane import ControlPane
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -29,6 +30,10 @@ class MainWindow(qtw.QMainWindow):
         mainwindow_uifile = resources.open_text(ui, "zoo.ui")
         uic.loadUi(mainwindow_uifile, self)
         self._base_window_title = self.windowTitle()
+        self._control_pane = ControlPane()
+        self.horizontalLayout.addWidget(self._control_pane)
+        self.show()
+        return
 
         self._generate_method_lists()
         self.organize_widgets()
