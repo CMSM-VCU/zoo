@@ -1,14 +1,15 @@
 import ast
-from io import BytesIO
 import os
 import typing
 from functools import partial
+from importlib import resources
+from io import BytesIO
 from pathlib import Path
 
 import pyperclip
 import win32clipboard
 
-from .ui.zoo_ui import Ui_MainWindow
+from . import ui
 from .VTK_PVH5Model import VTK_PVH5Model
 
 os.environ["QT_API"] = "pyqt5"
@@ -17,6 +18,7 @@ from PIL import Image
 from qtpy import QtCore as qtc
 from qtpy import QtGui as qtg
 from qtpy import QtWidgets as qtw
+from qtpy import uic
 
 
 class MainWindow(qtw.QMainWindow):
@@ -24,8 +26,8 @@ class MainWindow(qtw.QMainWindow):
 
     def __init__(self, parent=None, show=True, file_to_load=None) -> None:
         super().__init__(parent=parent)
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        mainwindow_uifile = resources.open_text(ui, "zoo.ui")
+        uic.loadUi(mainwindow_uifile, self)
         self._base_window_title = self.windowTitle()
 
         self._generate_method_lists()
@@ -33,9 +35,9 @@ class MainWindow(qtw.QMainWindow):
         self.hook_up_signals()
         self.toggle_control_pane(enable=False)
 
-        self.ui.viewport.setAcceptDrops(True)
-        self.ui.viewport.dragEnterEvent = self._dragEnterEvent
-        self.ui.viewport.dropEvent = self._dropEvent
+        self.viewport.setAcceptDrops(True)
+        self.viewport.dragEnterEvent = self._dragEnterEvent
+        self.viewport.dropEvent = self._dropEvent
 
         if show:
             self.show()
@@ -53,96 +55,96 @@ class MainWindow(qtw.QMainWindow):
             del self._model
         self._model = model
 
-        model.plotter.setParent(self.ui.viewport)
-        if self.ui.viewport.layout().count() != 0:
-            old = self.ui.viewport.layout().takeAt(0)
+        model.plotter.setParent(self.viewport)
+        if self.viewport.layout().count() != 0:
+            old = self.viewport.layout().takeAt(0)
             del old
-        self.ui.viewport.layout().addWidget(model.plotter.interactor)
+        self.viewport.layout().addWidget(model.plotter.interactor)
 
         model.loaded_file.connect(self.toggle_control_pane)
-        model.changed_timestep.connect(self.ui.timeStepSelector.setCurrentText)
+        model.changed_timestep.connect(self.timeStepSelector.setCurrentText)
         model.changed_timestep.connect(self.update_time_value)
-        model.changed_mask_dataset.connect(self.ui.maskdatasetSelector.setCurrentText)
+        model.changed_mask_dataset.connect(self.maskdatasetSelector.setCurrentText)
         model.program_changed_clipping_extents.connect(self.update_extents_boxes)
         model.program_changed_colorbar_limits.connect(self.update_colorlimit_boxes)
         model.program_changed_mask_limits.connect(self.update_masklimit_boxes)
         model.moved_camera.connect(self.update_camera_readout)
 
     def organize_widgets(self):
-        self.actions = {"open": self.ui.actionOpen, "exit": self.ui.actionExit}
+        self.actions = {"open": self.actionOpen, "exit": self.actionExit}
 
         self.gs_lineedits = (
-            self.ui.xgsLineEdit,
-            self.ui.ygsLineEdit,
-            self.ui.zgsLineEdit,
+            self.xgsLineEdit,
+            self.ygsLineEdit,
+            self.zgsLineEdit,
         )
         self.exag_spinboxes = (
-            self.ui.xexagSpinBox,
-            self.ui.yexagSpinBox,
-            self.ui.zexagSpinBox,
+            self.xexagSpinBox,
+            self.yexagSpinBox,
+            self.zexagSpinBox,
         )
-        self.color_lineedits = (self.ui.colorminLineEdit, self.ui.colormaxLineEdit)
-        self.mask_lineedits = (self.ui.maskminLineEdit, self.ui.maskmaxLineEdit)
+        self.color_lineedits = (self.colorminLineEdit, self.colormaxLineEdit)
+        self.mask_lineedits = (self.maskminLineEdit, self.maskmaxLineEdit)
         self.clip_lineedits = (
-            self.ui.xminLineEdit,
-            self.ui.xmaxLineEdit,
-            self.ui.yminLineEdit,
-            self.ui.ymaxLineEdit,
-            self.ui.zminLineEdit,
-            self.ui.zmaxLineEdit,
+            self.xminLineEdit,
+            self.xmaxLineEdit,
+            self.yminLineEdit,
+            self.ymaxLineEdit,
+            self.zminLineEdit,
+            self.zmaxLineEdit,
         )
         self.clip_checkboxes = (
-            self.ui.xclipCheckBox,
-            self.ui.yclipCheckBox,
-            self.ui.zclipCheckBox,
+            self.xclipCheckBox,
+            self.yclipCheckBox,
+            self.zclipCheckBox,
         )
 
     def hook_up_signals(self):
-        self.ui.actionOpen.triggered.connect(self.open_file)
-        self.ui.actionSave_Image.triggered.connect(self.save_image)
-        self.ui.actionCopy_Image.triggered.connect(self.copy_image)
-        self.ui.actionExit.triggered.connect(self.close)
+        self.actionOpen.triggered.connect(self.open_file)
+        self.actionSave_Image.triggered.connect(self.save_image)
+        self.actionCopy_Image.triggered.connect(self.copy_image)
+        self.actionExit.triggered.connect(self.close)
 
-        self.ui.nextTimeStep.clicked.connect(self.increment_timestep)
-        self.ui.prevTimeStep.clicked.connect(self.decrement_timestep)
-        self.ui.timeStepSelector.activated.connect(self.set_timestep)
+        self.nextTimeStep.clicked.connect(self.increment_timestep)
+        self.prevTimeStep.clicked.connect(self.decrement_timestep)
+        self.timeStepSelector.activated.connect(self.set_timestep)
 
-        self.ui.gsLockButton.toggled.connect(self.toggle_uniform_gs)
-        self.ui.xgsLineEdit.textEdited.connect(self.set_grid_spacing_uniform)
+        self.gsLockButton.toggled.connect(self.toggle_uniform_gs)
+        self.xgsLineEdit.textEdited.connect(self.set_grid_spacing_uniform)
 
-        self.ui.exagLockButton.toggled.connect(self.toggle_uniform_exag)
-        self.ui.xexagSpinBox.valueChanged.connect(self.set_exaggeration_uniform)
+        self.exagLockButton.toggled.connect(self.toggle_uniform_exag)
+        self.xexagSpinBox.valueChanged.connect(self.set_exaggeration_uniform)
 
-        self.ui.plotdatasetSelector.activated.connect(self.select_plot_dataset)
-        self.ui.colorCheckBox.stateChanged.connect(self.toggle_color_controls)
-        self.ui.colorminLineEdit.textEdited.connect(self.set_color_min)
-        self.ui.colormaxLineEdit.textEdited.connect(self.set_color_max)
+        self.plotdatasetSelector.activated.connect(self.select_plot_dataset)
+        self.colorCheckBox.stateChanged.connect(self.toggle_color_controls)
+        self.colorminLineEdit.textEdited.connect(self.set_color_min)
+        self.colormaxLineEdit.textEdited.connect(self.set_color_max)
 
-        self.ui.maskdatasetLockButton.toggled.connect(self.toggle_maskplot_lock)
-        self.ui.maskdatasetSelector.activated.connect(self.select_mask_dataset)
-        self.ui.maskCheckBox.stateChanged.connect(self.toggle_mask_controls)
-        self.ui.maskminLineEdit.textEdited.connect(self.set_mask_min)
-        self.ui.maskmaxLineEdit.textEdited.connect(self.set_mask_max)
+        self.maskdatasetLockButton.toggled.connect(self.toggle_maskplot_lock)
+        self.maskdatasetSelector.activated.connect(self.select_mask_dataset)
+        self.maskCheckBox.stateChanged.connect(self.toggle_mask_controls)
+        self.maskminLineEdit.textEdited.connect(self.set_mask_min)
+        self.maskmaxLineEdit.textEdited.connect(self.set_mask_max)
 
-        self.ui.xclipCheckBox.stateChanged.connect(self.toggle_xclip_controls)
-        self.ui.yclipCheckBox.stateChanged.connect(self.toggle_yclip_controls)
-        self.ui.zclipCheckBox.stateChanged.connect(self.toggle_zclip_controls)
+        self.xclipCheckBox.stateChanged.connect(self.toggle_xclip_controls)
+        self.yclipCheckBox.stateChanged.connect(self.toggle_yclip_controls)
+        self.zclipCheckBox.stateChanged.connect(self.toggle_zclip_controls)
         for i, box in enumerate(self.clip_lineedits):
             box.textEdited.connect(self.set_clipping_extent[i])
 
         # QGroupBox only emits clicked signal if it is checkable. Bypass this by
         # binding directly to the mousePressEvent.
-        self.ui.cameraLocationGroup.mousePressEvent = self.copypaste_camera_location
+        self.cameraLocationGroup.mousePressEvent = self.copypaste_camera_location
 
-        self.ui.xgsLineEdit.setValidator(qtg.QDoubleValidator())
-        self.ui.ygsLineEdit.setValidator(qtg.QDoubleValidator())
-        self.ui.zgsLineEdit.setValidator(qtg.QDoubleValidator())
+        self.xgsLineEdit.setValidator(qtg.QDoubleValidator())
+        self.ygsLineEdit.setValidator(qtg.QDoubleValidator())
+        self.zgsLineEdit.setValidator(qtg.QDoubleValidator())
 
-        self.ui.ygsLineEdit.setVisible(False)
-        self.ui.zgsLineEdit.setVisible(False)
+        self.ygsLineEdit.setVisible(False)
+        self.zgsLineEdit.setVisible(False)
 
-        self.ui.yexagSpinBox.setVisible(False)
-        self.ui.zexagSpinBox.setVisible(False)
+        self.yexagSpinBox.setVisible(False)
+        self.zexagSpinBox.setVisible(False)
 
     def open_file(self, *, override=None):
         # stackoverflow.com/a/44076057/13130795
@@ -157,26 +159,26 @@ class MainWindow(qtw.QMainWindow):
             self.setWindowTitle(f"{Path(filename).name} - {self._base_window_title}")
 
     def toggle_control_pane(self, enable: bool):
-        self.ui.controlPane.setEnabled(enable)
-        self.ui.menuView.setEnabled(enable)
+        self.controlPane.setEnabled(enable)
+        self.menuView.setEnabled(enable)
         if enable:
-            self.ui.timeStepSelector.clear()
-            self.ui.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
+            self.timeStepSelector.clear()
+            self.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
             self.update_time_value()
 
-            self.ui.plotdatasetSelector.clear()
-            self.ui.plotdatasetSelector.addItems(self.model.datasets)
-            self.ui.maskdatasetSelector.clear()
-            self.ui.maskdatasetSelector.addItems(self.model.datasets)
+            self.plotdatasetSelector.clear()
+            self.plotdatasetSelector.addItems(self.model.datasets)
+            self.maskdatasetSelector.clear()
+            self.maskdatasetSelector.addItems(self.model.datasets)
 
-            self.ui.xgsLineEdit.setText(str(self.model.grid_spacing[0]))
-            self.ui.xexagSpinBox.setValue(self.model.exaggeration[0])
+            self.xgsLineEdit.setText(str(self.model.grid_spacing[0]))
+            self.xexagSpinBox.setValue(self.model.exaggeration[0])
         else:
-            self.ui.colorCheckBox.setChecked(enable)
-            self.ui.maskCheckBox.setChecked(enable)
-            self.ui.xclipCheckBox.setChecked(enable)
-            self.ui.yclipCheckBox.setChecked(enable)
-            self.ui.zclipCheckBox.setChecked(enable)
+            self.colorCheckBox.setChecked(enable)
+            self.maskCheckBox.setChecked(enable)
+            self.xclipCheckBox.setChecked(enable)
+            self.yclipCheckBox.setChecked(enable)
+            self.zclipCheckBox.setChecked(enable)
 
     @staticmethod
     def _template_toggle_uniform_vector_spinbox(
@@ -250,24 +252,24 @@ class MainWindow(qtw.QMainWindow):
                 self.set_clipping_extent[i]()
 
     def update_colorlimit_boxes(self, limits: typing.Tuple[float]) -> None:
-        if not self.ui.colorCheckBox.isChecked():
-            self.ui.colorminLineEdit.setText(str(limits[0]))
-            self.ui.colormaxLineEdit.setText(str(limits[1]))
+        if not self.colorCheckBox.isChecked():
+            self.colorminLineEdit.setText(str(limits[0]))
+            self.colormaxLineEdit.setText(str(limits[1]))
         else:
             self.set_color_min()
             self.set_color_max()
 
     def update_masklimit_boxes(self, limits: typing.Tuple[float]) -> None:
-        if not self.ui.maskCheckBox.isChecked():
-            self.ui.maskminLineEdit.setText(str(limits[0]))
-            self.ui.maskmaxLineEdit.setText(str(limits[1]))
+        if not self.maskCheckBox.isChecked():
+            self.maskminLineEdit.setText(str(limits[0]))
+            self.maskmaxLineEdit.setText(str(limits[1]))
         else:
             self.set_mask_min()
             self.set_mask_max()
 
     def toggle_color_controls(self, enable: bool):
-        self.ui.colorminLineEdit.setEnabled(enable)
-        self.ui.colormaxLineEdit.setEnabled(enable)
+        self.colorminLineEdit.setEnabled(enable)
+        self.colormaxLineEdit.setEnabled(enable)
         if not enable:
             self.model.colorbar_limits = None
         else:
@@ -275,8 +277,8 @@ class MainWindow(qtw.QMainWindow):
             self.set_color_max()
 
     def toggle_mask_controls(self, enable: bool):
-        self.ui.maskminLineEdit.setEnabled(enable)
-        self.ui.maskmaxLineEdit.setEnabled(enable)
+        self.maskminLineEdit.setEnabled(enable)
+        self.maskmaxLineEdit.setEnabled(enable)
         if not enable:
             self.model.mask_limits = None
         else:
@@ -284,8 +286,8 @@ class MainWindow(qtw.QMainWindow):
             self.set_mask_max()
 
     def toggle_xclip_controls(self, enable: bool):
-        self.ui.xminLineEdit.setEnabled(enable)
-        self.ui.xmaxLineEdit.setEnabled(enable)
+        self.xminLineEdit.setEnabled(enable)
+        self.xmaxLineEdit.setEnabled(enable)
         if not enable:
             self.model.replace_clipping_extents(indeces=[0, 1], values=[None, None])
         else:
@@ -293,8 +295,8 @@ class MainWindow(qtw.QMainWindow):
             self.set_clipping_extent[1]()
 
     def toggle_yclip_controls(self, enable: bool):
-        self.ui.yminLineEdit.setEnabled(enable)
-        self.ui.ymaxLineEdit.setEnabled(enable)
+        self.yminLineEdit.setEnabled(enable)
+        self.ymaxLineEdit.setEnabled(enable)
         if not enable:
             self.model.replace_clipping_extents(indeces=[2, 3], values=[None, None])
         else:
@@ -302,8 +304,8 @@ class MainWindow(qtw.QMainWindow):
             self.set_clipping_extent[3]()
 
     def toggle_zclip_controls(self, enable: bool):
-        self.ui.zminLineEdit.setEnabled(enable)
-        self.ui.zmaxLineEdit.setEnabled(enable)
+        self.zminLineEdit.setEnabled(enable)
+        self.zmaxLineEdit.setEnabled(enable)
         if not enable:
             self.model.replace_clipping_extents(indeces=[4, 5], values=[None, None])
         else:
@@ -321,49 +323,45 @@ class MainWindow(qtw.QMainWindow):
 
     def select_plot_dataset(self, _=None, *, override: str = None):
         self.model.plot_dataset = (
-            override
-            if override is not None
-            else self.ui.plotdatasetSelector.currentText()
+            override if override is not None else self.plotdatasetSelector.currentText()
         )
 
     def select_mask_dataset(self, _=None, *, override: str = None):
         self.model.mask_dataset = (
-            override
-            if override is not None
-            else self.ui.maskdatasetSelector.currentText()
+            override if override is not None else self.maskdatasetSelector.currentText()
         )
 
     def toggle_maskplot_lock(self, enable: bool):
-        self.ui.maskdatasetSelector.setEnabled(not enable)
+        self.maskdatasetSelector.setEnabled(not enable)
         self.model.plot_and_mask_same_dataset = enable
         if enable:
-            self.select_mask_dataset(override=self.ui.plotdatasetSelector.currentText())
+            self.select_mask_dataset(override=self.plotdatasetSelector.currentText())
         else:
             self.select_mask_dataset()
 
     def set_color_min(self, _=None):
-        if self.ui.colorCheckBox.isChecked():
+        if self.colorCheckBox.isChecked():
             self.model.colorbar_limits = [
                 float_or_zero(self.color_lineedits[0].text()),
                 self.model.colorbar_limits[1],
             ]
 
     def set_color_max(self, _=None):
-        if self.ui.colorCheckBox.isChecked():
+        if self.colorCheckBox.isChecked():
             self.model.colorbar_limits = [
                 self.model.colorbar_limits[0],
                 float_or_zero(self.color_lineedits[1].text()),
             ]
 
     def set_mask_min(self, _=None):
-        if self.ui.maskCheckBox.isChecked():
+        if self.maskCheckBox.isChecked():
             self.model.mask_limits = [
                 float_or_zero(self.mask_lineedits[0].text()),
                 self.model.mask_limits[1],
             ]
 
     def set_mask_max(self, _=None):
-        if self.ui.maskCheckBox.isChecked():
+        if self.maskCheckBox.isChecked():
             self.model.mask_limits = [
                 self.model.mask_limits[0],
                 float_or_zero(self.mask_lineedits[1].text()),
@@ -410,17 +408,17 @@ class MainWindow(qtw.QMainWindow):
         pos = data[0]
         foc = data[1]
         up = data[2]
-        self.ui.positionValue.setText(f"{pos[0]:.2f}, {pos[1]:.2f}, {pos[2]:.2f}")
-        self.ui.focalValue.setText(f"{foc[0]:.2f}, {foc[1]:.2f}, {foc[2]:.2f}")
-        self.ui.viewupValue.setText(f"{up[0]:.2f}, {up[1]:.2f}, {up[2]:.2f}")
+        self.positionValue.setText(f"{pos[0]:.2f}, {pos[1]:.2f}, {pos[2]:.2f}")
+        self.focalValue.setText(f"{foc[0]:.2f}, {foc[1]:.2f}, {foc[2]:.2f}")
+        self.viewupValue.setText(f"{up[0]:.2f}, {up[1]:.2f}, {up[2]:.2f}")
 
     def update_time_value(self, _=None) -> None:
         try:
             time = self.model.time
-            self.ui.timeLabel.setText(f"{time:.3e}")
-            self.ui.timeLabel.setToolTip(f"{time:.8e}")
+            self.timeLabel.setText(f"{time:.3e}")
+            self.timeLabel.setToolTip(f"{time:.8e}")
         except TypeError:
-            self.ui.timeLabel.setText("not found")
+            self.timeLabel.setText("not found")
 
     def copypaste_camera_location(self, event=None) -> None:
         if event.button() == 1:
