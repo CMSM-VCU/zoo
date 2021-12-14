@@ -15,15 +15,11 @@ from qtpy import uic
 
 
 class MainWindow(qtw.QMainWindow):
-    _page = None
-
     def __init__(self, parent=None, show=True, file_to_load=None) -> None:
         super().__init__(parent=parent)
         mainwindow_uifile = resources.open_text(ui, "zoo.ui")
         uic.loadUi(mainwindow_uifile, self)
         self._base_window_title = self.windowTitle()
-        self._page = MainPage(parent=self)
-        self.centralWidget().layout().addWidget(self._page)
 
         self.centralWidget().setAcceptDrops(True)
         self.centralWidget().dragEnterEvent = self._dragEnterEvent
@@ -36,16 +32,41 @@ class MainWindow(qtw.QMainWindow):
             self.show()
 
         if file_to_load is not None:
-            self._page.open_file(override=file_to_load)
+            self.open_file(override=file_to_load)
+
+    @property
+    def current_page(self) -> MainPage:
+        return self.tabWidget.currentWidget()
 
     def organize_widgets(self):
         self.actions = {"open": self.actionOpen, "exit": self.actionExit}
 
     def hook_up_signals(self):
-        self.actionOpen.triggered.connect(self._page.open_file)
-        self.actionSave_Image.triggered.connect(self._page.save_image)
-        self.actionCopy_Image.triggered.connect(self._page.copy_image)
+        self.actionOpen.triggered.connect(self.open_file)
+        self.actionSave_Image.triggered.connect(self.save_image)
+        self.actionCopy_Image.triggered.connect(self.copy_image)
         self.actionExit.triggered.connect(self.close)
+
+        self.tabWidget.tabCloseRequested.connect(self.close_tab)
+
+    def open_file(self, *, override=None):
+        # stackoverflow.com/a/44076057/13130795
+        if not override:
+            filename, _ = qtw.QFileDialog.getOpenFileName(self)
+        else:
+            filename = override
+        if filename:
+            self.setWindowTitle(f"Opening {Path(filename).name}...")
+            new_page = MainPage(parent=self.tabWidget)
+            new_page.open_file(filename)
+            self.tabWidget.addTab(new_page, new_page.windowTitle())
+            self.setWindowTitle(new_page.windowTitle())
+
+    def save_image(self, _=None) -> None:
+        self.current_page.save_image()
+
+    def copy_image(self, _=None) -> None:
+        self.current_page.copy_image()
 
     def _dragEnterEvent(self, event):
         # Based on https://stackoverflow.com/a/4176083/13130795
@@ -58,8 +79,6 @@ class MainWindow(qtw.QMainWindow):
         if event.mimeData().hasUrls():
             # Local file path is just one thing that counts as a URL
             if event.mimeData().urls()[0].toLocalFile():
-                self._page.open_file(
-                    override=Path(event.mimeData().urls()[0].toLocalFile())
-                )
+                self.open_file(override=Path(event.mimeData().urls()[0].toLocalFile()))
         else:
             event.ignore()

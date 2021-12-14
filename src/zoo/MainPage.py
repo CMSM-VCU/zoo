@@ -48,17 +48,10 @@ class MainPage(qtw.QWidget):
         model.loaded_file.connect(self.toggle_control_pane)
         self._control_pane._connect_model(model)
 
-    def open_file(self, *, override=None):
-        # stackoverflow.com/a/44076057/13130795
-        if not override:
-            filename, _ = qtw.QFileDialog.getOpenFileName(self)
-        else:
-            filename = override
-        if filename:
-            self.setWindowTitle(f"Opening {Path(filename).name}...")
-            self.model = VTK_PVH5Model()
-            self.model.load_file(Path(filename))
-            self.setWindowTitle(f"{Path(filename).name} - {self._base_window_title}")
+    def open_file(self, filename):
+        self.model = VTK_PVH5Model()
+        self.model.load_file(Path(filename))
+        self.setWindowTitle(f"{Path(filename).name} - {self._base_window_title}")
 
     def toggle_control_pane(self, enable: bool):
         self._control_pane.toggle_control_pane(enable)
