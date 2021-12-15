@@ -59,7 +59,7 @@ class MainWindow(qtw.QMainWindow):
             filename = override
         if filename:
             self.setWindowTitle(f"Opening {Path(filename).name}...")
-            new_page = MainPage(parent=self.tabWidget)
+            new_page = MainPage()
             new_page.open_file(filename)
             new_idx = self.tabWidget.addTab(new_page, new_page.windowTitle())
             self.tabWidget.setTabToolTip(new_idx, f"{filename}")
