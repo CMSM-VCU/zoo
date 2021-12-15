@@ -18,6 +18,7 @@ from qtpy import uic
 
 class MainPage(qtw.QWidget):
     _model: VTK_PVH5Model = None
+    _filename = None
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent=parent)
@@ -60,6 +61,7 @@ class MainPage(qtw.QWidget):
         self.model = VTK_PVH5Model()
         self.model.load_file(Path(filename))
         self.tab_name = f"{Path(filename).name}"
+        self._filename = filename
 
     def toggle_control_pane(self, enable: bool):
         self._control_pane.toggle_control_pane(enable)

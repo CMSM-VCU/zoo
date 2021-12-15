@@ -46,6 +46,7 @@ class MainWindow(qtw.QMainWindow):
         self.actionSave_Image.triggered.connect(self.save_image)
         self.actionCopy_Image.triggered.connect(self.copy_image)
         self.actionExit.triggered.connect(self.close)
+        self.actionDuplicate.triggered.connect(self.duplicate_current_tab)
 
         self.tabWidget.tabCloseRequested.connect(self.close_tab)
         self.tabWidget.currentChanged.connect(self.tab_title_to_window)
@@ -80,6 +81,10 @@ class MainWindow(qtw.QMainWindow):
 
     def close_tab(self, idx=None) -> None:
         self.tabWidget.removeTab(idx)
+
+    def duplicate_current_tab(self, _=None) -> None:
+        if self.current_page:
+            self.open_file(override=self.current_page._filename)
 
     def _dragEnterEvent(self, event):
         # Based on https://stackoverflow.com/a/4176083/13130795
