@@ -68,6 +68,9 @@ class MainWindow(qtw.QMainWindow):
     def copy_image(self, _=None) -> None:
         self.current_page.copy_image()
 
+    def close_tab(self, idx=None) -> None:
+        self.tabWidget.removeTab(idx)
+
     def _dragEnterEvent(self, event):
         # Based on https://stackoverflow.com/a/4176083/13130795
         if event.mimeData().hasUrls():
