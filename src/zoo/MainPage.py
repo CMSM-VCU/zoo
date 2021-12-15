@@ -48,10 +48,18 @@ class MainPage(qtw.QWidget):
         model.loaded_file.connect(self.toggle_control_pane)
         self._control_pane._connect_model(model)
 
+    @property
+    def tab_name(self) -> str:
+        return self.windowTitle()
+
+    @tab_name.setter
+    def tab_name(self, name: str) -> None:
+        self.setWindowTitle(name)
+
     def open_file(self, filename):
         self.model = VTK_PVH5Model()
         self.model.load_file(Path(filename))
-        self.setWindowTitle(f"{Path(filename).name} - {self._base_window_title}")
+        self.tab_name = f"{Path(filename).name}"
 
     def toggle_control_pane(self, enable: bool):
         self._control_pane.toggle_control_pane(enable)

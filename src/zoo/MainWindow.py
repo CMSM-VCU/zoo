@@ -48,6 +48,7 @@ class MainWindow(qtw.QMainWindow):
         self.actionExit.triggered.connect(self.close)
 
         self.tabWidget.tabCloseRequested.connect(self.close_tab)
+        self.tabWidget.currentChanged.connect(self.tab_title_to_window)
 
     def open_file(self, *, override=None):
         # stackoverflow.com/a/44076057/13130795
@@ -59,14 +60,23 @@ class MainWindow(qtw.QMainWindow):
             self.setWindowTitle(f"Opening {Path(filename).name}...")
             new_page = MainPage(parent=self.tabWidget)
             new_page.open_file(filename)
-            self.tabWidget.addTab(new_page, new_page.windowTitle())
-            self.setWindowTitle(new_page.windowTitle())
+            new_idx = self.tabWidget.addTab(new_page, new_page.windowTitle())
+            self.tabWidget.setTabToolTip(new_idx, f"{filename}")
+            self.tabWidget.setCurrentIndex(new_idx)
 
     def save_image(self, _=None) -> None:
         self.current_page.save_image()
 
     def copy_image(self, _=None) -> None:
         self.current_page.copy_image()
+
+    def tab_title_to_window(self, idx: int) -> None:
+        try:
+            self.setWindowTitle(
+                f"{self.tabWidget.widget(idx).tab_name} - {self._base_window_title}"
+            )
+        except:
+            self.setWindowTitle(self._base_window_title)
 
     def close_tab(self, idx=None) -> None:
         self.tabWidget.removeTab(idx)
