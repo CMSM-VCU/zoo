@@ -80,6 +80,8 @@ class MainWindow(qtw.QMainWindow):
             self.setWindowTitle(self._base_window_title)
 
     def close_tab(self, idx=None) -> None:
+        page = self.tabWidget.widget(idx)
+        page.clean_up()
         self.tabWidget.removeTab(idx)
 
     def duplicate_current_tab(self, _=None) -> None:

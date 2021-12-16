@@ -83,3 +83,8 @@ class MainPage(qtw.QWidget):
         win32clipboard.EmptyClipboard()
         win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
         win32clipboard.CloseClipboard()
+
+    def clean_up(self) -> None:
+        self._model.df = None
+        self._model.polydata = None
+        self._model.construct_timestep_data.cache_clear()
