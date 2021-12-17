@@ -15,6 +15,8 @@ from vtkmodules.vtkRenderingOpenGL2 import vtkShader
 
 from .H5Model import H5Model
 
+srcGS = resources.read_text(__package__, "cubeGS.glsl")
+
 
 class VTK_PVH5Model(H5Model):
     raw_mesh_cache: dict = {}
@@ -147,7 +149,6 @@ class VTK_PVH5Model(H5Model):
             "maskscalarVSOutput = _mask_scalar;\n",
             False,
         )
-        srcGS = resources.read_text(__package__, "cubeGS.glsl")
         shader_property.SetGeometryShaderCode(srcGS)
 
         shader_parameters = shader_property.GetGeometryCustomUniforms()
