@@ -22,8 +22,8 @@ class MainPage(qtw.QWidget):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent=parent)
-        mainpage_uifile = resources.open_text(ui, "mainpage.ui")
-        uic.loadUi(mainpage_uifile, self)
+        with resources.open_text(ui, "mainpage.ui") as uifile:
+            uic.loadUi(uifile, self)
         self._base_window_title = self.windowTitle()
         self._control_pane = ControlPane(parent=self)
         self.horizontalLayout.addWidget(self._control_pane)

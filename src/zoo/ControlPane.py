@@ -22,8 +22,8 @@ class ControlPane(qtw.QWidget):
 
     def __init__(self, parent: typing.Optional["qtw.QWidget"] = None,) -> None:
         super().__init__(parent=parent)
-        controlpane_uifile = resources.open_text(ui, "controlpane_primary.ui")
-        uic.loadUi(controlpane_uifile, self)
+        with resources.open_text(ui, "controlpane_primary.ui") as uifile:
+            uic.loadUi(uifile, self)
 
         self._parent = parent
         self._generate_method_lists()

@@ -17,8 +17,8 @@ from qtpy import uic
 class MainWindow(qtw.QMainWindow):
     def __init__(self, parent=None, show=True, file_to_load=None) -> None:
         super().__init__(parent=parent)
-        mainwindow_uifile = resources.open_text(ui, "zoo.ui")
-        uic.loadUi(mainwindow_uifile, self)
+        with resources.open_text(ui, "zoo.ui") as uifile:
+            uic.loadUi(uifile, self)
         self._base_window_title = self.windowTitle()
 
         self.centralWidget().setAcceptDrops(True)
