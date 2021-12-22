@@ -7,6 +7,8 @@ from qtpy import QtCore as qtc
 from scipy.spatial import cKDTree
 from scipy.stats import mode
 
+from .Loader import Loader
+
 LARGE: float = 1e12
 H5_FILE_EXTENSIONS = (".h5", ".hdf5")
 GRID_FILE_EXTENSIONS = (".csv", ".grid")
@@ -55,44 +57,12 @@ class H5Model(qtc.QAbstractItemModel):
         super().__init__()
 
     def load_file(self, filename) -> None:
-        logger.info(f"Starting to load {filename}...")
-        if filename.suffix in H5_FILE_EXTENSIONS:
-            logger.info("Reading as hdf5...")
-            try:
-                self.df = pd.read_hdf(filename, key="data", mode="r")
-            except Exception as err:
-                raise err
-        elif filename.suffix in GRID_FILE_EXTENSIONS:
-            logger.info("Reading as csv...")
-            # Increase robustness by pre-determining delimiter
-            # Currently limited to comma or whitespace
-            with open(filename, mode="r") as f:
-                _ = f.readline()
-                sep = (
-                    "," if "," in f.readline() else "\s+"
-                )  # stackoverflow.com/a/59327911/13130795
-            logger.debug(f"Detected delimiter as {sep}")
-            try:
-                grid = pd.read_csv(
-                    filename,
-                    skiprows=1,
-                    names=["x1", "x2", "x3", "material"],
-                    sep=sep,
-                    skipinitialspace=True,
-                )
-            except Exception as err:
-                raise err
-            else:
-                grid["iter"] = 0
-                grid["m_global"] = grid.index
-                grid.set_index(["iter", "m_global"], inplace=True)
-                grid["u1"] = 0.0
-                grid["u2"] = 0.0
-                grid["u3"] = 0.0
-                self.df = grid
+        self.loader = Loader(filename)
+        self.loader.setup(parent=self)
 
-        else:
-            logger.warning(f"Unrecognized file extension: {filename.suffix}")
+    def extract(self) -> None:
+        self.df = self.loader.df
+        if self.df is None:
             return
 
         self.datasets = tuple(self.df.columns)
@@ -105,7 +75,8 @@ class H5Model(qtc.QAbstractItemModel):
         self._mask_dataset = self._plot_dataset
         self._grid_spacing = self.guess_grid_spacing()
         self.loaded_file.emit(True)
-        logger.info(f"Finished loading {filename}")
+        logger.info(f"Finished loading {self.loader.filename}")
+        # self.loader = None
 
     @property
     def timestep_index(self) -> int:
