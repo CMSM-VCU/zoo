@@ -76,7 +76,7 @@ class H5Model(qtc.QAbstractItemModel):
         self._grid_spacing = self.guess_grid_spacing()
         self.loaded_file.emit(True)
         logger.info(f"Finished loading {self.loader.filename}")
-        # self.loader = None
+        self.loader.df = None  # Allow memory to be released later
 
     @property
     def timestep_index(self) -> int:
