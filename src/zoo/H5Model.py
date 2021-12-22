@@ -10,8 +10,6 @@ from scipy.stats import mode
 from .Loader import Loader
 
 LARGE: float = 1e12
-H5_FILE_EXTENSIONS = (".h5", ".hdf5")
-GRID_FILE_EXTENSIONS = (".csv", ".grid")
 
 
 class H5Model(qtc.QAbstractItemModel):
