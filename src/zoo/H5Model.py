@@ -2,6 +2,7 @@ import typing
 from abc import abstractmethod
 
 import pandas as pd
+from loguru import logger
 from qtpy import QtCore as qtc
 from scipy.spatial import cKDTree
 from scipy.stats import mode
@@ -54,12 +55,15 @@ class H5Model(qtc.QAbstractItemModel):
         super().__init__()
 
     def load_file(self, filename) -> None:
+        logger.info(f"Starting to load {filename}...")
         if filename.suffix in H5_FILE_EXTENSIONS:
+            logger.info("Reading as hdf5...")
             try:
                 self.df = pd.read_hdf(filename, key="data", mode="r")
             except Exception as err:
                 raise err
         elif filename.suffix in GRID_FILE_EXTENSIONS:
+            logger.info("Reading as csv...")
             # Increase robustness by pre-determining delimiter
             # Currently limited to comma or whitespace
             with open(filename, mode="r") as f:
@@ -67,6 +71,7 @@ class H5Model(qtc.QAbstractItemModel):
                 sep = (
                     "," if "," in f.readline() else "\s+"
                 )  # stackoverflow.com/a/59327911/13130795
+            logger.debug(f"Detected delimiter as {sep}")
             try:
                 grid = pd.read_csv(
                     filename,
@@ -87,7 +92,7 @@ class H5Model(qtc.QAbstractItemModel):
                 self.df = grid
 
         else:
-            print(f"Unrecognized file extension: {filename.suffix}")
+            logger.warning(f"Unrecognized file extension: {filename.suffix}")
             return
 
         self.datasets = tuple(self.df.columns)
@@ -100,6 +105,7 @@ class H5Model(qtc.QAbstractItemModel):
         self._mask_dataset = self._plot_dataset
         self._grid_spacing = self.guess_grid_spacing()
         self.loaded_file.emit(True)
+        logger.info(f"Finished loading {filename}")
 
     @property
     def timestep_index(self) -> int:

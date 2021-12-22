@@ -5,6 +5,7 @@ from importlib import resources
 import numpy as np
 import pyvista as pv
 import pyvistaqt
+from loguru import logger
 from vtk.numpy_interface import dataset_adapter as dsa
 from vtkmodules.vtkCommonCore import vtkCommand, vtkLookupTable, vtkPoints
 from vtkmodules.vtkCommonDataModel import vtkDataObject, vtkPolyData
@@ -54,6 +55,7 @@ class VTK_PVH5Model(H5Model):
 
     @lru_cache(maxsize=8)
     def construct_timestep_data(self, timestep: int) -> pv.PolyData:
+        logger.debug("Constructing data object...")
         coords = self.df.loc[timestep, ("x1", "x2", "x3")].values
         points = vtkPoints()
         points.SetData(dsa.numpyTovtkDataArray(coords))
@@ -78,6 +80,7 @@ class VTK_PVH5Model(H5Model):
         return pv.utilities.wrap(polydata)
 
     def construct_data_mapper(self, polydata: pv.PolyData) -> "MapperHelper":
+        logger.debug("Constructing VTK mapper...")
         vertexGlyphFilter = vtkVertexGlyphFilter()
         vertexGlyphFilter.AddInputDataObject(polydata)
         vertexGlyphFilter.Update()
@@ -97,6 +100,7 @@ class VTK_PVH5Model(H5Model):
         return mapper
 
     def construct_plot_at_timestep(self, _=None) -> None:
+        logger.info(f"Constructing: {self.timestep}")
         self.polydata = self.construct_timestep_data(self.timestep)
         self.polydata.GetPointData().SetActiveScalars(self.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
@@ -122,6 +126,7 @@ class VTK_PVH5Model(H5Model):
         self.update_mask_dataset()
 
     def apply_shaders(self, actor: vtkActor):
+        logger.debug("Applying shaders...")
         shader_property = actor.GetShaderProperty()
 
         shader_property.AddShaderReplacement(
@@ -178,6 +183,7 @@ class VTK_PVH5Model(H5Model):
             self._applied_extents = extents
 
     def update_plot_dataset(self, _=None) -> None:
+        logger.debug(f"Updating plot dataset to {self.plot_dataset}...")
         self._plot_dataset_limits = list(
             self.polydata.get_data_range(self.plot_dataset)
         )
@@ -192,6 +198,7 @@ class VTK_PVH5Model(H5Model):
         )
 
     def update_mask_dataset(self, _=None) -> None:
+        logger.debug(f"Updating mask dataset to {self.mask_dataset}...")
         self._mask_dataset_limits = list(
             self.polydata.get_data_range(self.mask_dataset)
         )

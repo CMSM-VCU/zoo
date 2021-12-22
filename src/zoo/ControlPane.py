@@ -3,6 +3,7 @@ import os
 import typing
 from functools import partial
 from importlib import resources
+from loguru import logger
 
 import pyperclip
 
@@ -278,11 +279,17 @@ class ControlPane(qtw.QWidget):
         self.model.timestep_index = int(new_timestep)
 
     def select_plot_dataset(self, _=None, *, override: str = None):
+        logger.debug(
+            f"Selected plot dataset {self.plotdatasetSelector.currentText()} overridden by {override}"
+        )
         self.model.plot_dataset = (
             override if override is not None else self.plotdatasetSelector.currentText()
         )
 
     def select_mask_dataset(self, _=None, *, override: str = None):
+        logger.debug(
+            f"Selected mask dataset {self.maskdatasetSelector.currentText()} overridden by {override}"
+        )
         self.model.mask_dataset = (
             override if override is not None else self.maskdatasetSelector.currentText()
         )
