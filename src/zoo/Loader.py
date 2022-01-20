@@ -2,8 +2,7 @@ import pandas as pd
 from loguru import logger
 from qtpy import QtCore as qtc
 
-H5_FILE_EXTENSIONS = (".h5", ".hdf5")
-GRID_FILE_EXTENSIONS = (".csv", ".grid")
+from .utils import EXTENSIONS
 
 
 class Loader(qtc.QObject):
@@ -27,13 +26,13 @@ class Loader(qtc.QObject):
 
     def load(self) -> None:
         logger.info(f"Starting to load {self.filename}...")
-        if self.filename.suffix in H5_FILE_EXTENSIONS:
+        if self.filename.suffix in EXTENSIONS["h5"]:
             logger.info("Reading as hdf5...")
             try:
                 df = pd.read_hdf(self.filename, key="data", mode="r")
             except Exception as err:
                 raise err
-        elif self.filename.suffix in GRID_FILE_EXTENSIONS:
+        elif self.filename.suffix in EXTENSIONS["grid"]:
             logger.info("Reading as csv...")
             # Increase robustness by pre-determining delimiter
             # Currently limited to comma or whitespace
