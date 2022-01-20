@@ -34,34 +34,38 @@ class Loader(qtc.QObject):
                 raise err
         elif self.filename.suffix in EXTENSIONS["grid"]:
             logger.info("Reading as csv...")
-            # Increase robustness by pre-determining delimiter
-            # Currently limited to comma or whitespace
-            with open(self.filename, mode="r") as f:
-                _ = f.readline()
-                sep = (
-                    "," if "," in f.readline() else "\s+"
-                )  # stackoverflow.com/a/59327911/13130795
-            logger.debug(f"Detected delimiter as {sep}")
-            try:
-                grid = pd.read_csv(
-                    self.filename,
-                    skiprows=1,
-                    names=["x1", "x2", "x3", "material"],
-                    sep=sep,
-                    skipinitialspace=True,
-                )
-            except Exception as err:
-                raise err
-            else:
-                grid["iter"] = 0
-                grid["m_global"] = grid.index
-                grid.set_index(["iter", "m_global"], inplace=True)
-                grid["u1"] = 0.0
-                grid["u2"] = 0.0
-                grid["u3"] = 0.0
-                df = grid
+            df = Loader.read_as_grid_file(self.filename)
         else:
             logger.warning(f"Unrecognized file extension: {self.filename.suffix}")
             df = None
         self.df = df
         self.finished.emit()
+
+    @staticmethod
+    def read_as_grid_file(path):
+        # Increase robustness by pre-determining delimiter
+        # Currently limited to comma or whitespace
+        with open(path, mode="r") as f:
+            _ = f.readline()
+            sep = (
+                "," if "," in f.readline() else "\s+"
+            )  # stackoverflow.com/a/59327911/13130795
+        logger.debug(f"Detected delimiter as {sep}")
+        try:
+            grid = pd.read_csv(
+                path,
+                skiprows=1,
+                names=["x1", "x2", "x3", "material"],
+                sep=sep,
+                skipinitialspace=True,
+            )
+        except Exception as err:
+            raise err
+        else:
+            grid["iter"] = 0
+            grid["m_global"] = grid.index
+            grid.set_index(["iter", "m_global"], inplace=True)
+            grid["u1"] = 0.0
+            grid["u2"] = 0.0
+            grid["u3"] = 0.0
+            return grid
