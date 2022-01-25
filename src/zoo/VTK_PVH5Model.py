@@ -201,9 +201,8 @@ class VTK_PVH5Model(H5Model):
         logger.debug(f"Detected value range of {self._plot_dataset_limits}")
         self._set_colorbar_limits(self._plot_dataset_limits)
         self.plotter.scalar_bar.SetTitle(self.plot_dataset)
-        self.plotter.update_scalars(
-            scalars=self.plot_dataset, mesh=self.polydata, render=True
-        )
+        self.polydata.GetPointData().SetActiveScalars(self.plot_dataset)
+        self.plotter.render()
 
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
             "_scalar", self.plot_dataset, vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
