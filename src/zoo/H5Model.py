@@ -94,6 +94,7 @@ class H5Model(qtc.QAbstractItemModel):
         if value in self.timesteps:
             self.timestep_index = self.timesteps.index(self.timestep)
         else:
+            logger.warn(f"{value} not found in timesteps")
             return
         self.changed_timestep.emit(str(self.timestep))
 
@@ -116,6 +117,7 @@ class H5Model(qtc.QAbstractItemModel):
         elif isinstance(value, float):
             self._grid_spacing = list([value, value, value])
         else:
+            logger.warn(f"Bad grid spacing value: {value}")
             return
         self.changed_grid_spacing.emit(self._grid_spacing)
 
@@ -130,6 +132,7 @@ class H5Model(qtc.QAbstractItemModel):
         elif isinstance(value, float):
             self._exaggeration = list([value, value, value])
         else:
+            logger.warn(f"Bad exaggeration value: {value}")
             return
         self.changed_exaggeration.emit(self._exaggeration)
 
@@ -142,6 +145,7 @@ class H5Model(qtc.QAbstractItemModel):
         if name in self.datasets:
             self._plot_dataset = name
         else:
+            logger.warn(f"{name} not found in datasets")
             return
         self.changed_plot_dataset.emit(self._plot_dataset)
         if self.plot_and_mask_same_dataset:
@@ -156,6 +160,7 @@ class H5Model(qtc.QAbstractItemModel):
         if name in self.datasets:
             self._mask_dataset = name
         else:
+            logger.warn(f"{name} not found in datasets")
             return
         self.changed_mask_dataset.emit(self._mask_dataset)
 
@@ -201,6 +206,7 @@ class H5Model(qtc.QAbstractItemModel):
         elif value is None:
             self._mask_limits = [-LARGE, LARGE]
         else:
+            logger.warn(f"Bad mask limits value: {value}")
             return
         self.changed_mask_limits.emit(self._mask_limits)
         if not external:
@@ -222,6 +228,7 @@ class H5Model(qtc.QAbstractItemModel):
         elif value is None:
             self._colorbar_limits = self._plot_dataset_limits
         else:
+            logger.warn(f"Bad colorbar limits value: {value}")
             return
         self.changed_colorbar_limits.emit(self._colorbar_limits)
         if not external:
