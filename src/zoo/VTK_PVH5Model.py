@@ -166,27 +166,39 @@ class VTK_PVH5Model(H5Model):
         return shader_parameters
 
     def change_grid_spacing(self, _=None) -> None:
+        logger.debug(f"Updating shaders with grid spacing {self.grid_spacing}...")
         self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
 
     def change_exaggeration(self, _=None) -> None:
+        logger.debug(f"Updating shaders with exaggeration {self.exaggeration}...")
         self.shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
 
     def change_mask_limits(self, _=None) -> None:
+        logger.debug(f"Updating shaders with mask limits {self.mask_limits}...")
         self.shader_parameters.SetUniform2f("mask_limits", self.mask_limits)
 
     def change_clipping_extents(self, extents: typing.Tuple[float]) -> None:
+        logger.debug(f"Updating shaders with clipping extents {extents}...")
         if extents != self._applied_extents:
             extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
 
+            logger.debug(
+                f"Actual values sent to shaders: bottom left - {extents_MC[0]}, top right - {extents_MC[1]}"
+            )
             self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
             self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
             self._applied_extents = extents
+        else:
+            logger.debug(
+                f"Clipping extents {extents} same as current value. Update not applied."
+            )
 
     def update_plot_dataset(self, _=None) -> None:
         logger.debug(f"Updating plot dataset to {self.plot_dataset}...")
         self._plot_dataset_limits = list(
             self.polydata.get_data_range(self.plot_dataset)
         )
+        logger.debug(f"Detected value range of {self._plot_dataset_limits}")
         self._set_colorbar_limits(self._plot_dataset_limits)
         self.plotter.scalar_bar.SetTitle(self.plot_dataset)
         self.plotter.update_scalars(
@@ -202,6 +214,7 @@ class VTK_PVH5Model(H5Model):
         self._mask_dataset_limits = list(
             self.polydata.get_data_range(self.mask_dataset)
         )
+        logger.debug(f"Detected value range of {self._plot_dataset_limits}")
         self._set_mask_limits(self._mask_dataset_limits)
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
             "_mask_scalar",
@@ -212,6 +225,9 @@ class VTK_PVH5Model(H5Model):
 
     def change_colorbar_limits(self, _=None) -> None:
         if self.colorbar_limits[0] <= self.colorbar_limits[1]:
+            logger.debug(
+                f"Colorbar limits {self.colorbar_limits} in correct order. Applying..."
+            )
             self.plotter.update_scalar_bar_range(self.colorbar_limits)
 
     def emit_moved_camera(self, *args) -> None:
