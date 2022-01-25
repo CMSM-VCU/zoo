@@ -82,6 +82,7 @@ class H5Model(qtc.QAbstractItemModel):
 
     @timestep_index.setter
     def timestep_index(self, value: int) -> None:
+        logger.debug(f"Setting timestep index to {value}...")
         self._timestep_index = max(0, min(len(self.timesteps) - 1, value))
         self.changed_timestep.emit(str(self.timestep))
 
@@ -91,6 +92,7 @@ class H5Model(qtc.QAbstractItemModel):
 
     @timestep.setter
     def timestep(self, value: int) -> None:
+        logger.debug(f"Setting timestep to {value}...")
         if value in self.timesteps:
             self.timestep_index = self.timesteps.index(self.timestep)
         else:
@@ -112,6 +114,7 @@ class H5Model(qtc.QAbstractItemModel):
 
     @grid_spacing.setter
     def grid_spacing(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
+        logger.debug(f"Setting grid spacing index to {value}...")
         if isinstance(value, typing.Iterable) and len(value) == 3:
             self._grid_spacing = list(value)
         elif isinstance(value, float):
@@ -127,6 +130,7 @@ class H5Model(qtc.QAbstractItemModel):
 
     @exaggeration.setter
     def exaggeration(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
+        logger.debug(f"Setting exaggeration to {value}...")
         if isinstance(value, typing.Iterable) and len(value) == 3:
             self._exaggeration = list(value)
         elif isinstance(value, float):
@@ -142,6 +146,7 @@ class H5Model(qtc.QAbstractItemModel):
 
     @plot_dataset.setter
     def plot_dataset(self, name: str) -> None:
+        logger.debug(f"Setting plot dataset to {name}...")
         if name in self.datasets:
             self._plot_dataset = name
         else:
@@ -157,6 +162,7 @@ class H5Model(qtc.QAbstractItemModel):
 
     @mask_dataset.setter
     def mask_dataset(self, name: str) -> None:
+        logger.debug(f"Setting mask dataset to {name}...")
         if name in self.datasets:
             self._mask_dataset = name
         else:
@@ -170,11 +176,15 @@ class H5Model(qtc.QAbstractItemModel):
 
     @clipping_extents.setter
     def clipping_extents(self, extents: typing.Sequence[float]) -> None:
+        logger.debug(f"Externally setting clipping extents to {extents}...")
         self._set_clipping_extents(extents=extents, external=True)
 
     def _set_clipping_extents(
         self, extents: typing.Sequence[float], external: bool = False
     ) -> None:
+        logger.debug(
+            f"Setting clipping extents to {extents}. Externally? {external}..."
+        )
         self._clipping_extents = tuple(extents)
         self.changed_clipping_extents.emit(self._clipping_extents)
         if not external:
@@ -183,6 +193,7 @@ class H5Model(qtc.QAbstractItemModel):
     def replace_clipping_extents(
         self, indeces: typing.Sequence[int], values: typing.Sequence[float]
     ) -> None:
+        logger.debug(f"Replacing clipping extents {indeces} with {values}...")
         extents = list(self._clipping_extents)
         for index, value in zip(indeces, values):
             extents[index] = (
@@ -196,11 +207,13 @@ class H5Model(qtc.QAbstractItemModel):
 
     @mask_limits.setter
     def mask_limits(self, value: typing.Iterable[float]) -> None:
+        logger.debug(f"Externally setting mask limits to {value}...")
         self._set_mask_limits(value=value, external=True)
 
     def _set_mask_limits(
         self, value: typing.Iterable[float], external: bool = False
     ) -> None:
+        logger.debug(f"Setting mask limits to {value}. Externally? {external}...")
         if isinstance(value, typing.Iterable) and len(value) == 2:
             self._mask_limits = list(value)
         elif value is None:
@@ -218,11 +231,13 @@ class H5Model(qtc.QAbstractItemModel):
 
     @colorbar_limits.setter
     def colorbar_limits(self, value: typing.Iterable[float]) -> None:
+        logger.debug(f"Externally setting colorbar limits to {value}...")
         self._set_colorbar_limits(value=value, external=True)
 
     def _set_colorbar_limits(
         self, value: typing.Iterable[float], external: bool = False
     ) -> None:
+        logger.debug(f"Setting colorbar limits to {value}. Externally? {external}...")
         if isinstance(value, typing.Iterable) and len(value) == 2:
             self._colorbar_limits = list(value)
         elif value is None:
