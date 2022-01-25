@@ -58,6 +58,7 @@ class Loader(qtc.QObject):
                 names=["x1", "x2", "x3", "material"],
                 sep=sep,
                 skipinitialspace=True,
+                usecols=[0, 1, 2, 3],
             )
         except Exception as err:
             raise err
