@@ -116,7 +116,7 @@ class H5Model(qtc.QAbstractItemModel):
         elif isinstance(value, float):
             self._grid_spacing = list([value, value, value])
         else:
-            return None
+            return
         self.changed_grid_spacing.emit(self._grid_spacing)
 
     @property
@@ -130,7 +130,7 @@ class H5Model(qtc.QAbstractItemModel):
         elif isinstance(value, float):
             self._exaggeration = list([value, value, value])
         else:
-            return None
+            return
         self.changed_exaggeration.emit(self._exaggeration)
 
     @property
@@ -201,7 +201,7 @@ class H5Model(qtc.QAbstractItemModel):
         elif value is None:
             self._mask_limits = [-LARGE, LARGE]
         else:
-            return None
+            return
         self.changed_mask_limits.emit(self._mask_limits)
         if not external:
             self.program_changed_mask_limits.emit(self._mask_limits)
@@ -222,7 +222,7 @@ class H5Model(qtc.QAbstractItemModel):
         elif value is None:
             self._colorbar_limits = self._plot_dataset_limits
         else:
-            return None
+            return
         self.changed_colorbar_limits.emit(self._colorbar_limits)
         if not external:
             self.program_changed_colorbar_limits.emit(self._colorbar_limits)
