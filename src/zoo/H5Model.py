@@ -93,6 +93,8 @@ class H5Model(qtc.QAbstractItemModel):
     def timestep(self, value: int) -> None:
         if value in self.timesteps:
             self.timestep_index = self.timesteps.index(self.timestep)
+        else:
+            return
         self.changed_timestep.emit(str(self.timestep))
 
     @property
@@ -139,6 +141,8 @@ class H5Model(qtc.QAbstractItemModel):
     def plot_dataset(self, name: str) -> None:
         if name in self.datasets:
             self._plot_dataset = name
+        else:
+            return
         self.changed_plot_dataset.emit(self._plot_dataset)
         if self.plot_and_mask_same_dataset:
             self.mask_dataset = name
@@ -151,6 +155,8 @@ class H5Model(qtc.QAbstractItemModel):
     def mask_dataset(self, name: str) -> None:
         if name in self.datasets:
             self._mask_dataset = name
+        else:
+            return
         self.changed_mask_dataset.emit(self._mask_dataset)
 
     @property
