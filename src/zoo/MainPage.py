@@ -95,3 +95,4 @@ class MainPage(qtw.QWidget):
         self._model.df = None
         self._model.polydata = None
         self._model.construct_timestep_data.cache_clear()
+        self.close()
