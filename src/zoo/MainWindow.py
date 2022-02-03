@@ -59,7 +59,7 @@ class MainWindow(qtw.QMainWindow):
             filename = override
         if filename:
             self.setWindowTitle(f"Opening {Path(filename).name}...")
-            new_page = MainPage()
+            new_page = MainPage(parent=self)
             new_page.open_file(filename)
             new_idx = self.tabWidget.addTab(new_page, new_page.windowTitle())
             self.tabWidget.setTabToolTip(new_idx, f"{filename}")
@@ -79,8 +79,11 @@ class MainWindow(qtw.QMainWindow):
         except:
             self.setWindowTitle(self._base_window_title)
 
-    def close_tab(self, idx=None) -> None:
-        page = self.tabWidget.widget(idx)
+    def close_tab(self, idx=None, *, page=None) -> None:
+        if page:
+            idx = self.tabWidget.indexOf(page)
+        else:
+            page = self.tabWidget.widget(idx)
         page.clean_up()
         self.tabWidget.removeTab(idx)
 

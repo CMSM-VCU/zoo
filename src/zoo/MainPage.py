@@ -17,6 +17,7 @@ from qtpy import uic
 
 
 class MainPage(qtw.QWidget):
+    _parent = None
     _model: VTK_PVH5Model = None
     _filename = None
 
@@ -24,6 +25,7 @@ class MainPage(qtw.QWidget):
         super().__init__(parent=parent)
         with resources.open_text(ui, "mainpage.ui") as uifile:
             uic.loadUi(uifile, self)
+        self._parent = parent
         self._base_window_title = self.windowTitle()
         self._control_pane = ControlPane(parent=self)
         self.horizontalLayout.addWidget(self._control_pane)
@@ -83,6 +85,9 @@ class MainPage(qtw.QWidget):
         win32clipboard.EmptyClipboard()
         win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
         win32clipboard.CloseClipboard()
+
+    def close_my_tab(self) -> None:
+        self._parent.close_tab(page=self)
 
     def clean_up(self) -> None:
         self._model.df = None
