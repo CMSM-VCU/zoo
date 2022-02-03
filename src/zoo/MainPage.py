@@ -12,6 +12,7 @@ from .VTK_PVH5Model import VTK_PVH5Model
 
 os.environ["QT_API"] = "pyqt5"
 
+from qtpy import QtCore as qtc
 from qtpy import QtWidgets as qtw
 from qtpy import uic
 
@@ -25,6 +26,7 @@ class MainPage(qtw.QWidget):
         super().__init__(parent=parent)
         with resources.open_text(ui, "mainpage.ui") as uifile:
             uic.loadUi(uifile, self)
+        self.setAttribute(qtc.Qt.WA_DeleteOnClose, True)
         self._parent = parent
         self._base_window_title = self.windowTitle()
         self._control_pane = ControlPane(parent=self)
