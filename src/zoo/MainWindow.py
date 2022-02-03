@@ -97,8 +97,9 @@ class MainWindow(qtw.QMainWindow):
 
     def _dropEvent(self, event):
         if event.mimeData().hasUrls():
-            # Local file path is just one thing that counts as a URL
-            if event.mimeData().urls()[0].toLocalFile():
-                self.open_file(override=Path(event.mimeData().urls()[0].toLocalFile()))
+            for url in event.mimeData().urls():
+                # Local file path is just one thing that counts as a URL
+                if url.toLocalFile():
+                    self.open_file(override=Path(url.toLocalFile()))
         else:
             event.ignore()
