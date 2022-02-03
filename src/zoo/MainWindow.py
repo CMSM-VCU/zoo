@@ -6,6 +6,7 @@ from pathlib import Path
 from loguru import logger
 
 from . import ui
+from . import utils
 from .MainPage import MainPage
 
 os.environ["QT_API"] = "pyqt5"
@@ -121,7 +122,7 @@ class MainWindow(qtw.QMainWindow):
             logger.warn(f"Attempting to open {len(paths)} in this iteration.")
 
         for path in paths:
-            if path.is_file():
+            if path.is_file() and utils.has_known_extension(path):
                 self.open_file(override=path)
             elif path.is_dir():
                 self.open_dropped_files(list(path.iterdir()), depth=depth + 1)
