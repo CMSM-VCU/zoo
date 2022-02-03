@@ -35,6 +35,7 @@ class H5Model(qtc.QAbstractItemModel):
     program_changed_mask_limits = qtc.Signal(list)
     program_changed_colorbar_limits = qtc.Signal(list)
     moved_camera = qtc.Signal(list)
+    destroyed = qtc.Signal()
 
     timesteps: typing.Tuple[int] = (None,)
     datasets: typing.Tuple[str] = (None,)

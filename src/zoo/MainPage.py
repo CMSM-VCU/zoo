@@ -65,6 +65,8 @@ class MainPage(qtw.QWidget):
         self.tab_name = f"{Path(filename).name}"
         self._filename = filename
 
+        self.model.destroyed.connect(self.close_my_tab)
+
     def toggle_control_pane(self, enable: bool):
         self._control_pane.toggle_control_pane(enable)
 

@@ -24,6 +24,7 @@ class Loader(qtc.QObject):
         self.finished.connect(self.thread.quit)
         self.finished.connect(self.deleteLater)
 
+        self.rejected.connect(parent.destroyed.emit)
         self.rejected.connect(self.thread.quit)
         self.rejected.connect(self.deleteLater)
 
