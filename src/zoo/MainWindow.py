@@ -3,6 +3,8 @@ import typing
 from importlib import resources
 from pathlib import Path
 
+from loguru import logger
+
 from . import ui
 from .MainPage import MainPage
 
@@ -100,9 +102,26 @@ class MainWindow(qtw.QMainWindow):
 
     def _dropEvent(self, event):
         if event.mimeData().hasUrls():
-            for url in event.mimeData().urls():
-                # Local file path is just one thing that counts as a URL
-                if url.toLocalFile():
-                    self.open_file(override=Path(url.toLocalFile()))
+            # Local file path is just one thing that counts as a URL
+            self.open_dropped_files(
+                [
+                    Path(url.toLocalFile())
+                    for url in event.mimeData().urls()
+                    if url.toLocalFile()
+                ],
+                depth=0,
+            )
         else:
             event.ignore()
+
+    def open_dropped_files(self, paths: typing.List, *, depth: int = 0) -> None:
+        if depth > 1:
+            logger.warn(f"Directory recursion depth at {depth}.")
+        if len(paths) > 10:
+            logger.warn(f"Attempting to open {len(paths)} in this iteration.")
+
+        for path in paths:
+            if path.is_file():
+                self.open_file(override=path)
+            elif path.is_dir():
+                self.open_dropped_files(list(path.iterdir()), depth=depth + 1)
