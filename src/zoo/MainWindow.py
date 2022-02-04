@@ -117,9 +117,9 @@ class MainWindow(qtw.QMainWindow):
 
     def open_dropped_files(self, paths: typing.List, *, depth: int = 0) -> None:
         if depth > 1:
-            logger.warn(f"Directory recursion depth at {depth}.")
+            logger.warning(f"Directory recursion depth at {depth}.")
         if len(paths) > 10:
-            logger.warn(f"Attempting to open {len(paths)} in this iteration.")
+            logger.warning(f"Attempting to open {len(paths)} items in this iteration.")
 
         for path in paths:
             if path.is_file() and utils.has_known_extension(path):
