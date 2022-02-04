@@ -101,6 +101,8 @@ class ControlPane(qtw.QWidget):
         self.zclipCheckBox.stateChanged.connect(self.toggle_zclip_controls)
         for i, box in enumerate(self.clip_lineedits):
             box.textEdited.connect(self.set_clipping_extent[i])
+            box.defaultMousePressEvent = box.mousePressEvent
+            box.mousePressEvent = lambda x, b=box: select_all_wrapper(b, event=x)
 
         # QGroupBox only emits clicked signal if it is checkable. Bypass this by
         # binding directly to the mousePressEvent.
@@ -405,6 +407,13 @@ class ControlPane(qtw.QWidget):
                 self.model.camera_location = paste_data
                 self.update_camera_readout(data=paste_data)
                 print("Pasted!")
+
+
+def select_all_wrapper(box, event):
+    if not box.isModified() and not box.hasSelectedText():
+        box.selectAll()
+    else:
+        box.defaultMousePressEvent(event)
 
 
 def float_or_zero(string: str) -> float:
