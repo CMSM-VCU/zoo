@@ -18,6 +18,7 @@ class ControlPaneTabs(qtw.QWidget):
         super().__init__(parent=parent)
         with resources.open_text(ui, "controlpane_tabs.ui") as uifile:
             uic.loadUi(uifile, self)
+        self.panes = {}
 
         self._parent = parent
         self.panes["primary"] = ControlPanePrimary(parent=self._parent)
