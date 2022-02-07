@@ -14,6 +14,8 @@ from vtkmodules.vtkInteractionWidgets import vtkCameraOrientationWidget
 from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
 from vtkmodules.vtkRenderingOpenGL2 import vtkShader
 
+from .ClippingBox import ClippingBox
+
 from .H5Model import H5Model
 
 srcGS = resources.read_text(__package__, "cubeGS.glsl")
@@ -42,6 +44,8 @@ class VTK_PVH5Model(H5Model):
         self.changed_mask_dataset.connect(self.update_mask_dataset)
         self.changed_mask_limits.connect(self.change_mask_limits)
         self.changed_colorbar_limits.connect(self.change_colorbar_limits)
+
+        self.clipping_box = ClippingBox(self, self.plotter)
 
     @property
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
@@ -122,6 +126,7 @@ class VTK_PVH5Model(H5Model):
             self.shown_first_plot = True
         self.plotter.add_scalar_bar(render=False)
         self._set_clipping_extents(self._original_extents)
+        self.clipping_box.update(self._original_extents)
         self.update_plot_dataset()
         self.update_mask_dataset()
 
