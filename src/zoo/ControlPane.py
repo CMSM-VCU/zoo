@@ -99,6 +99,7 @@ class ControlPane(qtw.QWidget):
         self.xclipCheckBox.stateChanged.connect(self.toggle_xclip_controls)
         self.yclipCheckBox.stateChanged.connect(self.toggle_yclip_controls)
         self.zclipCheckBox.stateChanged.connect(self.toggle_zclip_controls)
+        self.clippingboxButton.toggled.connect(self.toggle_clipping_box)
         for i, box in enumerate(self.clip_lineedits):
             box.textEdited.connect(self.set_clipping_extent[i])
             box.defaultMousePressEvent = box.mousePressEvent
@@ -407,6 +408,9 @@ class ControlPane(qtw.QWidget):
                 self.model.camera_location = paste_data
                 self.update_camera_readout(data=paste_data)
                 print("Pasted!")
+
+    def toggle_clipping_box(self, enable: bool):
+        self.model.toggle_clipping_box(enable)
 
 
 def select_all_wrapper(box, event):

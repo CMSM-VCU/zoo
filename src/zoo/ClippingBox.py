@@ -11,10 +11,9 @@ class ClippingBox(vtkBoxWidget2):
         self.GetRepresentation().SetOutlineCursorWires(0)
 
         self.AddObserver("InteractionEvent", self.callback)
-        self.On()
 
     def update(self, bounds):
         self.GetRepresentation().PlaceWidget(bounds)
 
     def callback(self, obj, event):
-        self.model.change_clipping_extents(self.GetRepresentation().GetBounds())
+        self.model._set_clipping_extents(self.GetRepresentation().GetBounds())

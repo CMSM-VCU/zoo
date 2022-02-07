@@ -193,6 +193,7 @@ class VTK_PVH5Model(H5Model):
             self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
             self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
             self._applied_extents = extents
+            self.clipping_box.update(self._applied_extents)
         else:
             logger.debug(
                 f"Clipping extents {extents} same as current value. Update not applied."
@@ -247,6 +248,9 @@ class VTK_PVH5Model(H5Model):
         camera_widget.On()
 
         self.plotter.camera_widget = camera_widget
+
+    def toggle_clipping_box(self, enable):
+        self.clipping_box.SetEnabled(enable)
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):
