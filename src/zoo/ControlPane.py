@@ -207,7 +207,7 @@ class ControlPane(qtw.QWidget):
     def update_extents_boxes(self, extents: typing.Tuple[float]) -> None:
         for i, extent in enumerate(extents):
             if not self.clip_checkboxes[i // 2].isChecked():
-                self.clip_lineedits[i].setText(str(extent))
+                self.clip_lineedits[i].setText(f"{extent:.4g}")
             else:
                 self.set_clipping_extent[i]()
 
