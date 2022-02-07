@@ -7,8 +7,11 @@ class ClippingBox(vtkBoxWidget2):
         self.model = model
         self.SetInteractor(interactor)
         self.GetRepresentation().SetPlaceFactor(1)
+        self.GetRepresentation().SetOutlineCursorWires(False)
         self.SetRotationEnabled(False)
-        self.GetRepresentation().SetOutlineCursorWires(0)
+        self.SetTranslationEnabled(False)
+        self.SetScalingEnabled(False)
+        self.GetRepresentation().GetOutlineProperty().SetLineWidth(1.0)
 
         self.AddObserver("InteractionEvent", self.callback)
 
