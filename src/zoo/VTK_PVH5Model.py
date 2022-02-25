@@ -22,14 +22,13 @@ srcGS = resources.read_text(__package__, "cubeGS.glsl")
 
 
 class VTK_PVH5Model(H5Model):
-    raw_mesh_cache: dict = {}
-    shown_first_plot: bool = False
-
     def __init__(self) -> None:
         super().__init__()
         self.timesteps = (None,)
         self.datasets = (None,)
         self.mesh = None
+        self.raw_mesh_cache: dict = {}
+        self.shown_first_plot: bool = False
 
         self.plotter = pyvistaqt.QtInteractor()
         self.plotter.AddObserver(vtkCommand.InteractionEvent, self.emit_moved_camera)
