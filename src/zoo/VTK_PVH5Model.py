@@ -114,11 +114,10 @@ class VTK_PVH5Model(H5Model):
         logger.debug(f"Size: {self._model_size}")
         logger.debug(f"Extents: {self._original_extents}")
         if np.linalg.norm(self._model_size) ** 2 <= 1000.000000:
-            logger.debug(
-                f"System is below threshold: L^2={np.linalg.norm(self._model_size)**2} < 1000"
-            )
+            logger.debug(f"System span^2={np.linalg.norm(self._model_size)**2} <= 1000")
             self.length_over_threshold = False
         else:
+            logger.debug(f"System span^2={np.linalg.norm(self._model_size)**2} > 1000")
             self.length_over_threshold = True
 
         self.actor = vtkActor()
