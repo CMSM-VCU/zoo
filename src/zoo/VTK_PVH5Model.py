@@ -174,6 +174,9 @@ class VTK_PVH5Model(H5Model):
         shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
         shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
         shader_parameters.SetUniform2f("mask_limits", self.mask_limits)
+        shader_parameters.SetUniform3f(
+            "epsilon_vector", [np.linalg.norm(self._model_size) / 1000.0] * 3
+        )
         if self.length_over_threshold:
             shader_parameters.SetUniform4f("modelSize", [*self._model_size, 1.0])
             shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
