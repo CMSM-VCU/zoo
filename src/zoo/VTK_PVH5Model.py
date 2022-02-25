@@ -112,6 +112,15 @@ class VTK_PVH5Model(H5Model):
             np.array(self._original_extents[1::2])
             - np.array(self._original_extents[0::2])
         )
+        logger.debug(f"Size: {self._model_size}")
+        logger.debug(f"Extents: {self._original_extents}")
+        if np.linalg.norm(self._model_size) ** 2 <= 1000.000000:
+            logger.debug(
+                f"System is below threshold: L^2={np.linalg.norm(self._model_size)**2} < 1000"
+            )
+            self.length_over_threshold = False
+        else:
+            self.length_over_threshold = True
 
         self.actor = vtkActor()
         mapper = self.construct_data_mapper(self.polydata)
@@ -162,12 +171,18 @@ class VTK_PVH5Model(H5Model):
         shader_property.SetGeometryShaderCode(srcGS)
 
         shader_parameters = shader_property.GetGeometryCustomUniforms()
-        shader_parameters.SetUniform4f("modelSize", [*self._model_size, 1.0])
-        shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
-        shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
         shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
         shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
         shader_parameters.SetUniform2f("mask_limits", self.mask_limits)
+        if self.length_over_threshold:
+            shader_parameters.SetUniform4f("modelSize", [*self._model_size, 1.0])
+            shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
+            shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
+        else:
+            shader_parameters.SetUniform4f("modelSize", [1.0, 1.0, 1.0, 1.0])
+            shader_parameters.SetUniform3f("bottomLeft", self._original_extents[::2])
+            shader_parameters.SetUniform3f("topRight", self._original_extents[1::2])
+
         return shader_parameters
 
     def change_grid_spacing(self, _=None) -> None:
@@ -190,8 +205,12 @@ class VTK_PVH5Model(H5Model):
             logger.debug(
                 f"Actual values sent to shaders: bottom left - {extents_MC[0]}, top right - {extents_MC[1]}"
             )
-            self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
-            self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
+            if self.length_over_threshold:
+                self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
+                self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
+            else:
+                self.shader_parameters.SetUniform3f("bottomLeft", extents[::2])
+                self.shader_parameters.SetUniform3f("topRight", extents[1::2])
             self._applied_extents = extents
             self.clipping_box.update(self._applied_extents)
         else:
