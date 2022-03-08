@@ -7,7 +7,7 @@ import win32clipboard
 from PIL import Image
 
 from . import ui
-from .ControlPane import ControlPane
+from .ControlPanePrimary import ControlPanePrimary
 from .VTK_PVH5Model import VTK_PVH5Model
 
 os.environ["QT_API"] = "pyqt5"
@@ -29,7 +29,7 @@ class MainPage(qtw.QWidget):
         self.setAttribute(qtc.Qt.WA_DeleteOnClose, True)
         self._parent = parent
         self._base_window_title = self.windowTitle()
-        self._control_pane = ControlPane(parent=self)
+        self._control_pane = ControlPanePrimary(parent=self)
         self.horizontalLayout.addWidget(self._control_pane)
 
         self.toggle_control_pane(enable=False)
