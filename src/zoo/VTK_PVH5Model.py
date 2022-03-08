@@ -12,7 +12,7 @@ from vtkmodules.vtkCommonDataModel import vtkDataObject, vtkPolyData
 from vtkmodules.vtkFiltersGeneral import vtkVertexGlyphFilter
 from vtkmodules.vtkInteractionWidgets import vtkCameraOrientationWidget
 from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
-from vtkmodules.vtkRenderingOpenGL2 import vtkShader
+from vtkmodules.vtkRenderingOpenGL2 import vtkRenderStepsPass, vtkShader, vtkSSAOPass
 
 from .ClippingBox import ClippingBox
 
@@ -33,6 +33,7 @@ class VTK_PVH5Model(H5Model):
         self.plotter = pyvistaqt.QtInteractor()
         self.plotter.AddObserver(vtkCommand.InteractionEvent, self.emit_moved_camera)
         self.create_camera_control_widget()
+        self.ssao = self.setup_ssao()
 
         self.loaded_file.connect(self.construct_plot_at_timestep)
         self.changed_timestep.connect(self.construct_plot_at_timestep)
@@ -272,6 +273,21 @@ class VTK_PVH5Model(H5Model):
 
     def toggle_clipping_box(self, enable):
         self.clipping_box.SetEnabled(enable)
+
+    def setup_ssao(self, kernel_size: int = 256) -> vtkSSAOPass:
+        ssao = vtkSSAOPass()
+        ssao.SetRadius(100)
+        ssao.SetBias(0.02)
+        ssao.SetKernelSize(kernel_size)
+        ssao.BlurOn()
+        ssao.SetDelegatePass(vtkRenderStepsPass())
+        return ssao
+
+    def toggle_ssao(self) -> None:
+        if self.plotter.renderer.GetPass():
+            self.plotter.renderer.SetPass(None)
+        else:
+            self.plotter.renderer.SetPass(self.ssao)
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):

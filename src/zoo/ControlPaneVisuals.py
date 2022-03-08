@@ -40,6 +40,7 @@ class ControlPaneVisuals(qtw.QWidget):
 
     def hook_up_signals(self):
         self.bgcolorFrameButton.mousePressEvent = self.pick_bg_color
+        self.ssaotoggleButton.clicked.connect(self.toggle_ssao)
 
     def toggle_control_pane(self, enable: bool):
         self.setEnabled(enable)
@@ -55,3 +56,6 @@ class ControlPaneVisuals(qtw.QWidget):
             self.bgcolorFrameButton.setStyleSheet(
                 f"background-color: rgb{color.getRgb()[:3]}"
             )
+
+    def toggle_ssao(self, _=None):
+        self.model.toggle_ssao()

@@ -68,6 +68,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: red</string>
             </property>
@@ -111,6 +114,13 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="ssaotoggleButton">
+          <property name="text">
+           <string>Toggle SSAO</string>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="verticalSpacer">
