@@ -8,17 +8,17 @@ from . import ui
 from .ControlPanePrimary import ControlPanePrimary
 
 
-class ControlPaneStack(qtw.QWidget):
+class ControlPaneTabs(qtw.QWidget):
     _parent = None
 
     def __init__(self, parent: typing.Optional["qtw.QWidget"] = None,) -> None:
         super().__init__(parent=parent)
-        with resources.open_text(ui, "controlpane_stack.ui") as uifile:
+        with resources.open_text(ui, "controlpane_tabs.ui") as uifile:
             uic.loadUi(uifile, self)
 
         self._parent = parent
         self._primary_pane = ControlPanePrimary(parent=self._parent)
-        self.stackedWidget.addWidget(self._primary_pane)
+        self.tabWidget.addTab(self._primary_pane, "Primary")
 
     def toggle_control_pane(self, enable: bool):
         self._primary_pane.toggle_control_pane(enable)
