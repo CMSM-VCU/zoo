@@ -36,4 +36,9 @@ class ControlPaneVisuals(qtw.QWidget):
         ...
 
     def hook_up_signals(self):
-        ...
+        self.bgcolorFrameButton.mousePressEvent = self.pick_bg_color
+
+    def pick_bg_color(self, event=None) -> None:
+        if event.button() == 1:
+            color = qtw.QColorDialog.getColor()
+            print(color)
