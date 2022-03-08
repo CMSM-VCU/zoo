@@ -32,13 +32,26 @@ class ControlPaneVisuals(qtw.QWidget):
         else:
             return None
 
+    def _connect_model(self, model: VTK_PVH5Model) -> None:
+        ...
+
     def organize_widgets(self):
         ...
 
     def hook_up_signals(self):
         self.bgcolorFrameButton.mousePressEvent = self.pick_bg_color
 
+    def toggle_control_pane(self, enable: bool):
+        self.setEnabled(enable)
+        if enable:
+            self.bgcolorFrameButton.setStyleSheet(
+                f"background-color: rgb{tuple(int(c*255) for c in self.model.background_color)}"
+            )
+
     def pick_bg_color(self, event=None) -> None:
         if event.button() == 1:
             color = qtw.QColorDialog.getColor()
-            print(color)
+            self.model.background_color = color.getRgbF()[:3]
+            self.bgcolorFrameButton.setStyleSheet(
+                f"background-color: rgb{color.getRgb()[:3]}"
+            )

@@ -258,6 +258,14 @@ class H5Model(qtc.QAbstractItemModel):
     def save_image(self, filename) -> None:
         self.plotter.screenshot(filename=filename)
 
+    @property
+    def background_color(self) -> typing.List[float]:
+        return self.plotter.background_color
+
+    @background_color.setter
+    def background_color(self, color: typing.Sequence[float]) -> None:
+        self.plotter.set_background(color)
+
     def guess_grid_spacing(self) -> typing.Tuple[float, float, float]:
         coords = self.df.loc[self.timesteps[0], ["x1", "x2", "x3"]]
         tree = cKDTree(coords)
