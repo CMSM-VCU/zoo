@@ -76,9 +76,6 @@ class ControlPaneVisuals(qtw.QWidget):
             self.colormap_completer.setCompletionPrefix(
                 self.colormapSelector.currentText()
             )
-            self.colormapSelector.setCurrentText(
-                self.colormap_completer.currentCompletion()
-            )
             self.colormapSelector.setCurrentIndex(
                 self.colormapSelector.findText(
                     self.colormap_completer.currentCompletion()
