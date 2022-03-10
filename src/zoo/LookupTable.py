@@ -14,8 +14,8 @@ class LookupTable(vtkLookupTable):
         num_colors=512,
     ) -> None:
         super().__init__()
-        self.reverse = reverse
-        self.num_colors = num_colors
+        self._reverse = reverse
+        self._num_colors = num_colors
         self.cmap = cmap
         self.above_color = above_color
         self.below_color = below_color
@@ -31,6 +31,14 @@ class LookupTable(vtkLookupTable):
     @property
     def below_color(self):
         return self._below_color
+
+    @property
+    def reverse(self):
+        return self._reverse
+
+    @property
+    def num_colors(self):
+        return self._num_colors
 
     @cmap.setter
     def cmap(self, cmap):
@@ -58,3 +66,15 @@ class LookupTable(vtkLookupTable):
         else:
             self.SetUseBelowRangeColor(False)
         self._below_color = below_color
+
+    @reverse.setter
+    def reverse(self, reverse: bool):
+        if reverse != self._reverse:
+            self._reverse = reverse
+            self.cmap = self._cmap
+
+    @num_colors.setter
+    def num_colors(self, num_colors: bool):
+        if num_colors != self._num_colors:
+            self._num_colors = num_colors
+            self.cmap = self._cmap
