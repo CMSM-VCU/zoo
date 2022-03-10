@@ -15,6 +15,7 @@ from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
 from vtkmodules.vtkRenderingOpenGL2 import vtkShader
 
 from .ClippingBox import ClippingBox
+from .LookupTable import LookupTable
 
 from .H5Model import H5Model
 
@@ -45,6 +46,8 @@ class VTK_PVH5Model(H5Model):
         self.changed_colorbar_limits.connect(self.change_colorbar_limits)
 
         self.clipping_box = ClippingBox(self, self.plotter)
+
+        self.lut = LookupTable()
 
     @property
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
@@ -90,11 +93,7 @@ class VTK_PVH5Model(H5Model):
 
         mapper = pv.mapper.make_mapper(vtkPolyDataMapper)
         mapper.SetInputConnection(vertexGlyphFilter.GetOutputPort())
-        lut = vtkLookupTable()
-        lut.SetNumberOfColors(256)
-        lut.SetHueRange([0.0, 0.667][::-1])  # Reverse indexing to reverse colorbar
-        lut.Build()
-        mapper.SetLookupTable(lut)
+        mapper.SetLookupTable(self.lut)
 
         mapper.MapDataArrayToVertexAttribute(
             "_disp", "_displacement", vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
