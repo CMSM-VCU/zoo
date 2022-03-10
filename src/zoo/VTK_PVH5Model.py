@@ -47,7 +47,7 @@ class VTK_PVH5Model(H5Model):
 
         self.clipping_box = ClippingBox(self, self.plotter)
 
-        self.lut = LookupTable(cmap="jet")
+        self.lut = LookupTable()
 
     @property
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:

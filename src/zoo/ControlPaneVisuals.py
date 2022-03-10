@@ -61,7 +61,9 @@ class ControlPaneVisuals(qtw.QWidget):
             self.colormap_completer = qtw.QCompleter(COLORMAPS)
             self.colormap_completer.setCaseSensitivity(False)
             self.colormapSelector.setCompleter(self.colormap_completer)
-            self.colormapSelector.setCurrentIndex(self.colormapSelector.findText("jet"))
+            self.colormapSelector.setCurrentIndex(
+                self.colormapSelector.findText("rainbow4")
+            )
 
     def pick_color_bg(self, event=None) -> None:
         if event.button() == 1:
