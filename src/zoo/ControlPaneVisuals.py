@@ -40,7 +40,7 @@ class ControlPaneVisuals(qtw.QWidget):
         ...
 
     def hook_up_signals(self):
-        self.colormapSelector.activated.connect(self.set_colormap)
+        self.colormapSelector.currentTextChanged.connect(self.set_colormap)
         self.reverseCheckBox.stateChanged.connect(self.toggle_reverse)
         self.outofrangeCheckBox.stateChanged.connect(self.toggle_outofrange_color)
 
@@ -57,13 +57,17 @@ class ControlPaneVisuals(qtw.QWidget):
 
             self.colormapSelector.clear()
             self.colormapSelector.addItems(COLORMAPS)
+            completer = qtw.QCompleter(COLORMAPS)
+            completer.setCaseSensitivity(False)
+            self.colormapSelector.setCompleter(completer)
 
     def pick_color_bg(self, event=None) -> None:
         if event.button() == 1:
             self.model.background_color = self._pick_color(self.bgcolorFrameButton)[:3]
 
     def set_colormap(self, _: int) -> None:
-        self.model.lut.cmap = self.colormapSelector.currentText()
+        if self.colormapSelector.currentText() in COLORMAPS:
+            self.model.lut.cmap = self.colormapSelector.currentText()
 
     def toggle_reverse(self, enable: bool) -> None:
         self.model.lut.reverse = enable
