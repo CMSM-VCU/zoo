@@ -41,6 +41,7 @@ class ControlPaneVisuals(qtw.QWidget):
 
     def hook_up_signals(self):
         self.colormapSelector.currentTextChanged.connect(self.set_colormap)
+        self.colormapSelector.focusOutEvent = self.tabcomplete_colormap
         self.reverseCheckBox.stateChanged.connect(self.toggle_reverse)
         self.outofrangeCheckBox.stateChanged.connect(self.toggle_outofrange_color)
 
@@ -57,9 +58,9 @@ class ControlPaneVisuals(qtw.QWidget):
 
             self.colormapSelector.clear()
             self.colormapSelector.addItems(COLORMAPS)
-            completer = qtw.QCompleter(COLORMAPS)
-            completer.setCaseSensitivity(False)
-            self.colormapSelector.setCompleter(completer)
+            self.colormap_completer = qtw.QCompleter(COLORMAPS)
+            self.colormap_completer.setCaseSensitivity(False)
+            self.colormapSelector.setCompleter(self.colormap_completer)
 
     def pick_color_bg(self, event=None) -> None:
         if event.button() == 1:
@@ -68,6 +69,22 @@ class ControlPaneVisuals(qtw.QWidget):
     def set_colormap(self, _: int) -> None:
         if self.colormapSelector.currentText() in COLORMAPS:
             self.model.lut.cmap = self.colormapSelector.currentText()
+
+    def tabcomplete_colormap(self, event=None) -> None:
+        # https://doc.qt.io/qt-5/qt.html#FocusReason-enum
+        if event.reason() == 1:
+            self.colormap_completer.setCompletionPrefix(
+                self.colormapSelector.currentText()
+            )
+            self.colormapSelector.setCurrentText(
+                self.colormap_completer.currentCompletion()
+            )
+            self.colormapSelector.setCurrentIndex(
+                self.colormapSelector.findText(
+                    self.colormap_completer.currentCompletion()
+                )
+            )
+            self.colormapSelector.setFocus(7)  # Undo the standard Tab behavior
 
     def toggle_reverse(self, enable: bool) -> None:
         self.model.lut.reverse = enable
