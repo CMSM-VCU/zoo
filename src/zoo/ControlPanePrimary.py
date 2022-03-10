@@ -18,7 +18,7 @@ from qtpy import QtWidgets as qtw
 from qtpy import uic
 
 
-class ControlPane(qtw.QWidget):
+class ControlPanePrimary(qtw.QWidget):
     _parent = None
 
     def __init__(self, parent: typing.Optional["qtw.QWidget"] = None,) -> None:

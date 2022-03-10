@@ -33,6 +33,7 @@ setuptools.setup(
         "scipy",
         "pyperclip",
         "pywin32",
+        "colorcet",
     ],
     entry_points={"console_scripts": ["zoo = zoo:run"]},
 )
