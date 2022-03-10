@@ -42,12 +42,13 @@ class LookupTable(vtkLookupTable):
 
     @cmap.setter
     def cmap(self, cmap):
-        cmap_object = get_cmap_safe(cmap)
-        ctable = cmap_object(np.linspace(0, 1, self.num_colors)) * 255
-        ctable = ctable.astype(np.uint8)
-        if self.reverse:
-            ctable = np.ascontiguousarray(ctable[::-1])
-        self.SetTable(numpy_to_vtk(ctable))
+        if cmap:
+            cmap_object = get_cmap_safe(cmap)
+            ctable = cmap_object(np.linspace(0, 1, self.num_colors)) * 255
+            ctable = ctable.astype(np.uint8)
+            if self.reverse:
+                ctable = np.ascontiguousarray(ctable[::-1])
+            self.SetTable(numpy_to_vtk(ctable))
         self._cmap = cmap
 
     @above_color.setter
