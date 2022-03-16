@@ -4,6 +4,7 @@ from vtkmodules.vtkCommonCore import vtkLookupTable
 from vtkmodules.util.numpy_support import numpy_to_vtk
 
 # Drawing heavily from PyVista's `mapper.set_scalars` method
+# github.com/pyvista/pyvista/blob/main/pyvista/plotting/mapper.py
 class LookupTable(vtkLookupTable):
     def __init__(
         self,
@@ -11,7 +12,7 @@ class LookupTable(vtkLookupTable):
         above_color=None,
         below_color=None,
         reverse=False,
-        num_colors=512,
+        num_colors=256,
     ) -> None:
         super().__init__()
         self._reverse = reverse
