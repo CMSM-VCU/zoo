@@ -22,7 +22,9 @@ matplotlib_colormaps = [
     name for name in colormaps() if "cet_" not in name and not name.endswith("_r")
 ]
 
-COLORMAPS = sorted(colorcet_colormaps) + sorted(matplotlib_colormaps)
+COLORMAPS = (
+    sorted(colorcet_colormaps) + sorted(matplotlib_colormaps) + ["rainbow (legacy)"]
+)
 
 
 def has_known_extension(file: Path) -> bool:

@@ -42,7 +42,14 @@ class LookupTable(vtkLookupTable):
 
     @cmap.setter
     def cmap(self, cmap):
-        if cmap:
+        if cmap == "rainbow (legacy)":
+            self.SetHueRange([0.0, 0.0])
+            if self.reverse:
+                self.SetHueRange([0.0, 0.66667])
+            else:
+                self.SetHueRange([0.66667, 0.0])
+            self.ForceBuild()
+        elif cmap:
             cmap_object = get_cmap_safe(cmap)
             ctable = cmap_object(np.linspace(0, 1, self.num_colors)) * 255
             ctable = ctable.astype(np.uint8)
