@@ -72,8 +72,11 @@ class MainPage(qtw.QWidget):
     def toggle_control_pane(self, enable: bool):
         self._control_pane.toggle_control_pane(enable)
 
-    def save_image(self, _=None) -> None:
-        filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
+    def save_image(self, _=None, override=None) -> None:
+        if override:
+            filename = override
+        else:
+            filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
         if filename:
             self.model.save_image(filename)
 
