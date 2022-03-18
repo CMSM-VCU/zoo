@@ -2,6 +2,7 @@ import os
 from importlib import resources
 from io import BytesIO
 from pathlib import Path
+from loguru import logger
 
 import win32clipboard
 from PIL import Image
@@ -72,14 +73,6 @@ class MainPage(qtw.QWidget):
     def toggle_control_pane(self, enable: bool):
         self._control_pane.toggle_control_pane(enable)
 
-    def save_image(self, _=None, override=None) -> None:
-        if override:
-            filename = override
-        else:
-            filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
-        if filename:
-            self.model.save_image(filename)
-
     def copy_image(self, _=None) -> None:
         image = Image.fromarray(self.model.plotter.image)
         # https://stackoverflow.com/a/61546024/13130795
@@ -92,6 +85,28 @@ class MainPage(qtw.QWidget):
         win32clipboard.EmptyClipboard()
         win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
         win32clipboard.CloseClipboard()
+
+    def save_image(self, _=None, override=None) -> None:
+        if override:
+            filename = override
+        else:
+            filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
+        if filename:
+            logger.debug(f"Saving image at {Path(filename).absolute()}")
+            self.model.save_image(filename)
+
+    def save_all_images(self, _=None, name_prefix="image") -> None:
+        folder = qtw.QFileDialog.getExistingDirectory(
+            self, directory=str(Path(self._filename).parent)
+        )
+        if folder:
+            logger.debug(f"Saving all images in {Path(folder).absolute()}")
+            self.model.timestep_index = 0
+            for _ in self.model.timesteps:
+                self.model.timestep_index += 1
+                self.save_image(
+                    override=f"{folder}/{name_prefix}_{self.model.timestep:07d}.png"
+                )
 
     def close_my_tab(self) -> None:
         self._parent.close_tab(page=self)
