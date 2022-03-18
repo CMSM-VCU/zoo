@@ -46,8 +46,9 @@ class MainWindow(qtw.QMainWindow):
 
     def hook_up_signals(self):
         self.actionOpen.triggered.connect(self.open_file)
-        self.actionSave_Image.triggered.connect(self.save_image)
         self.actionCopy_Image.triggered.connect(self.copy_image)
+        self.actionSave_Image.triggered.connect(self.save_image)
+        self.actionSave_All_Images.triggered.connect(self.save_all_images)
         self.actionExit.triggered.connect(self.close)
         self.actionDuplicate.triggered.connect(self.duplicate_current_tab)
 
@@ -68,11 +69,14 @@ class MainWindow(qtw.QMainWindow):
             self.tabWidget.setTabToolTip(new_idx, f"{filename}")
             self.tabWidget.setCurrentIndex(new_idx)
 
+    def copy_image(self, _=None) -> None:
+        self.current_page.copy_image()
+
     def save_image(self, _=None) -> None:
         self.current_page.save_image()
 
-    def copy_image(self, _=None) -> None:
-        self.current_page.copy_image()
+    def save_all_images(self, _=None) -> None:
+        self.current_page.save_all_images()
 
     def tab_title_to_window(self, idx: int) -> None:
         try:
