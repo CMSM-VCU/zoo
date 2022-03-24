@@ -30,6 +30,6 @@ class ControlPaneTabs(qtw.QWidget):
         for pane in self.panes.values():
             pane.toggle_control_pane(enable)
 
-    def _connect_model(self, model) -> None:
+    def _connect_contour_controller(self, model) -> None:
         for pane in self.panes.values():
-            pane._connect_model(model)
+            pane._connect_contour_controller(model)

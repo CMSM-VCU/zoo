@@ -4,7 +4,7 @@ from importlib import resources
 
 from . import ui
 from .utils import COLORMAPS
-from .ContourVTKCustom import ContourVTKCustom
+from .ContourController import ContourController
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -27,13 +27,13 @@ class ControlPaneVisuals(qtw.QWidget):
         self.hook_up_signals()
 
     @property
-    def model(self) -> ContourVTKCustom:
+    def controller(self) -> ContourController:
         if self._parent:
-            return self._parent.model
+            return self._parent.controller
         else:
             return None
 
-    def _connect_model(self, model: ContourVTKCustom) -> None:
+    def _connect_contour_controller(self, controller: ContourController) -> None:
         ...
 
     def organize_widgets(self):
@@ -53,7 +53,7 @@ class ControlPaneVisuals(qtw.QWidget):
         self.setEnabled(enable)
         if enable:
             self.bgcolorFrameButton.setStyleSheet(
-                f"background-color: rgb{tuple(int(c*255) for c in self.model.background_color)}"
+                f"background-color: rgb{tuple(int(c*255) for c in self.controller.background_color)}"
             )
 
             self.colormapSelector.clear()
@@ -67,11 +67,13 @@ class ControlPaneVisuals(qtw.QWidget):
 
     def pick_color_bg(self, event=None) -> None:
         if event.button() == 1:
-            self.model.background_color = self._pick_color(self.bgcolorFrameButton)[:3]
+            self.controller.background_color = self._pick_color(
+                self.bgcolorFrameButton
+            )[:3]
 
     def set_colormap(self, _: int) -> None:
         if self.colormapSelector.currentText() in COLORMAPS:
-            self.model.lut.cmap = self.colormapSelector.currentText()
+            self.controller.lut.cmap = self.colormapSelector.currentText()
 
     def tabcomplete_colormap(self, event=None) -> None:
         # https://doc.qt.io/qt-5/qt.html#FocusReason-enum
@@ -87,7 +89,7 @@ class ControlPaneVisuals(qtw.QWidget):
             self.colormapSelector.setFocus(7)  # Undo the standard Tab behavior
 
     def toggle_reverse(self, enable: bool) -> None:
-        self.model.lut.reverse = enable
+        self.controller.lut.reverse = enable
 
     def toggle_outofrange_color(self, enable: bool) -> None:
         self.abovecolorFrameButton.setEnabled(enable)
@@ -95,31 +97,31 @@ class ControlPaneVisuals(qtw.QWidget):
         self.belowcolorFrameButton.setEnabled(enable)
         self.belowcolorLabel.setEnabled(enable)
         if enable:
-            self.model.lut.above_color = (
+            self.controller.lut.above_color = (
                 self.abovecolorFrameButton.palette()
                 .color(qtg.QPalette.Background)
                 .name()
             )
-            self.model.lut.below_color = (
+            self.controller.lut.below_color = (
                 self.belowcolorFrameButton.palette()
                 .color(qtg.QPalette.Background)
                 .name()
             )
         else:
-            self.model.lut.above_color = None
-            self.model.lut.below_color = None
+            self.controller.lut.above_color = None
+            self.controller.lut.below_color = None
 
     def pick_color_above(self, event=None) -> None:
         if event.button() == 1:
-            self.model.lut.above_color = self._pick_color(self.abovecolorFrameButton)[
-                :3
-            ]
+            self.controller.lut.above_color = self._pick_color(
+                self.abovecolorFrameButton
+            )[:3]
 
     def pick_color_below(self, event=None) -> None:
         if event.button() == 1:
-            self.model.lut.below_color = self._pick_color(self.belowcolorFrameButton)[
-                :3
-            ]
+            self.controller.lut.below_color = self._pick_color(
+                self.belowcolorFrameButton
+            )[:3]
 
     @staticmethod
     def _pick_color(button) -> typing.Tuple:
