@@ -356,10 +356,10 @@ class ControlPanePrimary(qtw.QWidget):
     def set_grid_spacing_n(obj, index):
         gs_vector = obj.controller.glyph_size
         gs_vector[index] = float_or_zero(obj.gs_lineedits[index].text())
-        obj.controller.glyph_size = gs_vector
+        obj.controller.set_glyph_size(gs_vector, instigator=id(obj))
 
     def set_grid_spacing_uniform(self, new_gs: str) -> None:
-        self.controller.glyph_size = [float_or_zero(new_gs)] * 3
+        self.controller.set_glyph_size([float_or_zero(new_gs)] * 3, instigator=id(self))
 
     @staticmethod
     def set_exaggeration_n(obj, index):

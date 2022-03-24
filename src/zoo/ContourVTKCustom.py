@@ -48,7 +48,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
         self.controller.initialized.connect(self.construct_plot_at_timestep)
         self.controller.changed_timestep.connect(self.construct_plot_at_timestep)
-        self.controller.changed_grid_spacing.connect(self.change_grid_spacing)
+        self.controller.changed_glyph_size.connect(self.change_glyph_size)
         self.controller.changed_clipping_extents.connect(self.change_clipping_extents)
         self.controller.changed_exaggeration.connect(self.change_exaggeration)
         self.controller.changed_plot_dataset.connect(self.update_plot_dataset)
@@ -203,7 +203,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
         return shader_parameters
 
-    def change_grid_spacing(self, _=None) -> None:
+    def change_glyph_size(self, instigator=None) -> None:
         logger.debug(
             f"Updating shaders with grid spacing {self.controller.glyph_size}..."
         )

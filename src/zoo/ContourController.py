@@ -36,7 +36,7 @@ class ContourController(qtc.QAbstractItemModel):
 
     initialized                      = qtc.Signal()
     changed_timestep                 = qtc.Signal(int)
-    changed_grid_spacing             = qtc.Signal(list)
+    changed_glyph_size               = qtc.Signal(int)
     changed_exaggeration             = qtc.Signal(list)
     changed_plot_dataset             = qtc.Signal(str)
     changed_mask_dataset             = qtc.Signal(str)
@@ -109,8 +109,9 @@ class ContourController(qtc.QAbstractItemModel):
     def glyph_size(self) -> typing.List[float]:
         return list(self._glyph_size)
 
-    @glyph_size.setter
-    def glyph_size(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
+    def set_glyph_size(
+        self, value: typing.Union[float, typing.Iterable[float]], instigator: int
+    ) -> None:
         logger.debug(f"Setting grid spacing index to {value}...")
         if isinstance(value, typing.Iterable) and len(value) == 3:
             self._glyph_size = list(value)
@@ -119,7 +120,7 @@ class ContourController(qtc.QAbstractItemModel):
         else:
             logger.warning(f"Bad grid spacing value: {value}")
             return
-        self.changed_grid_spacing.emit(self._glyph_size)
+        self.changed_glyph_size.emit(instigator)
 
     @property
     def exaggeration(self) -> typing.List[float]:
