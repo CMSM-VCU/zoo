@@ -39,7 +39,6 @@ class ControlPanePrimary(qtw.QWidget):
             return None
 
     def _connect_contour_controller(self, controller: ContourController) -> None:
-        controller.changed_timestep.connect(self.timeStepSelector.setCurrentText)
         controller.changed_timestep.connect(self.update_time_value)
         controller.changed_mask_dataset.connect(self.maskdatasetSelector.setCurrentText)
         controller.program_changed_clipping_extents.connect(self.update_extents_boxes)
@@ -387,6 +386,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.viewupValue.setText(f"{up[0]:.2f}, {up[1]:.2f}, {up[2]:.2f}")
 
     def update_time_value(self, _=None) -> None:
+        self.timeStepSelector.setCurrentText(self.controller.timestep)
         try:
             time = self.controller.time
             self.timeLabel.setText(f"{time:.3e}")
