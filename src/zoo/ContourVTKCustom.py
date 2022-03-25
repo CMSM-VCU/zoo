@@ -6,6 +6,7 @@ import numpy as np
 import pyvista as pv
 import pyvistaqt
 from loguru import logger
+from qtpy import QtCore as qtc
 from vtk.numpy_interface import dataset_adapter as dsa
 from vtkmodules.vtkCommonCore import vtkCommand, vtkLookupTable, vtkPoints
 from vtkmodules.vtkCommonDataModel import vtkDataObject, vtkPolyData
@@ -16,7 +17,6 @@ from vtkmodules.vtkRenderingOpenGL2 import vtkShader
 
 from .ClippingBox import ClippingBox
 from .LookupTable import LookupTable
-
 from .H5Model import H5Model
 
 LARGE: float = 1e12
@@ -25,9 +25,44 @@ EPSILON: float = 1e-6
 srcGS = resources.read_text(__package__, "cubeGS.glsl")
 
 
-class ContourVTKCustom(H5Model):
-    def __init__(self) -> None:
+class ContourVTKCustom(qtc.QAbstractItemModel):
+    plotter: "InteractorLike"  # e.g. QtInteractor, vtkInteractor
+    plot_dataset: str
+    mask_dataset: str
+    timestep_index: int
+    grid_spacing: float
+    exaggeration: float
+
+    plot_and_mask_same_dataset: bool = True
+
+    changed_timestep = qtc.Signal(str)  # intended for a socket expecting a str, not int
+    changed_grid_spacing = qtc.Signal(list)
+    changed_exaggeration = qtc.Signal(list)
+    changed_plot_dataset = qtc.Signal(str)
+    changed_mask_dataset = qtc.Signal(str)
+    changed_clipping_extents = qtc.Signal(tuple)
+    changed_mask_limits = qtc.Signal(list)
+    changed_colorbar_limits = qtc.Signal(list)
+    program_changed_clipping_extents = qtc.Signal(tuple)
+    program_changed_mask_limits = qtc.Signal(list)
+    program_changed_colorbar_limits = qtc.Signal(list)
+    moved_camera = qtc.Signal(list)
+    destroyed = qtc.Signal()
+
+    _timestep_index: int = 0
+    _grid_spacing: typing.List[float] = [None, None, None]
+    _exaggeration: typing.List[float] = [0.0, 0.0, 0.0]
+    _clipping_extents: typing.Tuple[float] = (None,) * 6
+    _original_extents: typing.Tuple[float] = (None,) * 6
+    _applied_extents: typing.Tuple[float] = (None,) * 6
+    _mask_limits: typing.List[float] = [-LARGE, LARGE]
+    _colorbar_limits: typing.List[float] = [-LARGE, LARGE]
+    _plot_dataset_limits: typing.List[float] = [-LARGE, LARGE]
+    _mask_dataset_limits: typing.List[float] = [-LARGE, LARGE]
+
+    def __init__(self, model: H5Model) -> None:
         super().__init__()
+        self.model = model
         self.timesteps = (None,)
         self.datasets = (None,)
         self.mesh = None
@@ -38,7 +73,7 @@ class ContourVTKCustom(H5Model):
         self.plotter.AddObserver(vtkCommand.InteractionEvent, self.emit_moved_camera)
         self.create_camera_control_widget()
 
-        self.loaded_file.connect(self.construct_plot_at_timestep)
+        self.model.loaded_file.connect(self.initialize)
         self.changed_timestep.connect(self.construct_plot_at_timestep)
         self.changed_grid_spacing.connect(self.change_grid_spacing)
         self.changed_clipping_extents.connect(self.change_clipping_extents)
@@ -65,7 +100,7 @@ class ContourVTKCustom(H5Model):
     @lru_cache(maxsize=8)
     def construct_timestep_data(self, timestep: int) -> pv.PolyData:
         logger.debug("Constructing data object...")
-        coords = self.df.loc[timestep, ("x1", "x2", "x3")].values
+        coords = self.model.df.loc[timestep, ("x1", "x2", "x3")].values
         points = vtkPoints()
         points.SetData(dsa.numpyTovtkDataArray(coords))
         polydata = vtkPolyData()
@@ -74,19 +109,29 @@ class ContourVTKCustom(H5Model):
         polydata.GetPointData().SetNormals(
             dsa.numpyTovtkDataArray(np.empty_like(coords))
         )  # Assign dummy normals to trick VTK into enabling (specular?) lighting
-        for dataset in self.datasets:
+        for dataset in self.model.datasets:
             polydata.GetPointData().AddArray(
                 dsa.numpyTovtkDataArray(
-                    self.df.loc[timestep, dataset].values, name=dataset
+                    self.model.df.loc[timestep, dataset].values, name=dataset
                 )
             )
         polydata.GetPointData().AddArray(
             dsa.numpyTovtkDataArray(
-                self.df.loc[timestep, ("u1", "u2", "u3")].values, name="_displacement",
+                self.model.df.loc[timestep, ("u1", "u2", "u3")].values,
+                name="_displacement",
             )
         )
-        polydata.GetPointData().SetActiveScalars(self.datasets[0])
+        polydata.GetPointData().SetActiveScalars(self.model.datasets[0])
         return pv.utilities.wrap(polydata)
+
+    def initialize(self) -> None:
+        model = self.model
+        self._timestep_index = 0
+        self._plot_dataset = model.datasets[0]
+        self._mask_dataset = self._plot_dataset
+        self._grid_spacing = model.grid_spacing
+
+        self.construct_plot_at_timestep()
 
     def construct_data_mapper(self, polydata: pv.PolyData) -> "MapperHelper":
         logger.debug("Constructing VTK mapper...")
@@ -106,6 +151,9 @@ class ContourVTKCustom(H5Model):
 
     def construct_plot_at_timestep(self, _=None) -> None:
         logger.info(f"Constructing: {self.timestep}")
+        if not self.timestep:
+            self._timestep_index = 0
+        logger.info(f"Actually: {self.timestep}")
         self.polydata = self.construct_timestep_data(self.timestep)
         self.polydata.GetPointData().SetActiveScalars(self.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
@@ -278,6 +326,190 @@ class ContourVTKCustom(H5Model):
 
     def toggle_clipping_box(self, enable):
         self.clipping_box.SetEnabled(enable)
+
+    @property
+    def timestep_index(self) -> int:
+        return self._timestep_index
+
+    @timestep_index.setter
+    def timestep_index(self, value: int) -> None:
+        logger.debug(f"Setting timestep index to {value}...")
+        self._timestep_index = max(0, min(len(self.model.timesteps) - 1, value))
+        self.changed_timestep.emit(str(self.timestep))
+
+    @property
+    def timestep(self) -> int:
+        return self.model.timesteps[self.timestep_index]
+
+    @timestep.setter
+    def timestep(self, value: int) -> None:
+        logger.debug(f"Setting timestep to {value}...")
+        if value in self.model.timesteps:
+            self.timestep_index = self.model.timesteps.index(self.timestep)
+        else:
+            logger.warning(f"{value} not found in timesteps")
+            return
+        self.changed_timestep.emit(str(self.timestep))
+
+    @property
+    def time(self) -> float:
+        # TODO: Expand the list of possible time column names
+        if "timex" in self.model.datasets:
+            return self.model.df.loc[self.timestep, "timex"].values[0]
+        else:
+            return None
+
+    @property
+    def grid_spacing(self) -> typing.List[float]:
+        return list(self._grid_spacing)
+
+    @grid_spacing.setter
+    def grid_spacing(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
+        logger.debug(f"Setting grid spacing index to {value}...")
+        if isinstance(value, typing.Iterable) and len(value) == 3:
+            self._grid_spacing = list(value)
+        elif isinstance(value, float):
+            self._grid_spacing = list([value, value, value])
+        else:
+            logger.warning(f"Bad grid spacing value: {value}")
+            return
+        self.changed_grid_spacing.emit(self._grid_spacing)
+
+    @property
+    def exaggeration(self) -> typing.List[float]:
+        return list(self._exaggeration)
+
+    @exaggeration.setter
+    def exaggeration(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
+        logger.debug(f"Setting exaggeration to {value}...")
+        if isinstance(value, typing.Iterable) and len(value) == 3:
+            self._exaggeration = list(value)
+        elif isinstance(value, float):
+            self._exaggeration = list([value, value, value])
+        else:
+            logger.warning(f"Bad exaggeration value: {value}")
+            return
+        self.changed_exaggeration.emit(self._exaggeration)
+
+    @property
+    def plot_dataset(self) -> str:
+        return self._plot_dataset
+
+    @plot_dataset.setter
+    def plot_dataset(self, name: str) -> None:
+        logger.debug(f"Setting plot dataset to {name}...")
+        if name in self.model.datasets:
+            self._plot_dataset = name
+        else:
+            logger.warning(f"{name} not found in datasets")
+            return
+        self.changed_plot_dataset.emit(self._plot_dataset)
+        if self.plot_and_mask_same_dataset:
+            self.mask_dataset = name
+
+    @property
+    def mask_dataset(self) -> str:
+        return self._mask_dataset
+
+    @mask_dataset.setter
+    def mask_dataset(self, name: str) -> None:
+        logger.debug(f"Setting mask dataset to {name}...")
+        if name in self.model.datasets:
+            self._mask_dataset = name
+        else:
+            logger.warning(f"{name} not found in datasets")
+            return
+        self.changed_mask_dataset.emit(self._mask_dataset)
+
+    @property
+    def clipping_extents(self) -> typing.Tuple[float]:
+        return self._clipping_extents
+
+    @clipping_extents.setter
+    def clipping_extents(self, extents: typing.Sequence[float]) -> None:
+        logger.debug(f"Externally setting clipping extents to {extents}...")
+        self._set_clipping_extents(extents=extents, external=True)
+
+    def _set_clipping_extents(
+        self, extents: typing.Sequence[float], external: bool = False
+    ) -> None:
+        logger.debug(
+            f"Setting clipping extents to {extents}. Externally? {external}..."
+        )
+        self._clipping_extents = tuple(extents)
+        self.changed_clipping_extents.emit(self._clipping_extents)
+        if not external:
+            self.program_changed_clipping_extents.emit(self._clipping_extents)
+
+    def replace_clipping_extents(
+        self, indeces: typing.Sequence[int], values: typing.Sequence[float]
+    ) -> None:
+        logger.debug(f"Replacing clipping extents {indeces} with {values}...")
+        extents = list(self._clipping_extents)
+        for index, value in zip(indeces, values):
+            extents[index] = (
+                value if value is not None else self._original_extents[index]
+            )
+        self.clipping_extents = tuple(extents)
+
+    @property
+    def mask_limits(self) -> typing.List[float]:
+        return self._mask_limits
+
+    @mask_limits.setter
+    def mask_limits(self, value: typing.Iterable[float]) -> None:
+        logger.debug(f"Externally setting mask limits to {value}...")
+        self._set_mask_limits(value=value, external=True)
+
+    def _set_mask_limits(
+        self, value: typing.Iterable[float], external: bool = False
+    ) -> None:
+        logger.debug(f"Setting mask limits to {value}. Externally? {external}...")
+        if isinstance(value, typing.Iterable) and len(value) == 2:
+            self._mask_limits = list(value)
+        elif value is None:
+            self._mask_limits = [-LARGE, LARGE]
+        else:
+            logger.warn(f"Bad mask limits value: {value}")
+            return
+        self.changed_mask_limits.emit(self._mask_limits)
+        if not external:
+            self.program_changed_mask_limits.emit(self._mask_limits)
+
+    @property
+    def colorbar_limits(self) -> typing.List[float]:
+        return self._colorbar_limits
+
+    @colorbar_limits.setter
+    def colorbar_limits(self, value: typing.Iterable[float]) -> None:
+        logger.debug(f"Externally setting colorbar limits to {value}...")
+        self._set_colorbar_limits(value=value, external=True)
+
+    def _set_colorbar_limits(
+        self, value: typing.Iterable[float], external: bool = False
+    ) -> None:
+        logger.debug(f"Setting colorbar limits to {value}. Externally? {external}...")
+        if isinstance(value, typing.Iterable) and len(value) == 2:
+            self._colorbar_limits = list(value)
+        elif value is None:
+            self._colorbar_limits = self._plot_dataset_limits
+        else:
+            logger.warn(f"Bad colorbar limits value: {value}")
+            return
+        self.changed_colorbar_limits.emit(self._colorbar_limits)
+        if not external:
+            self.program_changed_colorbar_limits.emit(self._colorbar_limits)
+
+    def save_image(self, filename) -> None:
+        self.plotter.screenshot(filename=filename)
+
+    @property
+    def background_color(self) -> typing.List[float]:
+        return self.plotter.background_color
+
+    @background_color.setter
+    def background_color(self, color: typing.Sequence[float]) -> None:
+        self.plotter.set_background(color)
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):

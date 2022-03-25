@@ -10,6 +10,7 @@ from PIL import Image
 from . import ui
 from .ControlPaneTabs import ControlPaneTabs
 from .ContourVTKCustom import ContourVTKCustom
+from .H5Model import H5Model
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -51,7 +52,7 @@ class MainPage(qtw.QWidget):
             del old
         self.viewport.layout().addWidget(model.plotter.interactor)
 
-        model.loaded_file.connect(self.toggle_control_pane)
+        model.model.loaded_file.connect(self.toggle_control_pane)
         self._control_pane._connect_model(model)
 
     @property
@@ -63,8 +64,9 @@ class MainPage(qtw.QWidget):
         self.setWindowTitle(name)
 
     def open_file(self, filename):
-        self.model = ContourVTKCustom()
-        self.model.load_file(Path(filename))
+        _model = H5Model()
+        self.model = ContourVTKCustom(_model)
+        _model.load_file(Path(filename))
         self.tab_name = f"{Path(filename).name}"
         self._filename = filename
 
