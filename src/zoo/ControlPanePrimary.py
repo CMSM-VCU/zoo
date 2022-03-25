@@ -280,13 +280,17 @@ class ControlPanePrimary(qtw.QWidget):
             self.set_clipping_extent[5]()
 
     def increment_timestep(self):
-        self.controller.timestep_index += 1
+        self.controller.set_timestep_index(
+            self.controller.timestep_index + 1, instigator=id(self)
+        )
 
     def decrement_timestep(self):
-        self.controller.timestep_index -= 1
+        self.controller.set_timestep_index(
+            self.controller.timestep_index - 1, instigator=id(self)
+        )
 
     def set_timestep(self, new_timestep: str):
-        self.controller.timestep_index = int(new_timestep)
+        self.controller.set_timestep_index(int(new_timestep), instigator=id(self))
 
     def select_plot_dataset(self, _=None, *, override: str = None):
         logger.debug(
@@ -385,8 +389,8 @@ class ControlPanePrimary(qtw.QWidget):
         self.focalValue.setText(f"{foc[0]:.2f}, {foc[1]:.2f}, {foc[2]:.2f}")
         self.viewupValue.setText(f"{up[0]:.2f}, {up[1]:.2f}, {up[2]:.2f}")
 
-    def update_time_value(self, _=None) -> None:
-        self.timeStepSelector.setCurrentText(self.controller.timestep)
+    def update_time_value(self, instigator=None) -> None:
+        self.timeStepSelector.setCurrentText(str(self.controller.timestep))
         try:
             time = self.controller.time
             self.timeLabel.setText(f"{time:.3e}")
