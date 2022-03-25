@@ -131,7 +131,7 @@ class ControlPanePrimary(qtw.QWidget):
             self.maskdatasetSelector.clear()
             self.maskdatasetSelector.addItems(self.model.model.datasets)
 
-            self.xgsLineEdit.setText(str(self.model.grid_spacing[0]))
+            self.xgsLineEdit.setText(str(self.model.glyph_size[0]))
             self.xexagSpinBox.setValue(self.model.exaggeration[0])
         else:
             self.colorCheckBox.setChecked(enable)
@@ -348,7 +348,7 @@ class ControlPanePrimary(qtw.QWidget):
         obj.model.grid_spacing = gs_vector
 
     def set_grid_spacing_uniform(self, new_gs: str) -> None:
-        self.model.grid_spacing = [float_or_zero(new_gs)] * 3
+        self.model.glyph_size = [float_or_zero(new_gs)] * 3
 
     @staticmethod
     def set_exaggeration_n(obj, index):

@@ -30,7 +30,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     plot_dataset: str
     mask_dataset: str
     timestep_index: int
-    grid_spacing: float
+    glyph_size: float
     exaggeration: float
 
     plot_and_mask_same_dataset: bool = True
@@ -50,7 +50,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     destroyed = qtc.Signal()
 
     _timestep_index: int = 0
-    _grid_spacing: typing.List[float] = [None, None, None]
+    _glyph_size: typing.List[float] = [None, None, None]
     _exaggeration: typing.List[float] = [0.0, 0.0, 0.0]
     _clipping_extents: typing.Tuple[float] = (None,) * 6
     _original_extents: typing.Tuple[float] = (None,) * 6
@@ -129,7 +129,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self._timestep_index = 0
         self._plot_dataset = model.datasets[0]
         self._mask_dataset = self._plot_dataset
-        self._grid_spacing = model.grid_spacing
+        self._glyph_size = model.grid_spacing
 
         self.construct_plot_at_timestep()
 
@@ -225,7 +225,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         shader_property.SetGeometryShaderCode(srcGS)
 
         shader_parameters = shader_property.GetGeometryCustomUniforms()
-        shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
+        shader_parameters.SetUniform4f("glyph_scale", [*self.glyph_size, 0.0])
         shader_parameters.SetUniform4f("disp_scale", [*self.exaggeration, 0.0])
         shader_parameters.SetUniform2f("mask_limits", self.mask_limits)
         if self.length_over_threshold:
@@ -244,8 +244,8 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         return shader_parameters
 
     def change_grid_spacing(self, _=None) -> None:
-        logger.debug(f"Updating shaders with grid spacing {self.grid_spacing}...")
-        self.shader_parameters.SetUniform4f("glyph_scale", [*self.grid_spacing, 0.0])
+        logger.debug(f"Updating shaders with grid spacing {self.glyph_size}...")
+        self.shader_parameters.SetUniform4f("glyph_scale", [*self.glyph_size, 0.0])
 
     def change_exaggeration(self, _=None) -> None:
         logger.debug(f"Updating shaders with exaggeration {self.exaggeration}...")
@@ -362,20 +362,20 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             return None
 
     @property
-    def grid_spacing(self) -> typing.List[float]:
-        return list(self._grid_spacing)
+    def glyph_size(self) -> typing.List[float]:
+        return list(self._glyph_size)
 
-    @grid_spacing.setter
-    def grid_spacing(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
+    @glyph_size.setter
+    def glyph_size(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
         logger.debug(f"Setting grid spacing index to {value}...")
         if isinstance(value, typing.Iterable) and len(value) == 3:
-            self._grid_spacing = list(value)
+            self._glyph_size = list(value)
         elif isinstance(value, float):
-            self._grid_spacing = list([value, value, value])
+            self._glyph_size = list([value, value, value])
         else:
             logger.warning(f"Bad grid spacing value: {value}")
             return
-        self.changed_grid_spacing.emit(self._grid_spacing)
+        self.changed_grid_spacing.emit(self._glyph_size)
 
     @property
     def exaggeration(self) -> typing.List[float]:
