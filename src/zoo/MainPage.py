@@ -104,6 +104,7 @@ class MainPage(qtw.QWidget):
             self.model.timestep_index = 0
             for _ in self.model.timesteps:
                 self.model.timestep_index += 1
+                self.model.plotter.render()
                 self.save_image(
                     override=f"{folder}/{name_prefix}_{self.model.timestep:07d}.png"
                 )
