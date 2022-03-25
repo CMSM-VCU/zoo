@@ -8,7 +8,7 @@ import pyvistaqt
 from loguru import logger
 from qtpy import QtCore as qtc
 from vtk.numpy_interface import dataset_adapter as dsa
-from vtkmodules.vtkCommonCore import vtkCommand, vtkLookupTable, vtkPoints
+from vtkmodules.vtkCommonCore import vtkCommand, vtkPoints
 from vtkmodules.vtkCommonDataModel import vtkDataObject, vtkPolyData
 from vtkmodules.vtkFiltersGeneral import vtkVertexGlyphFilter
 from vtkmodules.vtkInteractionWidgets import vtkCameraOrientationWidget
@@ -63,10 +63,6 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     def __init__(self, model: H5Model) -> None:
         super().__init__()
         self.model = model
-        self.timesteps = (None,)
-        self.datasets = (None,)
-        self.mesh = None
-        self.raw_mesh_cache: dict = {}
         self.shown_first_plot: bool = False
 
         self.plotter = pyvistaqt.QtInteractor()
