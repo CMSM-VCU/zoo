@@ -100,7 +100,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     @lru_cache(maxsize=8)
     def construct_timestep_data(self, timestep: int) -> pv.PolyData:
         logger.debug("Constructing data object...")
-        coords = self.model.df.loc[timestep, ("x1", "x2", "x3")].values
+        coords = self.model.get_data_at_timestep(("x1", "x2", "x3"), timestep)
         points = vtkPoints()
         points.SetData(dsa.numpyTovtkDataArray(coords))
         polydata = vtkPolyData()
@@ -112,12 +112,12 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         for dataset in self.model.datasets:
             polydata.GetPointData().AddArray(
                 dsa.numpyTovtkDataArray(
-                    self.model.df.loc[timestep, dataset].values, name=dataset
+                    self.model.get_data_at_timestep(dataset, timestep), name=dataset
                 )
             )
         polydata.GetPointData().AddArray(
             dsa.numpyTovtkDataArray(
-                self.model.df.loc[timestep, ("u1", "u2", "u3")].values,
+                self.model.get_data_at_timestep(("u1", "u2", "u3"), timestep),
                 name="_displacement",
             )
         )
@@ -355,7 +355,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     def time(self) -> float:
         # TODO: Expand the list of possible time column names
         if "timex" in self.model.datasets:
-            return self.model.df.loc[self.timestep, "timex"].values[0]
+            return self.model.get_data_at_timestep("timex", self.timestep)[0]
         else:
             return None
 
