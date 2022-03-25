@@ -35,7 +35,7 @@ class ContourController(qtc.QAbstractItemModel):
     _colorbar_limits:     typing.List[float]  = [-LARGE, LARGE]
 
     initialized                      = qtc.Signal()
-    changed_timestep                 = qtc.Signal(str)  # intended for a socket expecting a str, not int
+    changed_timestep                 = qtc.Signal(int)
     changed_grid_spacing             = qtc.Signal(list)
     changed_exaggeration             = qtc.Signal(list)
     changed_plot_dataset             = qtc.Signal(str)
@@ -79,25 +79,23 @@ class ContourController(qtc.QAbstractItemModel):
     def timestep_index(self) -> int:
         return self._timestep_index
 
-    @timestep_index.setter
-    def timestep_index(self, value: int) -> None:
+    def set_timestep_index(self, value: int, instigator: int) -> None:
         logger.debug(f"Setting timestep index to {value}...")
         self._timestep_index = max(0, min(len(self.model.timesteps) - 1, value))
-        self.changed_timestep.emit(str(self.timestep))
+        self.changed_timestep.emit(instigator)
 
     @property
     def timestep(self) -> int:
         return self.model.timesteps[self.timestep_index]
 
-    @timestep.setter
-    def timestep(self, value: int) -> None:
+    def set_timestep(self, value: int, instigator: int) -> None:
         logger.debug(f"Setting timestep to {value}...")
         if value in self.model.timesteps:
             self.timestep_index = self.model.timesteps.index(self.timestep)
         else:
             logger.warning(f"{value} not found in timesteps")
             return
-        self.changed_timestep.emit(str(self.timestep))
+        self.changed_timestep.emit(instigator)
 
     @property
     def time(self) -> float:

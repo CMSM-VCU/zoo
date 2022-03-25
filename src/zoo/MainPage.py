@@ -103,9 +103,9 @@ class MainPage(qtw.QWidget):
         )
         if folder:
             logger.debug(f"Saving all images in {Path(folder).absolute()}")
-            self.controller.timestep_index = 0
+            self.controller.set_timestep_index(0, instigator=id(self))
             for _ in self.controller.model.timesteps:
-                self.controller.timestep_index += 1
+                self.controller.set_timestep_index(self.controller.timestep_index + 1, instigator=id(self))
                 self.controller.plotter.render()
                 self.save_image(
                     override=f"{folder}/{name_prefix}_{self.controller.timestep:07d}.png"
