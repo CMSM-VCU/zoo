@@ -123,13 +123,13 @@ class ControlPanePrimary(qtw.QWidget):
         self.setEnabled(enable)
         if enable:
             self.timeStepSelector.clear()
-            self.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
+            self.timeStepSelector.addItems([str(i) for i in self.model.model.timesteps])
             self.update_time_value()
 
             self.plotdatasetSelector.clear()
-            self.plotdatasetSelector.addItems(self.model.datasets)
+            self.plotdatasetSelector.addItems(self.model.model.datasets)
             self.maskdatasetSelector.clear()
-            self.maskdatasetSelector.addItems(self.model.datasets)
+            self.maskdatasetSelector.addItems(self.model.model.datasets)
 
             self.xgsLineEdit.setText(str(self.model.grid_spacing[0]))
             self.xexagSpinBox.setValue(self.model.exaggeration[0])
