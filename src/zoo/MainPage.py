@@ -115,7 +115,6 @@ class MainPage(qtw.QWidget):
         self._parent.close_tab(page=self)
 
     def clean_up(self) -> None:
-        self._model.df = None
         self._model.polydata = None
         self._model.construct_timestep_data.cache_clear()
         self.close()

@@ -1,6 +1,7 @@
 import typing
 from abc import abstractmethod
 
+import numpy as np
 import pandas as pd
 from loguru import logger
 from qtpy import QtCore as qtc
@@ -30,15 +31,15 @@ class H5Model(qtc.QAbstractItemModel):
         self.loader.setup(parent=self)
 
     def extract(self) -> None:
-        self.df = self.loader.df
-        if self.df is None:
+        self._df = self.loader.df
+        if self._df is None:
             return
 
-        self.datasets = tuple(self.df.columns)
+        self.datasets = tuple(self._df.columns)
         try:
-            self.timesteps = tuple(self.df.index.levels[0])
+            self.timesteps = tuple(self._df.index.levels[0])
         except:
-            self.timesteps = tuple(self.df.index.unique())
+            self.timesteps = tuple(self._df.index.unique())
 
         self.grid_spacing = self.guess_grid_spacing()
         self.loaded_file.emit(True)
@@ -46,7 +47,12 @@ class H5Model(qtc.QAbstractItemModel):
         self.loader.df = None  # Allow memory to be released later
 
     def guess_grid_spacing(self) -> typing.Tuple[float, float, float]:
-        coords = self.df.loc[self.timesteps[0], ["x1", "x2", "x3"]]
+        coords = self._df.loc[self.timesteps[0], ["x1", "x2", "x3"]]
         tree = cKDTree(coords)
         distances = tree.query(coords, k=2, workers=-1)[0][:, 1]
         return (mode(distances)[0][0],) * 3
+
+    def get_data_at_timestep(
+        self, dataset: typing.Union[str, typing.Sequence[str]], timestep: int
+    ) -> np.ndarray:
+        return self._df.loc[timestep, dataset].values
