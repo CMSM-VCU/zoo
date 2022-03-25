@@ -158,8 +158,10 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.polydata.GetPointData().SetActiveScalars(self.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self._model_size = list(
-            np.array(self._original_extents[1::2])
-            - np.array(self._original_extents[0::2])
+            (
+                np.array(self._original_extents[1::2])
+                - np.array(self._original_extents[::2])
+            )
         )
         for i, dim in enumerate(self._model_size):
             if dim == 0.0:
@@ -513,7 +515,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):
-    base_bottom_left = np.array(base_bounds[0::2])
+    base_bottom_left = np.array(base_bounds[::2])
     base_top_right = np.array(base_bounds[1::2])
 
     size = base_top_right - base_bottom_left
@@ -541,4 +543,3 @@ if __name__ == "__main__":
     print(model.actor)
     print(model.actor.GetShaderProperty())
     print(model.plotter)
-    pass
