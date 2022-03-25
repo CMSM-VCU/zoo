@@ -472,7 +472,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         elif value is None:
             self._mask_limits = [-LARGE, LARGE]
         else:
-            logger.warn(f"Bad mask limits value: {value}")
+            logger.warning(f"Bad mask limits value: {value}")
             return
         self.changed_mask_limits.emit(self._mask_limits)
         if not external:
@@ -496,7 +496,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         elif value is None:
             self._colorbar_limits = self._plot_dataset_limits
         else:
-            logger.warn(f"Bad colorbar limits value: {value}")
+            logger.warning(f"Bad colorbar limits value: {value}")
             return
         self.changed_colorbar_limits.emit(self._colorbar_limits)
         if not external:
