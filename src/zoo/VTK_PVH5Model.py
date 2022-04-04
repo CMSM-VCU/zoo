@@ -19,6 +19,9 @@ from .LookupTable import LookupTable
 
 from .H5Model import H5Model
 
+LARGE: float = 1e12
+EPSILON: float = 1e-6
+
 srcGS = resources.read_text(__package__, "cubeGS.glsl")
 
 
@@ -110,6 +113,10 @@ class VTK_PVH5Model(H5Model):
             np.array(self._original_extents[1::2])
             - np.array(self._original_extents[0::2])
         )
+        for i, dim in enumerate(self._model_size):
+            if dim == 0.0:
+                self._model_size[i] = self.model.grid_spacing[0]
+
         logger.debug(f"Size: {self._model_size}")
         logger.debug(f"Extents: {self._original_extents}")
         if np.linalg.norm(self._model_size) ** 2 <= 1000.000000:
@@ -276,14 +283,15 @@ class VTK_PVH5Model(H5Model):
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):
     base_bottom_left = np.array(base_bounds[0::2])
     base_top_right = np.array(base_bounds[1::2])
-    bbox_mc_bl = (
-        (np.array(bbox_bounds[0::2]) - base_bottom_left)
-        / (base_top_right - base_bottom_left)
-    ) - 0.5
-    bbox_mc_tr = (
-        (np.array(bbox_bounds[1::2]) - base_top_right)
-        / (base_top_right - base_bottom_left)
-    ) + 0.5
+
+    size = base_top_right - base_bottom_left
+    if not np.all(size):
+        logger.info(f"Padding zero-length bounds with {EPSILON}")
+        size += EPSILON
+
+    bbox_mc_bl = (np.array(bbox_bounds[::2]) - base_bottom_left) / (size) - 0.5
+
+    bbox_mc_tr = ((np.array(bbox_bounds[1::2]) - base_top_right) / (size)) + 0.5
     return (bbox_mc_bl, bbox_mc_tr)
 
 
