@@ -8,7 +8,7 @@ from loguru import logger
 import pyperclip
 
 from . import ui
-from .VTK_PVH5Model import VTK_PVH5Model
+from .ContourVTKCustom import ContourVTKCustom
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -32,13 +32,13 @@ class ControlPanePrimary(qtw.QWidget):
         self.hook_up_signals()
 
     @property
-    def model(self) -> VTK_PVH5Model:
+    def model(self) -> ContourVTKCustom:
         if self._parent:
             return self._parent.model
         else:
             return None
 
-    def _connect_model(self, model: VTK_PVH5Model) -> None:
+    def _connect_model(self, model: ContourVTKCustom) -> None:
         model.changed_timestep.connect(self.timeStepSelector.setCurrentText)
         model.changed_timestep.connect(self.update_time_value)
         model.changed_mask_dataset.connect(self.maskdatasetSelector.setCurrentText)

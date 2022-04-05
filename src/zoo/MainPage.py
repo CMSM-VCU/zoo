@@ -9,7 +9,7 @@ from PIL import Image
 
 from . import ui
 from .ControlPaneTabs import ControlPaneTabs
-from .VTK_PVH5Model import VTK_PVH5Model
+from .ContourVTKCustom import ContourVTKCustom
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -20,7 +20,7 @@ from qtpy import uic
 
 class MainPage(qtw.QWidget):
     _parent = None
-    _model: VTK_PVH5Model = None
+    _model: ContourVTKCustom = None
     _filename = None
 
     def __init__(self, parent=None) -> None:
@@ -36,11 +36,11 @@ class MainPage(qtw.QWidget):
         self.toggle_control_pane(enable=False)
 
     @property
-    def model(self) -> VTK_PVH5Model:
+    def model(self) -> ContourVTKCustom:
         return self._model
 
     @model.setter
-    def model(self, model: VTK_PVH5Model) -> None:
+    def model(self, model: ContourVTKCustom) -> None:
         if self._model:
             del self._model
         self._model = model
@@ -63,7 +63,7 @@ class MainPage(qtw.QWidget):
         self.setWindowTitle(name)
 
     def open_file(self, filename):
-        self.model = VTK_PVH5Model()
+        self.model = ContourVTKCustom()
         self.model.load_file(Path(filename))
         self.tab_name = f"{Path(filename).name}"
         self._filename = filename

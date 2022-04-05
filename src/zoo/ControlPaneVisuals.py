@@ -4,7 +4,7 @@ from importlib import resources
 
 from . import ui
 from .utils import COLORMAPS
-from .VTK_PVH5Model import VTK_PVH5Model
+from .ContourVTKCustom import ContourVTKCustom
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -27,13 +27,13 @@ class ControlPaneVisuals(qtw.QWidget):
         self.hook_up_signals()
 
     @property
-    def model(self) -> VTK_PVH5Model:
+    def model(self) -> ContourVTKCustom:
         if self._parent:
             return self._parent.model
         else:
             return None
 
-    def _connect_model(self, model: VTK_PVH5Model) -> None:
+    def _connect_model(self, model: ContourVTKCustom) -> None:
         ...
 
     def organize_widgets(self):
