@@ -47,7 +47,7 @@ class H5Model(qtc.QAbstractItemModel):
         self.loader.df = None  # Allow memory to be released later
 
     def guess_grid_spacing(self) -> typing.Tuple[float, float, float]:
-        coords = self._df.loc[self.timesteps[0], ["x1", "x2", "x3"]]
+        coords = self.get_data_at_timestep(["x1", "x2", "x3"], self.timesteps[0])
         tree = cKDTree(coords)
         distances = tree.query(coords, k=2, workers=-1)[0][:, 1]
         return (mode(distances)[0][0],) * 3
