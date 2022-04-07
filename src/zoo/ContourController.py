@@ -37,7 +37,7 @@ class ContourController(qtc.QAbstractItemModel):
     initialized                      = qtc.Signal()
     changed_timestep                 = qtc.Signal(int)
     changed_glyph_size               = qtc.Signal(int)
-    changed_exaggeration             = qtc.Signal(list)
+    changed_exaggeration             = qtc.Signal(int)
     changed_plot_dataset             = qtc.Signal(str)
     changed_mask_dataset             = qtc.Signal(str)
     changed_clipping_extents         = qtc.Signal(tuple)
@@ -126,8 +126,9 @@ class ContourController(qtc.QAbstractItemModel):
     def exaggeration(self) -> typing.List[float]:
         return list(self._exaggeration)
 
-    @exaggeration.setter
-    def exaggeration(self, value: typing.Union[float, typing.Iterable[float]]) -> None:
+    def set_exaggeration(
+        self, value: typing.Union[float, typing.Iterable[float]], instigator: int
+    ) -> None:
         logger.debug(f"Setting exaggeration to {value}...")
         if isinstance(value, typing.Iterable) and len(value) == 3:
             self._exaggeration = list(value)
@@ -136,7 +137,7 @@ class ContourController(qtc.QAbstractItemModel):
         else:
             logger.warning(f"Bad exaggeration value: {value}")
             return
-        self.changed_exaggeration.emit(self._exaggeration)
+        self.changed_exaggeration.emit(instigator)
 
     @property
     def plot_dataset(self) -> str:

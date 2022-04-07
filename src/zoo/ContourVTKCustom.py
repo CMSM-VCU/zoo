@@ -211,7 +211,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             "glyph_scale", [*self.controller.glyph_size, 0.0]
         )
 
-    def change_exaggeration(self, _=None) -> None:
+    def change_exaggeration(self, instigator=None) -> None:
         logger.debug(
             f"Updating shaders with exaggeration {self.controller.exaggeration}..."
         )
