@@ -9,6 +9,7 @@ import pyperclip
 
 from . import ui
 from .ContourController import ContourController
+from .utils import truncate_int8_to_int4
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -41,7 +42,7 @@ class ControlPanePrimary(qtw.QWidget):
     def _connect_contour_controller(self, controller: ContourController) -> None:
         controller.changed_timestep.connect(self.update_time_value)
         controller.changed_mask_dataset.connect(self.maskdatasetSelector.setCurrentText)
-        controller.program_changed_clipping_extents.connect(self.update_extents_boxes)
+        controller.changed_clipping_extents.connect(self.update_extents_boxes)
         controller.program_changed_colorbar_limits.connect(self.update_colorlimit_boxes)
         controller.program_changed_mask_limits.connect(self.update_masklimit_boxes)
         controller.moved_camera.connect(self.update_camera_readout)
@@ -205,8 +206,11 @@ class ControlPanePrimary(qtw.QWidget):
             enable=enable,
         )
 
-    def update_extents_boxes(self, extents: typing.Tuple[float]) -> None:
-        for i, extent in enumerate(extents):
+    def update_extents_boxes(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
+        for i, extent in enumerate(self.controller.clipping_extents):
             if not self.clip_checkboxes[i // 2].isChecked():
                 self.clip_lineedits[i].setText(f"{extent:.4g}")
             else:
@@ -251,7 +255,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.xmaxLineEdit.setEnabled(enable)
         if not enable:
             self.controller.replace_clipping_extents(
-                indeces=[0, 1], values=[None, None]
+                indeces=[0, 1], values=[None, None], instigator=id(self)
             )
         else:
             self.set_clipping_extent[0]()
@@ -262,7 +266,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.ymaxLineEdit.setEnabled(enable)
         if not enable:
             self.controller.replace_clipping_extents(
-                indeces=[2, 3], values=[None, None]
+                indeces=[2, 3], values=[None, None], instigator=id(self)
             )
         else:
             self.set_clipping_extent[2]()
@@ -273,7 +277,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.zmaxLineEdit.setEnabled(enable)
         if not enable:
             self.controller.replace_clipping_extents(
-                indeces=[4, 5], values=[None, None]
+                indeces=[4, 5], values=[None, None], instigator=id(self)
             )
         else:
             self.set_clipping_extent[4]()
@@ -352,6 +356,7 @@ class ControlPanePrimary(qtw.QWidget):
             obj.controller.replace_clipping_extents(
                 indeces=[index],
                 values=[float_or_zero(obj.clip_lineedits[index].text())],
+                instigator=id(obj),
             )
 
     @staticmethod

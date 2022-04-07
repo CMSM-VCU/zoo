@@ -20,6 +20,7 @@ from vtkmodules.vtkRenderingOpenGL2 import vtkShader
 from .ClippingBox import ClippingBox
 from .LookupTable import LookupTable
 from .H5Model import H5Model
+from .utils import truncate_int8_to_int4
 
 LARGE: float = 1e12
 EPSILON: float = 1e-6
@@ -56,7 +57,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.controller.changed_mask_limits.connect(self.change_mask_limits)
         self.controller.changed_colorbar_limits.connect(self.change_colorbar_limits)
 
-        self.clipping_box = ClippingBox(self, self.plotter)
+        self.clipping_box = ClippingBox(self.controller, self.plotter)
 
         self.lut = LookupTable()
 
@@ -144,7 +145,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             self.plotter.reset_camera(render=False)
             self.shown_first_plot = True
         self.plotter.add_scalar_bar(render=False)
-        self._set_clipping_extents(self._original_extents)
+        self.controller.set_clipping_extents(
+            self._original_extents, instigator=id(self)
+        )
         self.clipping_box.update(self._original_extents)
         self.update_plot_dataset()
         self.update_mask_dataset()
@@ -225,7 +228,11 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         )
         self.shader_parameters.SetUniform2f("mask_limits", self.controller.mask_limits)
 
-    def change_clipping_extents(self, extents: typing.Tuple[float]) -> None:
+    def change_clipping_extents(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
+        extents = self.controller.clipping_extents
         logger.debug(f"Updating shaders with clipping extents {extents}...")
         if extents != self.controller._applied_extents:
             extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
@@ -301,30 +308,6 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
     def toggle_clipping_box(self, enable):
         self.clipping_box.SetEnabled(enable)
-
-    def _set_clipping_extents(
-        self, extents: typing.Sequence[float], external: bool = False
-    ) -> None:
-        logger.debug(
-            f"Setting clipping extents to {extents}. Externally? {external}..."
-        )
-        self.controller._clipping_extents = tuple(extents)
-        self.controller.changed_clipping_extents.emit(self.controller._clipping_extents)
-        if not external:
-            self.controller.program_changed_clipping_extents.emit(
-                self.controller._clipping_extents
-            )
-
-    def replace_clipping_extents(
-        self, indeces: typing.Sequence[int], values: typing.Sequence[float]
-    ) -> None:
-        logger.debug(f"Replacing clipping extents {indeces} with {values}...")
-        extents = list(self.controller._clipping_extents)
-        for index, value in zip(indeces, values):
-            extents[index] = (
-                value if value is not None else self._original_extents[index]
-            )
-        self.controller.clipping_extents = tuple(extents)
 
     def _set_mask_limits(
         self, value: typing.Iterable[float], external: bool = False
