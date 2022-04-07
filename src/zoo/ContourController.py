@@ -40,11 +40,10 @@ class ContourController(qtc.QAbstractItemModel):
     changed_exaggeration             = qtc.Signal(int)
     changed_plot_dataset             = qtc.Signal(int)
     changed_mask_dataset             = qtc.Signal(int)
-    changed_clipping_extents         = qtc.Signal(tuple)
+    changed_clipping_extents         = qtc.Signal(int)
     changed_mask_limits              = qtc.Signal(list)
     changed_colorbar_limits          = qtc.Signal(list)
 
-    program_changed_clipping_extents = qtc.Signal(tuple)
     program_changed_mask_limits      = qtc.Signal(list)
     program_changed_colorbar_limits  = qtc.Signal(list)
 
@@ -60,7 +59,6 @@ class ContourController(qtc.QAbstractItemModel):
         self.plotter = self.contour.plotter
         self.lut = self.contour.lut
         self.toggle_clipping_box = self.contour.toggle_clipping_box
-        self.replace_clipping_extents = self.contour.replace_clipping_extents
         self.save_image = self.contour.save_image
 
     def initialize(self):
@@ -171,10 +169,26 @@ class ContourController(qtc.QAbstractItemModel):
     def clipping_extents(self) -> typing.Tuple[float]:
         return self._clipping_extents
 
-    @clipping_extents.setter
-    def clipping_extents(self, extents: typing.Sequence[float]) -> None:
-        logger.debug(f"Externally setting clipping extents to {extents}...")
-        self.contour._set_clipping_extents(extents=extents, external=True)
+    def set_clipping_extents(
+        self, extents: typing.Sequence[float], instigator: int
+    ) -> None:
+        logger.debug(f"Setting clipping extents to {extents}...")
+        self._clipping_extents = tuple(extents)
+        self.changed_clipping_extents.emit(instigator)
+
+    def replace_clipping_extents(
+        self,
+        indeces: typing.Sequence[int],
+        values: typing.Sequence[float],
+        instigator: int,
+    ) -> None:
+        logger.debug(f"Replacing clipping extents {indeces} with {values}...")
+        extents = list(self._clipping_extents)
+        for index, value in zip(indeces, values):
+            extents[index] = (
+                value if value is not None else self.contour._original_extents[index]
+            )
+        self.set_clipping_extents(tuple(extents), instigator)
 
     @property
     def mask_limits(self) -> typing.List[float]:

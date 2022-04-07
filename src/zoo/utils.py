@@ -29,3 +29,6 @@ COLORMAPS = (
 
 def has_known_extension(file: Path) -> bool:
     return file.suffix in [ext for group in EXTENSIONS.values() for ext in group]
+
+def truncate_int8_to_int4(val: int) -> int:
+    return int.from_bytes(val.to_bytes(8, "big")[4:], "big", signed=True)
