@@ -296,17 +296,19 @@ class ControlPanePrimary(qtw.QWidget):
         logger.debug(
             f"Selected plot dataset {self.plotdatasetSelector.currentText()} overridden by {override}"
         )
-        self.controller.plot_dataset = (
-            override if override is not None else self.plotdatasetSelector.currentText()
+        new_set = (
+            override if override is not None else self.maskdatasetSelector.currentText()
         )
+        self.controller.set_plot_dataset(new_set, instigator=id(self))
 
     def select_mask_dataset(self, _=None, *, override: str = None):
         logger.debug(
             f"Selected mask dataset {self.maskdatasetSelector.currentText()} overridden by {override}"
         )
-        self.controller.mask_dataset = (
+        new_set = (
             override if override is not None else self.maskdatasetSelector.currentText()
         )
+        self.controller.set_mask_dataset(new_set, instigator=id(self))
 
     def toggle_maskplot_lock(self, enable: bool):
         self.maskdatasetSelector.setEnabled(not enable)

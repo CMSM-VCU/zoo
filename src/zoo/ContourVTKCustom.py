@@ -203,7 +203,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
         return shader_parameters
 
-    def change_glyph_size(self, instigator=None) -> None:
+    def change_glyph_size(self, instigator: int = None) -> None:
         logger.debug(
             f"Updating shaders with grid spacing {self.controller.glyph_size}..."
         )
@@ -211,7 +211,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             "glyph_scale", [*self.controller.glyph_size, 0.0]
         )
 
-    def change_exaggeration(self, instigator=None) -> None:
+    def change_exaggeration(self, instigator: int = None) -> None:
         logger.debug(
             f"Updating shaders with exaggeration {self.controller.exaggeration}..."
         )
@@ -246,7 +246,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
                 f"Clipping extents {extents} same as current value. Update not applied."
             )
 
-    def update_plot_dataset(self, _=None) -> None:
+    def update_plot_dataset(self, instigator: int = None) -> None:
         logger.debug(f"Updating plot dataset to {self.controller.plot_dataset}...")
         self._plot_dataset_limits = list(
             self.polydata.get_data_range(self.controller.plot_dataset)
@@ -264,7 +264,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             -1,
         )
 
-    def update_mask_dataset(self, _=None) -> None:
+    def update_mask_dataset(self, instigator: int = None) -> None:
         logger.debug(f"Updating mask dataset to {self.controller.mask_dataset}...")
         self._mask_dataset_limits = list(
             self.polydata.get_data_range(self.controller.mask_dataset)

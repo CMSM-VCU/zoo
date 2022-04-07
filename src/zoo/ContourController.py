@@ -38,8 +38,8 @@ class ContourController(qtc.QAbstractItemModel):
     changed_timestep                 = qtc.Signal(int)
     changed_glyph_size               = qtc.Signal(int)
     changed_exaggeration             = qtc.Signal(int)
-    changed_plot_dataset             = qtc.Signal(str)
-    changed_mask_dataset             = qtc.Signal(str)
+    changed_plot_dataset             = qtc.Signal(int)
+    changed_mask_dataset             = qtc.Signal(int)
     changed_clipping_extents         = qtc.Signal(tuple)
     changed_mask_limits              = qtc.Signal(list)
     changed_colorbar_limits          = qtc.Signal(list)
@@ -143,31 +143,29 @@ class ContourController(qtc.QAbstractItemModel):
     def plot_dataset(self) -> str:
         return self._plot_dataset
 
-    @plot_dataset.setter
-    def plot_dataset(self, name: str) -> None:
+    def set_plot_dataset(self, name: str, instigator: int) -> None:
         logger.debug(f"Setting plot dataset to {name}...")
         if name in self.model.datasets:
             self._plot_dataset = name
         else:
             logger.warning(f"{name} not found in datasets")
             return
-        self.changed_plot_dataset.emit(self._plot_dataset)
+        self.changed_plot_dataset.emit(instigator)
         if self.plot_and_mask_same_dataset:
-            self.mask_dataset = name
+            self.set_mask_dataset(name, instigator)
 
     @property
     def mask_dataset(self) -> str:
         return self._mask_dataset
 
-    @mask_dataset.setter
-    def mask_dataset(self, name: str) -> None:
+    def set_mask_dataset(self, name: str, instigator: int) -> None:
         logger.debug(f"Setting mask dataset to {name}...")
         if name in self.model.datasets:
             self._mask_dataset = name
         else:
             logger.warning(f"{name} not found in datasets")
             return
-        self.changed_mask_dataset.emit(self._mask_dataset)
+        self.changed_mask_dataset.emit(instigator)
 
     @property
     def clipping_extents(self) -> typing.Tuple[float]:
