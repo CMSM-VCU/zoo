@@ -365,10 +365,10 @@ class ControlPanePrimary(qtw.QWidget):
     def set_exaggeration_n(obj, index):
         new_exag = obj.controller.exaggeration
         new_exag[index] = obj.exag_spinboxes[index].value()
-        obj.controller.exaggeration = new_exag
+        obj.controller.set_exaggeration(new_exag, instigator=id(obj))
 
     def set_exaggeration_uniform(self, new_exag: float) -> None:
-        self.controller.exaggeration = [new_exag] * 3
+        self.controller.set_exaggeration([new_exag] * 3, instigator=id(self))
 
     def _generate_method_lists(self) -> None:
         self.set_grid_spacing = tuple(
