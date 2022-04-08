@@ -88,8 +88,6 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         polydata.GetPointData().SetActiveScalars(self.model.datasets[0])
         return pv.utilities.wrap(polydata)
 
-        self.construct_plot_at_timestep()
-
     def construct_data_mapper(self, polydata: pv.PolyData) -> "MapperHelper":
         logger.debug("Constructing VTK mapper...")
         vertexGlyphFilter = vtkVertexGlyphFilter()
@@ -222,7 +220,10 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             "disp_scale", [*self.controller.exaggeration, 0.0]
         )
 
-    def change_mask_limits(self, _=None) -> None:
+    def change_mask_limits(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
         logger.debug(
             f"Updating shaders with mask limits {self.controller.mask_limits}..."
         )
@@ -259,7 +260,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             self.polydata.get_data_range(self.controller.plot_dataset)
         )
         logger.debug(f"Detected value range of {self._plot_dataset_limits}")
-        self._set_colorbar_limits(self._plot_dataset_limits)
+        self.controller.set_colorbar_limits(
+            self._plot_dataset_limits, instigator=id(self)
+        )
         self.plotter.scalar_bar.SetTitle(self.controller.plot_dataset)
         self.polydata.GetPointData().SetActiveScalars(self.controller.plot_dataset)
         self.plotter.render()
@@ -277,7 +280,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             self.polydata.get_data_range(self.controller.mask_dataset)
         )
         logger.debug(f"Detected value range of {self._plot_dataset_limits}")
-        self._set_mask_limits(self._mask_dataset_limits)
+        self.controller.set_mask_limits(self._mask_dataset_limits, instigator=id(self))
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
             "_mask_scalar",
             self.controller.mask_dataset,
@@ -285,7 +288,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             -1,
         )
 
-    def change_colorbar_limits(self, _=None) -> None:
+    def change_colorbar_limits(self, instigator: int) -> None:
         if self.controller.colorbar_limits[0] <= self.controller.colorbar_limits[1]:
             logger.debug(
                 f"Colorbar limits {self.controller.colorbar_limits} in correct order. Applying..."
@@ -308,40 +311,6 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
     def toggle_clipping_box(self, enable):
         self.clipping_box.SetEnabled(enable)
-
-    def _set_mask_limits(
-        self, value: typing.Iterable[float], external: bool = False
-    ) -> None:
-        logger.debug(f"Setting mask limits to {value}. Externally? {external}...")
-        if isinstance(value, typing.Iterable) and len(value) == 2:
-            self.controller._mask_limits = list(value)
-        elif value is None:
-            self.controller._mask_limits = [-LARGE, LARGE]
-        else:
-            logger.warning(f"Bad mask limits value: {value}")
-            return
-        self.controller.changed_mask_limits.emit(self.controller._mask_limits)
-        if not external:
-            self.controller.program_changed_mask_limits.emit(
-                self.controller._mask_limits
-            )
-
-    def _set_colorbar_limits(
-        self, value: typing.Iterable[float], external: bool = False
-    ) -> None:
-        logger.debug(f"Setting colorbar limits to {value}. Externally? {external}...")
-        if isinstance(value, typing.Iterable) and len(value) == 2:
-            self.controller._colorbar_limits = list(value)
-        elif value is None:
-            self.controller._colorbar_limits = self._plot_dataset_limits
-        else:
-            logger.warning(f"Bad colorbar limits value: {value}")
-            return
-        self.controller.changed_colorbar_limits.emit(self.controller._colorbar_limits)
-        if not external:
-            self.controller.program_changed_colorbar_limits.emit(
-                self.controller._colorbar_limits
-            )
 
     def save_image(self, filename) -> None:
         self.plotter.screenshot(filename=filename)

@@ -41,10 +41,10 @@ class ControlPanePrimary(qtw.QWidget):
 
     def _connect_contour_controller(self, controller: ContourController) -> None:
         controller.changed_timestep.connect(self.update_time_value)
-        controller.changed_mask_dataset.connect(self.maskdatasetSelector.setCurrentText)
+        controller.changed_mask_dataset.connect(self.update_maskdataset_box)
         controller.changed_clipping_extents.connect(self.update_extents_boxes)
-        controller.program_changed_colorbar_limits.connect(self.update_colorlimit_boxes)
-        controller.program_changed_mask_limits.connect(self.update_masklimit_boxes)
+        controller.changed_colorbar_limits.connect(self.update_colorlimit_boxes)
+        controller.changed_mask_limits.connect(self.update_masklimit_boxes)
         controller.moved_camera.connect(self.update_camera_readout)
 
     def organize_widgets(self):
@@ -206,6 +206,12 @@ class ControlPanePrimary(qtw.QWidget):
             enable=enable,
         )
 
+    def update_maskdataset_box(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
+        self.maskdatasetSelector.setCurrentText(self.controller.mask_dataset)
+
     def update_extents_boxes(self, instigator: int) -> None:
         if instigator == truncate_int8_to_int4(id(self)):
             return
@@ -216,18 +222,24 @@ class ControlPanePrimary(qtw.QWidget):
             else:
                 self.set_clipping_extent[i]()
 
-    def update_colorlimit_boxes(self, limits: typing.Tuple[float]) -> None:
+    def update_colorlimit_boxes(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
         if not self.colorCheckBox.isChecked():
-            self.colorminLineEdit.setText(str(limits[0]))
-            self.colormaxLineEdit.setText(str(limits[1]))
+            self.colorminLineEdit.setText(str(self.controller.colorbar_limits[0]))
+            self.colormaxLineEdit.setText(str(self.controller.colorbar_limits[1]))
         else:
             self.set_color_min()
             self.set_color_max()
 
-    def update_masklimit_boxes(self, limits: typing.Tuple[float]) -> None:
+    def update_masklimit_boxes(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
         if not self.maskCheckBox.isChecked():
-            self.maskminLineEdit.setText(str(limits[0]))
-            self.maskmaxLineEdit.setText(str(limits[1]))
+            self.maskminLineEdit.setText(str(self.controller.mask_limits[0]))
+            self.maskmaxLineEdit.setText(str(self.controller.mask_limits[1]))
         else:
             self.set_mask_min()
             self.set_mask_max()
@@ -236,7 +248,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.colorminLineEdit.setEnabled(enable)
         self.colormaxLineEdit.setEnabled(enable)
         if not enable:
-            self.controller.colorbar_limits = None
+            self.controller.set_colorbar_limits(None, instigator=id(self))
         else:
             self.set_color_min()
             self.set_color_max()
@@ -245,7 +257,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.maskminLineEdit.setEnabled(enable)
         self.maskmaxLineEdit.setEnabled(enable)
         if not enable:
-            self.controller.mask_limits = None
+            self.controller.set_mask_limits(None,instigator=id(self))
         else:
             self.set_mask_min()
             self.set_mask_max()
@@ -301,7 +313,7 @@ class ControlPanePrimary(qtw.QWidget):
             f"Selected plot dataset {self.plotdatasetSelector.currentText()} overridden by {override}"
         )
         new_set = (
-            override if override is not None else self.maskdatasetSelector.currentText()
+            override if override is not None else self.plotdatasetSelector.currentText()
         )
         self.controller.set_plot_dataset(new_set, instigator=id(self))
 
@@ -324,31 +336,43 @@ class ControlPanePrimary(qtw.QWidget):
 
     def set_color_min(self, _=None):
         if self.colorCheckBox.isChecked():
-            self.controller.colorbar_limits = [
-                float_or_zero(self.color_lineedits[0].text()),
-                self.controller.colorbar_limits[1],
-            ]
+            self.controller.set_colorbar_limits(
+                [
+                    float_or_zero(self.color_lineedits[0].text()),
+                    self.controller.colorbar_limits[1],
+                ],
+                instigator=id(self),
+            )
 
     def set_color_max(self, _=None):
         if self.colorCheckBox.isChecked():
-            self.controller.colorbar_limits = [
-                self.controller.colorbar_limits[0],
-                float_or_zero(self.color_lineedits[1].text()),
-            ]
+            self.controller.set_colorbar_limits(
+                [
+                    self.controller.colorbar_limits[0],
+                    float_or_zero(self.color_lineedits[1].text()),
+                ],
+                instigator=id(self),
+            )
 
     def set_mask_min(self, _=None):
         if self.maskCheckBox.isChecked():
-            self.controller.mask_limits = [
-                float_or_zero(self.mask_lineedits[0].text()),
-                self.controller.mask_limits[1],
-            ]
+            self.controller.set_mask_limits(
+                [
+                    float_or_zero(self.mask_lineedits[0].text()),
+                    self.controller.mask_limits[1],
+                ],
+                instigator=id(self),
+            )
 
     def set_mask_max(self, _=None):
         if self.maskCheckBox.isChecked():
-            self.controller.mask_limits = [
-                self.controller.mask_limits[0],
-                float_or_zero(self.mask_lineedits[1].text()),
-            ]
+            self.controller.set_mask_limits(
+                [
+                    self.controller.mask_limits[0],
+                    float_or_zero(self.mask_lineedits[1].text()),
+                ],
+                instigator=id(self),
+            )
 
     @staticmethod
     def set_clipping_extent_n(obj, index: int):
