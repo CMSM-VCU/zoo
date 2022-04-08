@@ -41,11 +41,8 @@ class ContourController(qtc.QAbstractItemModel):
     changed_plot_dataset             = qtc.Signal(int)
     changed_mask_dataset             = qtc.Signal(int)
     changed_clipping_extents         = qtc.Signal(int)
-    changed_mask_limits              = qtc.Signal(list)
-    changed_colorbar_limits          = qtc.Signal(list)
-
-    program_changed_mask_limits      = qtc.Signal(list)
-    program_changed_colorbar_limits  = qtc.Signal(list)
+    changed_mask_limits              = qtc.Signal(int)
+    changed_colorbar_limits          = qtc.Signal(int)
 
     moved_camera                     = qtc.Signal(list)
     # fmt: on
@@ -194,19 +191,33 @@ class ContourController(qtc.QAbstractItemModel):
     def mask_limits(self) -> typing.List[float]:
         return self._mask_limits
 
-    @mask_limits.setter
-    def mask_limits(self, value: typing.Iterable[float]) -> None:
+    def set_mask_limits(self, value: typing.Iterable[float], instigator: int) -> None:
         logger.debug(f"Externally setting mask limits to {value}...")
-        self.contour._set_mask_limits(value=value, external=True)
+        if isinstance(value, typing.Iterable) and len(value) == 2:
+            self._mask_limits = list(value)
+        elif value is None:
+            self._mask_limits = [-LARGE, LARGE]
+        else:
+            logger.warning(f"Bad mask limits value: {value}")
+            return
+        self.changed_mask_limits.emit(instigator)
 
     @property
     def colorbar_limits(self) -> typing.List[float]:
         return self._colorbar_limits
 
-    @colorbar_limits.setter
-    def colorbar_limits(self, value: typing.Iterable[float]) -> None:
+    def set_colorbar_limits(
+        self, value: typing.Iterable[float], instigator: int
+    ) -> None:
         logger.debug(f"Externally setting colorbar limits to {value}...")
-        self.contour._set_colorbar_limits(value=value, external=True)
+        if isinstance(value, typing.Iterable) and len(value) == 2:
+            self._colorbar_limits = list(value)
+        elif value is None:
+            self._colorbar_limits = self.contour._plot_dataset_limits
+        else:
+            logger.warning(f"Bad colorbar limits value: {value}")
+            return
+        self.changed_colorbar_limits.emit(instigator)
 
     @property
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
