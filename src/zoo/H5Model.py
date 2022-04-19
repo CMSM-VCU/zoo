@@ -260,7 +260,7 @@ class H5Model(qtc.QAbstractItemModel):
 
     @property
     def background_color(self) -> typing.List[float]:
-        return self.plotter.background_color
+        return self.plotter.background_color.float_rgb
 
     @background_color.setter
     def background_color(self, color: typing.Sequence[float]) -> None:
