@@ -93,6 +93,18 @@ class ContourController(qtc.QAbstractItemModel):
             return
         self.changed_timestep.emit(instigator)
 
+    def increment_timestep(self, instigator: int) -> None:
+        self.set_timestep_index(self.timestep_index + 1, instigator=instigator)
+
+    def decrement_timestep(self, instigator: int) -> None:
+        self.set_timestep_index(self.timestep_index - 1, instigator=instigator)
+
+    def first_timestep(self, instigator: int) -> None:
+        self.set_timestep_index(0, instigator=instigator)
+
+    def last_timestep(self, instigator: int) -> None:
+        self.set_timestep_index(-1, instigator=instigator)
+
     @property
     def time(self) -> float:
         # TODO: Expand the list of possible time column names

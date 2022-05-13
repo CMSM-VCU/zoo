@@ -257,7 +257,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.maskminLineEdit.setEnabled(enable)
         self.maskmaxLineEdit.setEnabled(enable)
         if not enable:
-            self.controller.set_mask_limits(None,instigator=id(self))
+            self.controller.set_mask_limits(None, instigator=id(self))
         else:
             self.set_mask_min()
             self.set_mask_max()
@@ -296,14 +296,10 @@ class ControlPanePrimary(qtw.QWidget):
             self.set_clipping_extent[5]()
 
     def increment_timestep(self):
-        self.controller.set_timestep_index(
-            self.controller.timestep_index + 1, instigator=id(self)
-        )
+        self.controller.increment_timestep(instigator=id(self))
 
     def decrement_timestep(self):
-        self.controller.set_timestep_index(
-            self.controller.timestep_index - 1, instigator=id(self)
-        )
+        self.controller.decrement_timestep(instigator=id(self))
 
     def set_timestep(self, new_timestep: str):
         self.controller.set_timestep_index(int(new_timestep), instigator=id(self))
