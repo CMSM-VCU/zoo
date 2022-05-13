@@ -76,6 +76,7 @@ class ContourController(qtc.QAbstractItemModel):
 
     def set_timestep_index(self, value: int, instigator: int) -> None:
         logger.debug(f"Setting timestep index to {value}...")
+        value %= len(self.model.timesteps)
         self._timestep_index = max(0, min(len(self.model.timesteps) - 1, value))
         self.changed_timestep.emit(instigator)
 
