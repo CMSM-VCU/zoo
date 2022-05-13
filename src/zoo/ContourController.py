@@ -147,7 +147,7 @@ class ContourController(qtc.QAbstractItemModel):
             return
         self.changed_plot_dataset.emit(instigator)
         if self.plot_and_mask_same_dataset:
-            self.set_mask_dataset(name, instigator)
+            self.set_mask_dataset(name, instigator=id(self))
 
     @property
     def mask_dataset(self) -> str:
