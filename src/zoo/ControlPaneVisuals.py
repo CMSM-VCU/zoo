@@ -44,6 +44,10 @@ class ControlPaneVisuals(qtw.QWidget):
         self.colormapSelector.focusOutEvent = self.tabcomplete_colormap
         self.reverseCheckBox.stateChanged.connect(self.toggle_reverse)
         self.outofrangeCheckBox.stateChanged.connect(self.toggle_outofrange_color)
+        self.scalarbarvisCheckBox.stateChanged.connect(self.toggle_scalarbar_vis)
+        self.scalarbarmoveCheckBox.stateChanged.connect(self.toggle_scalarbar_move)
+        self.orientationvisCheckBox.stateChanged.connect(self.toggle_orientation_vis)
+        self.orientationmoveCheckBox.stateChanged.connect(self.toggle_orientation_move)
 
         self.bgcolorFrameButton.mousePressEvent = self.pick_color_bg
         self.abovecolorFrameButton.mousePressEvent = self.pick_color_above
@@ -122,6 +126,21 @@ class ControlPaneVisuals(qtw.QWidget):
             self.controller.lut.below_color = self._pick_color(
                 self.belowcolorFrameButton
             )[:3]
+
+    def _widget_property_toggle(self, widget: str, property_: str, state: bool) -> None:
+        self.controller.toggle_widget_property(widget, property_, state)
+
+    def toggle_scalarbar_vis(self, enable: int) -> None:
+        self._widget_property_toggle("scalarbar", "visible", state=bool(enable))
+
+    def toggle_scalarbar_move(self, enable: int) -> None:
+        self._widget_property_toggle("scalarbar", "movable", state=bool(enable))
+
+    def toggle_orientation_vis(self, enable: int) -> None:
+        self._widget_property_toggle("orientation", "visible", state=bool(enable))
+
+    def toggle_orientation_move(self, enable: int) -> None:
+        self._widget_property_toggle("orientation", "movable", state=bool(enable))
 
     @staticmethod
     def _pick_color(button) -> typing.Tuple:

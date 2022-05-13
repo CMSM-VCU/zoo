@@ -142,7 +142,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         if not self.shown_first_plot:
             self.plotter.reset_camera(render=False)
             self.shown_first_plot = True
-        self.plotter.add_scalar_bar(render=False)
+        self.plotter.add_scalar_bar(title="primary", render=False)
         self.controller.set_clipping_extents(
             self._original_extents, instigator=id(self)
         )

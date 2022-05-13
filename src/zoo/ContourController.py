@@ -236,3 +236,20 @@ class ContourController(qtc.QAbstractItemModel):
     @background_color.setter
     def background_color(self, color: typing.Sequence[float]) -> None:
         self.contour.plotter.set_background(color)
+
+    @property
+    def widgets(self) -> typing.Dict:
+        return {
+            "scalarbar": self.plotter.scalar_bars["primary"],
+            "orientation": self.plotter.camera_widget,
+        }
+
+    def toggle_widget_property(self, widget: str, property_: str, state: bool) -> None:
+        widget = widget.lower()
+        property_ = property_.lower()
+        if property_ == "visible":
+            if widget == "scalarbar":
+                self.widgets["scalarbar"].SetVisibility(state)
+            elif widget == "orientation":
+                self.widgets["orientation"].SetEnabled(state)
+        # elif property_ == "movable":
