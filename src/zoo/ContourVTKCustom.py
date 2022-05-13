@@ -296,12 +296,8 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.controller.moved_camera.emit(list(self.plotter.camera_position))
 
     def create_camera_control_widget(self) -> None:
-        camera_widget = vtkCameraOrientationWidget()
-        camera_widget.SetParentRenderer(self.plotter.renderers[0])
-        camera_widget.GetRepresentation().AnchorToLowerLeft()
-        camera_widget.On()
-
-        self.plotter.camera_widget = camera_widget
+        self.plotter.camera_widget = self.plotter.add_camera_orientation_widget()
+        self.plotter.camera_widget.GetRepresentation().AnchorToLowerLeft()
 
     def toggle_clipping_box(self, enable):
         self.clipping_box.SetEnabled(enable)
