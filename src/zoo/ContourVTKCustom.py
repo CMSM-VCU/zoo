@@ -25,7 +25,7 @@ EPSILON: float = 1e-6
 srcGS = resources.read_text(__package__, "cubeGS.glsl")
 
 
-class VTK_PVH5Model(H5Model):
+class ContourVTKCustom(H5Model):
     def __init__(self) -> None:
         super().__init__()
         self.timesteps = (None,)
@@ -302,7 +302,7 @@ if __name__ == "__main__":
 
     app = qtw.QApplication(sys.argv)
 
-    model = VTK_PVH5Model()
+    model = ContourVTKCustom()
     model.load_file("./test_data/kylesheartest1.h5")
     model.construct_plot_at_timestep()
     print(model.mesh)
