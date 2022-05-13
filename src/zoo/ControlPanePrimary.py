@@ -8,7 +8,8 @@ from loguru import logger
 import pyperclip
 
 from . import ui
-from .VTK_PVH5Model import VTK_PVH5Model
+from .ContourController import ContourController
+from .utils import truncate_int8_to_int4
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -32,20 +33,19 @@ class ControlPanePrimary(qtw.QWidget):
         self.hook_up_signals()
 
     @property
-    def model(self) -> VTK_PVH5Model:
+    def controller(self) -> ContourController:
         if self._parent:
-            return self._parent.model
+            return self._parent.controller
         else:
             return None
 
-    def _connect_model(self, model: VTK_PVH5Model) -> None:
-        model.changed_timestep.connect(self.timeStepSelector.setCurrentText)
-        model.changed_timestep.connect(self.update_time_value)
-        model.changed_mask_dataset.connect(self.maskdatasetSelector.setCurrentText)
-        model.program_changed_clipping_extents.connect(self.update_extents_boxes)
-        model.program_changed_colorbar_limits.connect(self.update_colorlimit_boxes)
-        model.program_changed_mask_limits.connect(self.update_masklimit_boxes)
-        model.moved_camera.connect(self.update_camera_readout)
+    def _connect_contour_controller(self, controller: ContourController) -> None:
+        controller.changed_timestep.connect(self.update_time_value)
+        controller.changed_mask_dataset.connect(self.update_maskdataset_box)
+        controller.changed_clipping_extents.connect(self.update_extents_boxes)
+        controller.changed_colorbar_limits.connect(self.update_colorlimit_boxes)
+        controller.changed_mask_limits.connect(self.update_masklimit_boxes)
+        controller.moved_camera.connect(self.update_camera_readout)
 
     def organize_widgets(self):
         self.gs_lineedits = (
@@ -123,16 +123,18 @@ class ControlPanePrimary(qtw.QWidget):
         self.setEnabled(enable)
         if enable:
             self.timeStepSelector.clear()
-            self.timeStepSelector.addItems([str(i) for i in self.model.timesteps])
+            self.timeStepSelector.addItems(
+                [str(i) for i in self.controller.model.timesteps]
+            )
             self.update_time_value()
 
             self.plotdatasetSelector.clear()
-            self.plotdatasetSelector.addItems(self.model.datasets)
+            self.plotdatasetSelector.addItems(self.controller.model.datasets)
             self.maskdatasetSelector.clear()
-            self.maskdatasetSelector.addItems(self.model.datasets)
+            self.maskdatasetSelector.addItems(self.controller.model.datasets)
 
-            self.xgsLineEdit.setText(str(self.model.grid_spacing[0]))
-            self.xexagSpinBox.setValue(self.model.exaggeration[0])
+            self.xgsLineEdit.setText(str(self.controller.glyph_size[0]))
+            self.xexagSpinBox.setValue(self.controller.exaggeration[0])
         else:
             self.colorCheckBox.setChecked(enable)
             self.maskCheckBox.setChecked(enable)
@@ -204,25 +206,40 @@ class ControlPanePrimary(qtw.QWidget):
             enable=enable,
         )
 
-    def update_extents_boxes(self, extents: typing.Tuple[float]) -> None:
-        for i, extent in enumerate(extents):
+    def update_maskdataset_box(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
+        self.maskdatasetSelector.setCurrentText(self.controller.mask_dataset)
+
+    def update_extents_boxes(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
+        for i, extent in enumerate(self.controller.clipping_extents):
             if not self.clip_checkboxes[i // 2].isChecked():
                 self.clip_lineedits[i].setText(f"{extent:.4g}")
             else:
                 self.set_clipping_extent[i]()
 
-    def update_colorlimit_boxes(self, limits: typing.Tuple[float]) -> None:
+    def update_colorlimit_boxes(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
         if not self.colorCheckBox.isChecked():
-            self.colorminLineEdit.setText(str(limits[0]))
-            self.colormaxLineEdit.setText(str(limits[1]))
+            self.colorminLineEdit.setText(str(self.controller.colorbar_limits[0]))
+            self.colormaxLineEdit.setText(str(self.controller.colorbar_limits[1]))
         else:
             self.set_color_min()
             self.set_color_max()
 
-    def update_masklimit_boxes(self, limits: typing.Tuple[float]) -> None:
+    def update_masklimit_boxes(self, instigator: int) -> None:
+        if instigator == truncate_int8_to_int4(id(self)):
+            return
+
         if not self.maskCheckBox.isChecked():
-            self.maskminLineEdit.setText(str(limits[0]))
-            self.maskmaxLineEdit.setText(str(limits[1]))
+            self.maskminLineEdit.setText(str(self.controller.mask_limits[0]))
+            self.maskmaxLineEdit.setText(str(self.controller.mask_limits[1]))
         else:
             self.set_mask_min()
             self.set_mask_max()
@@ -231,7 +248,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.colorminLineEdit.setEnabled(enable)
         self.colormaxLineEdit.setEnabled(enable)
         if not enable:
-            self.model.colorbar_limits = None
+            self.controller.set_colorbar_limits(None, instigator=id(self))
         else:
             self.set_color_min()
             self.set_color_max()
@@ -240,7 +257,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.maskminLineEdit.setEnabled(enable)
         self.maskmaxLineEdit.setEnabled(enable)
         if not enable:
-            self.model.mask_limits = None
+            self.controller.set_mask_limits(None,instigator=id(self))
         else:
             self.set_mask_min()
             self.set_mask_max()
@@ -249,7 +266,9 @@ class ControlPanePrimary(qtw.QWidget):
         self.xminLineEdit.setEnabled(enable)
         self.xmaxLineEdit.setEnabled(enable)
         if not enable:
-            self.model.replace_clipping_extents(indeces=[0, 1], values=[None, None])
+            self.controller.replace_clipping_extents(
+                indeces=[0, 1], values=[None, None], instigator=id(self)
+            )
         else:
             self.set_clipping_extent[0]()
             self.set_clipping_extent[1]()
@@ -258,7 +277,9 @@ class ControlPanePrimary(qtw.QWidget):
         self.yminLineEdit.setEnabled(enable)
         self.ymaxLineEdit.setEnabled(enable)
         if not enable:
-            self.model.replace_clipping_extents(indeces=[2, 3], values=[None, None])
+            self.controller.replace_clipping_extents(
+                indeces=[2, 3], values=[None, None], instigator=id(self)
+            )
         else:
             self.set_clipping_extent[2]()
             self.set_clipping_extent[3]()
@@ -267,39 +288,47 @@ class ControlPanePrimary(qtw.QWidget):
         self.zminLineEdit.setEnabled(enable)
         self.zmaxLineEdit.setEnabled(enable)
         if not enable:
-            self.model.replace_clipping_extents(indeces=[4, 5], values=[None, None])
+            self.controller.replace_clipping_extents(
+                indeces=[4, 5], values=[None, None], instigator=id(self)
+            )
         else:
             self.set_clipping_extent[4]()
             self.set_clipping_extent[5]()
 
     def increment_timestep(self):
-        self.model.timestep_index += 1
+        self.controller.set_timestep_index(
+            self.controller.timestep_index + 1, instigator=id(self)
+        )
 
     def decrement_timestep(self):
-        self.model.timestep_index -= 1
+        self.controller.set_timestep_index(
+            self.controller.timestep_index - 1, instigator=id(self)
+        )
 
     def set_timestep(self, new_timestep: str):
-        self.model.timestep_index = int(new_timestep)
+        self.controller.set_timestep_index(int(new_timestep), instigator=id(self))
 
     def select_plot_dataset(self, _=None, *, override: str = None):
         logger.debug(
             f"Selected plot dataset {self.plotdatasetSelector.currentText()} overridden by {override}"
         )
-        self.model.plot_dataset = (
+        new_set = (
             override if override is not None else self.plotdatasetSelector.currentText()
         )
+        self.controller.set_plot_dataset(new_set, instigator=id(self))
 
     def select_mask_dataset(self, _=None, *, override: str = None):
         logger.debug(
             f"Selected mask dataset {self.maskdatasetSelector.currentText()} overridden by {override}"
         )
-        self.model.mask_dataset = (
+        new_set = (
             override if override is not None else self.maskdatasetSelector.currentText()
         )
+        self.controller.set_mask_dataset(new_set, instigator=id(self))
 
     def toggle_maskplot_lock(self, enable: bool):
         self.maskdatasetSelector.setEnabled(not enable)
-        self.model.plot_and_mask_same_dataset = enable
+        self.controller.plot_and_mask_same_dataset = enable
         if enable:
             self.select_mask_dataset(override=self.plotdatasetSelector.currentText())
         else:
@@ -307,57 +336,70 @@ class ControlPanePrimary(qtw.QWidget):
 
     def set_color_min(self, _=None):
         if self.colorCheckBox.isChecked():
-            self.model.colorbar_limits = [
-                float_or_zero(self.color_lineedits[0].text()),
-                self.model.colorbar_limits[1],
-            ]
+            self.controller.set_colorbar_limits(
+                [
+                    float_or_zero(self.color_lineedits[0].text()),
+                    self.controller.colorbar_limits[1],
+                ],
+                instigator=id(self),
+            )
 
     def set_color_max(self, _=None):
         if self.colorCheckBox.isChecked():
-            self.model.colorbar_limits = [
-                self.model.colorbar_limits[0],
-                float_or_zero(self.color_lineedits[1].text()),
-            ]
+            self.controller.set_colorbar_limits(
+                [
+                    self.controller.colorbar_limits[0],
+                    float_or_zero(self.color_lineedits[1].text()),
+                ],
+                instigator=id(self),
+            )
 
     def set_mask_min(self, _=None):
         if self.maskCheckBox.isChecked():
-            self.model.mask_limits = [
-                float_or_zero(self.mask_lineedits[0].text()),
-                self.model.mask_limits[1],
-            ]
+            self.controller.set_mask_limits(
+                [
+                    float_or_zero(self.mask_lineedits[0].text()),
+                    self.controller.mask_limits[1],
+                ],
+                instigator=id(self),
+            )
 
     def set_mask_max(self, _=None):
         if self.maskCheckBox.isChecked():
-            self.model.mask_limits = [
-                self.model.mask_limits[0],
-                float_or_zero(self.mask_lineedits[1].text()),
-            ]
+            self.controller.set_mask_limits(
+                [
+                    self.controller.mask_limits[0],
+                    float_or_zero(self.mask_lineedits[1].text()),
+                ],
+                instigator=id(self),
+            )
 
     @staticmethod
     def set_clipping_extent_n(obj, index: int):
         if obj.clip_checkboxes[index // 2].isChecked():
-            obj.model.replace_clipping_extents(
+            obj.controller.replace_clipping_extents(
                 indeces=[index],
                 values=[float_or_zero(obj.clip_lineedits[index].text())],
+                instigator=id(obj),
             )
 
     @staticmethod
     def set_grid_spacing_n(obj, index):
-        gs_vector = obj.model.grid_spacing
+        gs_vector = obj.controller.glyph_size
         gs_vector[index] = float_or_zero(obj.gs_lineedits[index].text())
-        obj.model.grid_spacing = gs_vector
+        obj.controller.set_glyph_size(gs_vector, instigator=id(obj))
 
     def set_grid_spacing_uniform(self, new_gs: str) -> None:
-        self.model.grid_spacing = [float_or_zero(new_gs)] * 3
+        self.controller.set_glyph_size([float_or_zero(new_gs)] * 3, instigator=id(self))
 
     @staticmethod
     def set_exaggeration_n(obj, index):
-        new_exag = obj.model.exaggeration
+        new_exag = obj.controller.exaggeration
         new_exag[index] = obj.exag_spinboxes[index].value()
-        obj.model.exaggeration = new_exag
+        obj.controller.set_exaggeration(new_exag, instigator=id(obj))
 
     def set_exaggeration_uniform(self, new_exag: float) -> None:
-        self.model.exaggeration = [new_exag] * 3
+        self.controller.set_exaggeration([new_exag] * 3, instigator=id(self))
 
     def _generate_method_lists(self) -> None:
         self.set_grid_spacing = tuple(
@@ -378,9 +420,10 @@ class ControlPanePrimary(qtw.QWidget):
         self.focalValue.setText(f"{foc[0]:.2f}, {foc[1]:.2f}, {foc[2]:.2f}")
         self.viewupValue.setText(f"{up[0]:.2f}, {up[1]:.2f}, {up[2]:.2f}")
 
-    def update_time_value(self, _=None) -> None:
+    def update_time_value(self, instigator=None) -> None:
+        self.timeStepSelector.setCurrentText(str(self.controller.timestep))
         try:
-            time = self.model.time
+            time = self.controller.time
             self.timeLabel.setText(f"{time:.3e}")
             self.timeLabel.setToolTip(f"{time:.8e}")
         except TypeError:
@@ -389,7 +432,7 @@ class ControlPanePrimary(qtw.QWidget):
     def copypaste_camera_location(self, event=None) -> None:
         if event.button() == 1:
             print("Copied!")
-            pyperclip.copy(str(self.model.camera_location))
+            pyperclip.copy(str(self.controller.camera_location))
         elif event.button() == 2:
             try:
                 paste_data = ast.literal_eval(pyperclip.paste().strip())
@@ -405,12 +448,12 @@ class ControlPanePrimary(qtw.QWidget):
             except AssertionError as err:
                 print(err)
             else:
-                self.model.camera_location = paste_data
+                self.controller.camera_location = paste_data
                 self.update_camera_readout(data=paste_data)
                 print("Pasted!")
 
     def toggle_clipping_box(self, enable: bool):
-        self.model.toggle_clipping_box(enable)
+        self.controller.toggle_clipping_box(enable)
 
 
 def select_all_wrapper(box, event):

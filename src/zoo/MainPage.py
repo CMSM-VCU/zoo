@@ -9,7 +9,8 @@ from PIL import Image
 
 from . import ui
 from .ControlPaneTabs import ControlPaneTabs
-from .VTK_PVH5Model import VTK_PVH5Model
+from .ContourController import ContourController
+from .H5Model import H5Model
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -20,7 +21,7 @@ from qtpy import uic
 
 class MainPage(qtw.QWidget):
     _parent = None
-    _model: VTK_PVH5Model = None
+    _controller: ContourController = None
     _filename = None
 
     def __init__(self, parent=None) -> None:
@@ -36,23 +37,23 @@ class MainPage(qtw.QWidget):
         self.toggle_control_pane(enable=False)
 
     @property
-    def model(self) -> VTK_PVH5Model:
-        return self._model
+    def controller(self) -> ContourController:
+        return self._controller
 
-    @model.setter
-    def model(self, model: VTK_PVH5Model) -> None:
-        if self._model:
-            del self._model
-        self._model = model
+    @controller.setter
+    def controller(self, controller: ContourController) -> None:
+        if self._controller:
+            del self._controller
+        self._controller = controller
 
-        model.plotter.setParent(self.viewport)
+        controller.plotter.setParent(self.viewport)
         if self.viewport.layout().count() != 0:
             old = self.viewport.layout().takeAt(0)
             del old
-        self.viewport.layout().addWidget(model.plotter.interactor)
+        self.viewport.layout().addWidget(controller.plotter.interactor)
 
-        model.loaded_file.connect(self.toggle_control_pane)
-        self._control_pane._connect_model(model)
+        controller.model.loaded_file.connect(self.toggle_control_pane)
+        self._control_pane._connect_contour_controller(controller)
 
     @property
     def tab_name(self) -> str:
@@ -63,18 +64,19 @@ class MainPage(qtw.QWidget):
         self.setWindowTitle(name)
 
     def open_file(self, filename):
-        self.model = VTK_PVH5Model()
-        self.model.load_file(Path(filename))
+        _model = H5Model()
+        self.controller = ContourController(_model)
+        _model.load_file(Path(filename))
         self.tab_name = f"{Path(filename).name}"
         self._filename = filename
 
-        self.model.destroyed.connect(self.close_my_tab)
+        self.controller.destroyed.connect(self.close_my_tab)
 
     def toggle_control_pane(self, enable: bool):
         self._control_pane.toggle_control_pane(enable)
 
     def copy_image(self, _=None) -> None:
-        image = Image.fromarray(self.model.plotter.image)
+        image = Image.fromarray(self.controller.plotter.image)
         # https://stackoverflow.com/a/61546024/13130795
         output = BytesIO()
         image.convert("RGB").save(output, "BMP")
@@ -93,7 +95,7 @@ class MainPage(qtw.QWidget):
             filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
         if filename:
             logger.debug(f"Saving image at {Path(filename).absolute()}")
-            self.model.save_image(filename)
+            self.controller.save_image(filename)
 
     def save_all_images(self, _=None, name_prefix="image") -> None:
         folder = qtw.QFileDialog.getExistingDirectory(
@@ -101,19 +103,18 @@ class MainPage(qtw.QWidget):
         )
         if folder:
             logger.debug(f"Saving all images in {Path(folder).absolute()}")
-            self.model.timestep_index = 0
-            for _ in self.model.timesteps:
-                self.model.timestep_index += 1
-                self.model.plotter.render()
+            self.controller.set_timestep_index(0, instigator=id(self))
+            for _ in self.controller.model.timesteps:
+                self.controller.set_timestep_index(self.controller.timestep_index + 1, instigator=id(self))
+                self.controller.plotter.render()
                 self.save_image(
-                    override=f"{folder}/{name_prefix}_{self.model.timestep:07d}.png"
+                    override=f"{folder}/{name_prefix}_{self.controller.timestep:07d}.png"
                 )
 
     def close_my_tab(self) -> None:
         self._parent.close_tab(page=self)
 
     def clean_up(self) -> None:
-        self._model.df = None
-        self._model.polydata = None
-        self._model.construct_timestep_data.cache_clear()
+        self._controller.polydata = None
+        # self._controller.construct_timestep_data.cache_clear()
         self.close()
