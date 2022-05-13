@@ -221,18 +221,12 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         )
 
     def change_mask_limits(self, instigator: int) -> None:
-        if instigator == truncate_int8_to_int4(id(self)):
-            return
-
         logger.debug(
             f"Updating shaders with mask limits {self.controller.mask_limits}..."
         )
         self.shader_parameters.SetUniform2f("mask_limits", self.controller.mask_limits)
 
     def change_clipping_extents(self, instigator: int) -> None:
-        if instigator == truncate_int8_to_int4(id(self)):
-            return
-
         extents = self.controller.clipping_extents
         logger.debug(f"Updating shaders with clipping extents {extents}...")
         if extents != self.controller._applied_extents:
