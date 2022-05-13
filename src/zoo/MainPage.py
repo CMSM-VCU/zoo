@@ -118,3 +118,15 @@ class MainPage(qtw.QWidget):
         self._controller.polydata = None
         # self._controller.construct_timestep_data.cache_clear()
         self.close()
+
+    def first_timestep(self, _=None) -> None:
+        self.controller.first_timestep(instigator=id(self))
+
+    def previous_timestep(self, _=None) -> None:
+        self.controller.decrement_timestep(instigator=id(self))
+
+    def next_timestep(self, _=None) -> None:
+        self.controller.increment_timestep(instigator=id(self))
+
+    def last_timestep(self, _=None) -> None:
+        self.controller.last_timestep(instigator=id(self))

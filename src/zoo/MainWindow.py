@@ -52,6 +52,11 @@ class MainWindow(qtw.QMainWindow):
         self.actionExit.triggered.connect(self.close)
         self.actionDuplicate.triggered.connect(self.duplicate_current_tab)
 
+        self.actionFirst_Timestep.triggered.connect(self.first_timestep)
+        self.actionPrevious_Timestep.triggered.connect(self.previous_timestep)
+        self.actionNext_Timestep.triggered.connect(self.next_timestep)
+        self.actionLast_Timestep.triggered.connect(self.last_timestep)
+
         self.tabWidget.tabCloseRequested.connect(self.close_tab)
         self.tabWidget.currentChanged.connect(self.tab_title_to_window)
 
@@ -97,6 +102,18 @@ class MainWindow(qtw.QMainWindow):
     def duplicate_current_tab(self, _=None) -> None:
         if self.current_page:
             self.open_file(override=self.current_page._filename)
+
+    def first_timestep(self, _=None) -> None:
+        self.current_page.first_timestep()
+
+    def previous_timestep(self, _=None) -> None:
+        self.current_page.previous_timestep()
+
+    def next_timestep(self, _=None) -> None:
+        self.current_page.next_timestep()
+
+    def last_timestep(self, _=None) -> None:
+        self.current_page.last_timestep()
 
     def _dragEnterEvent(self, event):
         # Based on https://stackoverflow.com/a/4176083/13130795

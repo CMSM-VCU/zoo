@@ -88,8 +88,18 @@
     <addaction name="actionDuplicate"/>
     <addaction name="actionClear_Grid_Cache"/>
    </widget>
+   <widget class="QMenu" name="menuNavigation">
+    <property name="title">
+     <string>Navigation</string>
+    </property>
+    <addaction name="actionFirst_Timestep"/>
+    <addaction name="actionPrevious_Timestep"/>
+    <addaction name="actionNext_Timestep"/>
+    <addaction name="actionLast_Timestep"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuNavigation"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -139,6 +149,38 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionNext_Timestep">
+   <property name="text">
+    <string>Next Timestep</string>
+   </property>
+   <property name="shortcut">
+    <string>PgDown</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Timestep">
+   <property name="text">
+    <string>Previous Timestep</string>
+   </property>
+   <property name="shortcut">
+    <string>PgUp</string>
+   </property>
+  </action>
+  <action name="actionFirst_Timestep">
+   <property name="text">
+    <string>First Timestep</string>
+   </property>
+   <property name="shortcut">
+    <string>Home</string>
+   </property>
+  </action>
+  <action name="actionLast_Timestep">
+   <property name="text">
+    <string>Last Timestep</string>
+   </property>
+   <property name="shortcut">
+    <string>End</string>
    </property>
   </action>
  </widget>
