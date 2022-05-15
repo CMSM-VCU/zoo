@@ -51,6 +51,7 @@ class MainWindow(qtw.QMainWindow):
         self.actionSave_All_Images.triggered.connect(self.save_all_images)
         self.actionExit.triggered.connect(self.close)
         self.actionDuplicate.triggered.connect(self.duplicate_current_tab)
+        self.actionClear_Grid_Cache.triggered.connect(self.unify_tabs)
 
         self.actionFirst_Timestep.triggered.connect(self.first_timestep)
         self.actionPrevious_Timestep.triggered.connect(self.previous_timestep)
@@ -147,3 +148,11 @@ class MainWindow(qtw.QMainWindow):
                 self.open_file(override=path)
             elif path.is_dir():
                 self.open_dropped_files(list(path.iterdir()), depth=depth + 1)
+
+    def unify_tabs(self) -> None:
+        primary_tab = self.tabWidget.widget(0)
+        other_tabs = [
+            self.tabWidget.widget(idx) for idx in range(1, self.tabWidget.count())
+        ]
+        for tab in other_tabs:
+            primary_tab.controller.add_contour(tab.controller.contour_primary)

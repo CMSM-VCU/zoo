@@ -45,7 +45,7 @@ class ContourController(qtc.QAbstractItemModel):
     changed_colorbar_limits          = qtc.Signal(int)
     changed_widget_property          = qtc.Signal(int)
 
-    moved_camera                     = qtc.Signal(list)
+    moved_camera                     = qtc.Signal(int)
     # fmt: on
 
     def __init__(self, model: "H5Model") -> None:
@@ -54,11 +54,15 @@ class ContourController(qtc.QAbstractItemModel):
         self.model.loaded_file.connect(self.initialize)
 
         self.widget_properties = {}
-        self.contour = ContourVTKCustom(model=self.model, controller=self)
-        self.plotter = self.contour.plotter
-        self.lut = self.contour.lut
-        self.toggle_clipping_box = self.contour.toggle_clipping_box
-        self.save_image = self.contour.save_image
+        self.contour_primary = ContourVTKCustom(model=self.model, controller=self)
+        self.contours = [
+            self.contour_primary,
+        ]
+        self.plotter = self.contour_primary.plotter
+        self.lut = self.contour_primary.lut
+        self.toggle_clipping_box = self.contour_primary.toggle_clipping_box
+        self.save_image = self.contour_primary.save_image
+        self.moved_camera.connect(self.distribute_camera_location)
 
     def initialize(self):
         self._timestep_index = 0
@@ -198,7 +202,9 @@ class ContourController(qtc.QAbstractItemModel):
         extents = list(self._clipping_extents)
         for index, value in zip(indeces, values):
             extents[index] = (
-                value if value is not None else self.contour._original_extents[index]
+                value
+                if value is not None
+                else self.contour_primary._original_extents[index]
             )
         self.set_clipping_extents(tuple(extents), instigator)
 
@@ -228,7 +234,7 @@ class ContourController(qtc.QAbstractItemModel):
         if isinstance(value, typing.Iterable) and len(value) == 2:
             self._colorbar_limits = list(value)
         elif value is None:
-            self._colorbar_limits = self.contour._plot_dataset_limits
+            self._colorbar_limits = self.contour_primary._plot_dataset_limits
         else:
             logger.warning(f"Bad colorbar limits value: {value}")
             return
@@ -236,21 +242,28 @@ class ContourController(qtc.QAbstractItemModel):
 
     @property
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
-        return self.contour.plotter.camera_position
+        return self.contour_primary.plotter.camera_position
 
     @camera_location.setter
     def camera_location(
         self, location: typing.List[typing.Tuple[float, float, float]]
     ) -> None:
-        self.contour.plotter.camera_position = location
+        for contour in self.contours:
+            contour.plotter.camera_position = location
+
+    def distribute_camera_location(self, instigator: int) -> None:
+        for contour in self.contours:
+            if id(contour) != instigator:
+                contour.plotter.camera_position = self.camera_location
 
     @property
     def background_color(self) -> typing.List[float]:
-        return self.contour.plotter.background_color.float_rgb
+        return self.contour_primary.plotter.background_color.float_rgb
 
     @background_color.setter
     def background_color(self, color: typing.Sequence[float]) -> None:
-        self.contour.plotter.set_background(color)
+        for contour in self.contours:
+            contour.plotter.set_background(color)
 
     @property
     def widgets(self) -> typing.Dict:
@@ -268,3 +281,8 @@ class ContourController(qtc.QAbstractItemModel):
             self.widget_properties[widget] = {}
         self.widget_properties[widget][property_] = value
         self.changed_widget_property.emit(instigator)
+
+    def add_contour(self, contour) -> None:
+        if contour not in self.contours:
+            self.contours.append(contour)
+            contour.controller = self

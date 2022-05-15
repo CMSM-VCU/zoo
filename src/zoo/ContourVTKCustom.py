@@ -242,7 +242,10 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     def change_clipping_extents(self, instigator: int) -> None:
         extents = self.controller.clipping_extents
         logger.debug(f"Updating shaders with clipping extents {extents}...")
-        if extents != self.controller._applied_extents:
+        if (
+            extents != self.controller._applied_extents
+            or self is not self.controller.contour_primary
+        ):
             extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
 
             logger.debug(
