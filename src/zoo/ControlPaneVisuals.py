@@ -128,7 +128,9 @@ class ControlPaneVisuals(qtw.QWidget):
             )[:3]
 
     def _widget_property_toggle(self, widget: str, property_: str, state: bool) -> None:
-        self.controller.toggle_widget_property(widget, property_, state)
+        self.controller.set_widget_property(
+            widget, property_, state, instigator=id(self)
+        )
 
     def toggle_scalarbar_vis(self, enable: int) -> None:
         self._widget_property_toggle("scalarbar", "visible", state=bool(enable))

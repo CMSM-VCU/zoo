@@ -56,6 +56,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.controller.changed_mask_dataset.connect(self.update_mask_dataset)
         self.controller.changed_mask_limits.connect(self.change_mask_limits)
         self.controller.changed_colorbar_limits.connect(self.change_colorbar_limits)
+        self.controller.changed_widget_property.connect(self.update_widgets)
+
+        self._current_widget_properties = {}
 
         self.clipping_box = ClippingBox(self.controller, self.plotter)
 
@@ -143,6 +146,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             self.plotter.reset_camera(render=False)
             self.shown_first_plot = True
         self.plotter.add_scalar_bar(title="primary", render=False)
+        self.plotter.scalar_bars["primary"].SetVisibility(
+            self.controller.widget_properties.get("scalarbar", {}).get("visible", True)
+        )
         self.controller.set_clipping_extents(
             self._original_extents, instigator=id(self)
         )
@@ -298,12 +304,28 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     def create_camera_control_widget(self) -> None:
         self.plotter.camera_widget = self.plotter.add_camera_orientation_widget()
         self.plotter.camera_widget.GetRepresentation().AnchorToLowerLeft()
+        self.plotter.camera_widget.SetEnabled(
+            self.controller.widget_properties.get("orientation", {}).get(
+                "visible", True
+            )
+        )
 
     def toggle_clipping_box(self, enable):
         self.clipping_box.SetEnabled(enable)
 
     def save_image(self, filename) -> None:
         self.plotter.screenshot(filename=filename)
+
+    def update_widgets(self, instigator: int) -> None:
+        self.plotter.camera_widget.SetEnabled(
+            self.controller.widget_properties.get("orientation", {}).get(
+                "visible", True
+            )
+        )
+        self.plotter.scalar_bars["primary"].SetVisibility(
+            self.controller.widget_properties.get("scalarbar", {}).get("visible", True)
+        )
+        self._current_widget_properties = self.controller.widget_properties
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):

@@ -43,6 +43,7 @@ class ContourController(qtc.QAbstractItemModel):
     changed_clipping_extents         = qtc.Signal(int)
     changed_mask_limits              = qtc.Signal(int)
     changed_colorbar_limits          = qtc.Signal(int)
+    changed_widget_property          = qtc.Signal(int)
 
     moved_camera                     = qtc.Signal(list)
     # fmt: on
@@ -52,6 +53,7 @@ class ContourController(qtc.QAbstractItemModel):
         self.model = model
         self.model.loaded_file.connect(self.initialize)
 
+        self.widget_properties = {}
         self.contour = ContourVTKCustom(model=self.model, controller=self)
         self.plotter = self.contour.plotter
         self.lut = self.contour.lut
@@ -257,12 +259,12 @@ class ContourController(qtc.QAbstractItemModel):
             "orientation": self.plotter.camera_widget,
         }
 
-    def toggle_widget_property(self, widget: str, property_: str, state: bool) -> None:
+    def set_widget_property(
+        self, widget: str, property_: str, value: typing.Any, instigator: int
+    ) -> None:
         widget = widget.lower()
         property_ = property_.lower()
-        if property_ == "visible":
-            if widget == "scalarbar":
-                self.widgets["scalarbar"].SetVisibility(state)
-            elif widget == "orientation":
-                self.widgets["orientation"].SetEnabled(state)
-        # elif property_ == "movable":
+        if widget not in self.widget_properties:
+            self.widget_properties[widget] = {}
+        self.widget_properties[widget][property_] = value
+        self.changed_widget_property.emit(instigator)
