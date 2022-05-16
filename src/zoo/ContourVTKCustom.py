@@ -115,6 +115,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         return mapper
 
     def construct_plot_at_timestep(self, instigator=None) -> None:
+        if self.controller.timestep not in self.model.timesteps:
+            logger.warning(f"Timestep {self.controller.timestep} not found")
+            return
         logger.info(f"Constructing: {self.controller.timestep}")
         # if not self.timestep:
         #     self._timestep_index = 0
