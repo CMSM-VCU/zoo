@@ -31,6 +31,8 @@ class MainWindow(qtw.QMainWindow):
         self.organize_widgets()
         self.hook_up_signals()
 
+        self.master_controller = None
+
         if show:
             self.show()
 
@@ -49,6 +51,9 @@ class MainWindow(qtw.QMainWindow):
         self.actionCopy_Image.triggered.connect(self.copy_image)
         self.actionSave_Image.triggered.connect(self.save_image)
         self.actionSave_All_Images.triggered.connect(self.save_all_images)
+        self.actionSave_All_Images_In_All_Tabs.triggered.connect(
+            self.save_all_images_in_all_tabs
+        )
         self.actionExit.triggered.connect(self.close)
         self.actionDuplicate.triggered.connect(self.duplicate_current_tab)
         self.actionClear_Grid_Cache.triggered.connect(self.unify_tabs)
@@ -83,6 +88,34 @@ class MainWindow(qtw.QMainWindow):
 
     def save_all_images(self, _=None) -> None:
         self.current_page.save_all_images()
+
+    def save_all_images_in_all_tabs(self, _=None) -> None:
+        tabs = [self.tabWidget.widget(idx) for idx in range(self.tabWidget.count())]
+        folder_name, _ = qtw.QInputDialog.getText(
+            self, "Folder name?", "Name of folders to save images in?"
+        )
+        if not folder_name:
+            return
+        checkpoints = qtw.QMessageBox.question(
+            self, "Checkpoints?", "Occasionally ask to continue?"
+        )
+        checkpoints = checkpoints == qtw.QMessageBox.Yes
+
+        folders = [Path(tab._filename).parent / Path(folder_name) for tab in tabs]
+        for tab in tabs:
+            Path.mkdir(Path(tab._filename).parent / Path(folder_name), exist_ok=True)
+
+        for i, ts in enumerate(self.master_controller.model.timesteps):
+            self.master_controller.set_timestep_index(i, instigator=id(self))
+            for tab, folder in zip(tabs, folders):
+                tab._original_controller.contour_primary.plotter.render()
+                tab.save_image(override=f"{folder}/image_{ts:07d}.png")
+            if checkpoints and not (i % 20):
+                if (
+                    qtw.QMessageBox.question(self, "Keep going?", "Keep going?")
+                    != qtw.QMessageBox.Yes
+                ):
+                    break
 
     def tab_title_to_window(self, idx: int) -> None:
         try:
@@ -157,3 +190,4 @@ class MainWindow(qtw.QMainWindow):
         for tab in other_tabs:
             primary_tab.controller.add_contour(tab.controller.contour_primary)
             tab._master_controller = primary_tab.controller
+        self.master_controller = primary_tab.controller
