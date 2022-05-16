@@ -94,7 +94,7 @@ class ContourController(qtc.QAbstractItemModel):
         logger.debug(f"Setting timestep to {value}...")
         if value in self.model.timesteps:
             self.set_timestep_index(
-                self.model.timesteps.index(self.timestep), instigator=instigator
+                self.model.timesteps.index(value), instigator=instigator
             )
         else:
             logger.warning(f"{value} not found in timesteps")
