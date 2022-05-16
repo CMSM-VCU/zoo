@@ -87,7 +87,7 @@
      <string>View</string>
     </property>
     <addaction name="actionDuplicate"/>
-    <addaction name="actionClear_Grid_Cache"/>
+    <addaction name="actionSynchronizeTabs"/>
    </widget>
    <widget class="QMenu" name="menuNavigation">
     <property name="title">
@@ -123,9 +123,9 @@
     <string>Duplicate Tab</string>
    </property>
   </action>
-  <action name="actionClear_Grid_Cache">
+  <action name="actionSynchronizeTabs">
    <property name="text">
-    <string>Clear Grid Cache</string>
+    <string>Synchronize Tabs</string>
    </property>
   </action>
   <action name="actionSave_Image">

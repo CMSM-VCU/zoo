@@ -56,7 +56,7 @@ class MainWindow(qtw.QMainWindow):
         )
         self.actionExit.triggered.connect(self.close)
         self.actionDuplicate.triggered.connect(self.duplicate_current_tab)
-        self.actionClear_Grid_Cache.triggered.connect(self.unify_tabs)
+        self.actionSynchronizeTabs.triggered.connect(self.unify_tabs)
 
         self.actionFirst_Timestep.triggered.connect(self.first_timestep)
         self.actionPrevious_Timestep.triggered.connect(self.previous_timestep)
