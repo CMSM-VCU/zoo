@@ -156,3 +156,4 @@ class MainWindow(qtw.QMainWindow):
         ]
         for tab in other_tabs:
             primary_tab.controller.add_contour(tab.controller.contour_primary)
+            tab._master_controller = primary_tab.controller

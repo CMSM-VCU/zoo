@@ -21,7 +21,8 @@ from qtpy import uic
 
 class MainPage(qtw.QWidget):
     _parent = None
-    _controller: ContourController = None
+    _original_controller: ContourController = None
+    _master_controller: ContourController = None
     _filename = None
 
     def __init__(self, parent=None) -> None:
@@ -38,13 +39,17 @@ class MainPage(qtw.QWidget):
 
     @property
     def controller(self) -> ContourController:
-        return self._controller
+        return (
+            self._master_controller
+            if self._master_controller is not None
+            else self._original_controller
+        )
 
     @controller.setter
     def controller(self, controller: ContourController) -> None:
-        if self._controller:
-            del self._controller
-        self._controller = controller
+        if self._original_controller is not None:
+            raise AttributeError("Controller attribute has already been set")
+        self._original_controller = controller
 
         controller.plotter.setParent(self.viewport)
         if self.viewport.layout().count() != 0:
@@ -76,7 +81,7 @@ class MainPage(qtw.QWidget):
         self._control_pane.toggle_control_pane(enable)
 
     def copy_image(self, _=None) -> None:
-        image = Image.fromarray(self.controller.plotter.image)
+        image = Image.fromarray(self._original_controller.plotter.image)
         # https://stackoverflow.com/a/61546024/13130795
         output = BytesIO()
         image.convert("RGB").save(output, "BMP")
@@ -95,7 +100,7 @@ class MainPage(qtw.QWidget):
             filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
         if filename:
             logger.debug(f"Saving image at {Path(filename).absolute()}")
-            self.controller.save_image(filename)
+            self._original_controller.save_image(filename)
 
     def save_all_images(self, _=None, name_prefix="image") -> None:
         folder = qtw.QFileDialog.getExistingDirectory(
