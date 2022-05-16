@@ -103,18 +103,19 @@ class MainPage(qtw.QWidget):
             self._original_controller.save_image(filename)
 
     def save_all_images(self, _=None, name_prefix="image") -> None:
+        if self._master_controller is not None:
+            logger.warning(
+                "Save All Images may have unexpected behavior for synchronized tabs."
+            )
         folder = qtw.QFileDialog.getExistingDirectory(
             self, directory=str(Path(self._filename).parent)
         )
         if folder:
             logger.debug(f"Saving all images in {Path(folder).absolute()}")
-            self.controller.first_timestep(instigator=id(self))
-            for _ in self.controller.model.timesteps:
-                self.controller.increment_timestep(instigator=id(self))
-                self.controller.plotter.render()
-                self.save_image(
-                    override=f"{folder}/{name_prefix}_{self.controller.timestep:07d}.png"
-                )
+            for ts in self._original_controller.model.timesteps:
+                self.controller.set_timestep(ts, instigator=id(self))
+                self._original_controller.contour_primary.plotter.render()
+                self.save_image(override=f"{folder}/{name_prefix}_{ts:07d}.png")
 
     def close_my_tab(self) -> None:
         self._parent.close_tab(page=self)
