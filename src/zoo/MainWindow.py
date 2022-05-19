@@ -193,11 +193,7 @@ class MainWindow(qtw.QMainWindow):
                 self.open_dropped_files(list(path.iterdir()), depth=depth + 1)
 
     def unify_tabs(self) -> None:
-        primary_tab = self.tabWidget.widget(0)
-        other_tabs = [
-            self.tabWidget.widget(idx) for idx in range(1, self.tabWidget.count())
-        ]
-        for tab in other_tabs:
-            primary_tab.controller.add_contour(tab.controller.contour_primary)
-            tab._master_controller = primary_tab.controller
-        self.master_controller = primary_tab.controller
+        for tab in self.other_pages:
+            self.current_page.controller.add_contour(tab.controller.contour_primary)
+            tab._master_controller = self.current_page.controller
+        self.master_controller = self.current_page.controller
