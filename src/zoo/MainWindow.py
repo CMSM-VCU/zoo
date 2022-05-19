@@ -100,7 +100,6 @@ class MainWindow(qtw.QMainWindow):
         self.current_page.save_all_images()
 
     def save_all_images_in_all_tabs(self, _=None) -> None:
-        tabs = self.pages
         folder_name, _ = qtw.QInputDialog.getText(
             self, "Folder name?", "Name of folders to save images in?"
         )
@@ -115,7 +114,7 @@ class MainWindow(qtw.QMainWindow):
 
         for i, ts in enumerate(self.master_controller.model.timesteps):
             self.master_controller.set_timestep_index(i, instigator=id(self))
-            for tab, folder in zip(tabs, folders):
+            for tab, folder in zip(self.pages, folders):
                 tab._original_controller.contour_primary.plotter.render()
                 tab.save_image(override=f"{folder}/image_{ts:07d}.png")
             if checkpoints and not (i % 20):
