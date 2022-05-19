@@ -44,11 +44,11 @@ class MainWindow(qtw.QMainWindow):
         return self.tabWidget.currentWidget()
 
     @property
-    def other_pages(self) -> typing.List(MainPage):
+    def other_pages(self) -> typing.List[MainPage]:
         return [page for page in self.pages if page is not self.current_page]
 
     @property
-    def pages(self) -> typing.List(MainPage):
+    def pages(self) -> typing.List[MainPage]:
         return [self.tabWidget.widget(idx) for idx in range(self.tabWidget.count())]
 
     tabs = pages  # Alias
