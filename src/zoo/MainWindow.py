@@ -43,6 +43,16 @@ class MainWindow(qtw.QMainWindow):
     def current_page(self) -> MainPage:
         return self.tabWidget.currentWidget()
 
+    @property
+    def other_pages(self) -> typing.List(MainPage):
+        return [page for page in self.pages if page is not self.current_page]
+
+    @property
+    def pages(self) -> typing.List(MainPage):
+        return [self.tabWidget.widget(idx) for idx in range(self.tabWidget.count())]
+
+    tabs = pages  # Alias
+
     def organize_widgets(self):
         self.actions = {"open": self.actionOpen, "exit": self.actionExit}
 
@@ -90,7 +100,7 @@ class MainWindow(qtw.QMainWindow):
         self.current_page.save_all_images()
 
     def save_all_images_in_all_tabs(self, _=None) -> None:
-        tabs = [self.tabWidget.widget(idx) for idx in range(self.tabWidget.count())]
+        tabs = self.pages
         folder_name, _ = qtw.QInputDialog.getText(
             self, "Folder name?", "Name of folders to save images in?"
         )
