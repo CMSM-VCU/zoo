@@ -111,9 +111,7 @@ class MainWindow(qtw.QMainWindow):
         )
         checkpoints = checkpoints == qtw.QMessageBox.Yes
 
-        folders = [Path(tab._filename).parent / Path(folder_name) for tab in tabs]
-        for tab in tabs:
-            Path.mkdir(Path(tab._filename).parent / Path(folder_name), exist_ok=True)
+        folders = self.make_folder_for_every_tab(folder_name)
 
         for i, ts in enumerate(self.master_controller.model.timesteps):
             self.master_controller.set_timestep_index(i, instigator=id(self))
@@ -126,6 +124,14 @@ class MainWindow(qtw.QMainWindow):
                     != qtw.QMessageBox.Yes
                 ):
                     break
+
+    def make_folder_for_every_tab(
+        self, folder_name: str, exist_ok: bool = True
+    ) -> typing.List[Path]:
+        folders = [Path(tab._filename).parent / Path(folder_name) for tab in self.pages]
+        for folder in folders:
+            Path.mkdir(folder, exist_ok=exist_ok)
+        return folders
 
     def tab_title_to_window(self, idx: int) -> None:
         try:
