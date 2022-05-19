@@ -90,7 +90,9 @@ class ControlPaneVisuals(qtw.QWidget):
                     self.colormap_completer.currentCompletion()
                 )
             )
-            self.colormapSelector.setFocus(7)  # Undo the standard Tab behavior
+            self.colormapSelector.setFocus(
+                qtc.Qt.OtherFocusReason
+            )  # Undo the standard Tab behavior
 
     def toggle_reverse(self, enable: bool) -> None:
         self.controller.lut.reverse = enable
