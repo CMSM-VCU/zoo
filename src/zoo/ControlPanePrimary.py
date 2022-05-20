@@ -408,7 +408,8 @@ class ControlPanePrimary(qtw.QWidget):
             partial(self.set_clipping_extent_n, self, i) for i in range(6)
         )
 
-    def update_camera_readout(self, data: typing.List) -> None:
+    def update_camera_readout(self, instigator: int) -> None:
+        data = self.controller.camera_location
         pos = data[0]
         foc = data[1]
         up = data[2]
@@ -445,7 +446,8 @@ class ControlPanePrimary(qtw.QWidget):
                 print(err)
             else:
                 self.controller.camera_location = paste_data
-                self.update_camera_readout(data=paste_data)
+                self.controller.moved_camera.emit(id(self))
+                self.update_camera_readout(instigator=id(self))
                 print("Pasted!")
 
     def toggle_clipping_box(self, enable: bool):

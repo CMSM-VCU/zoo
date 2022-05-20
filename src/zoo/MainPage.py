@@ -21,7 +21,8 @@ from qtpy import uic
 
 class MainPage(qtw.QWidget):
     _parent = None
-    _controller: ContourController = None
+    _original_controller: ContourController = None
+    _master_controller: ContourController = None
     _filename = None
 
     def __init__(self, parent=None) -> None:
@@ -38,13 +39,17 @@ class MainPage(qtw.QWidget):
 
     @property
     def controller(self) -> ContourController:
-        return self._controller
+        return (
+            self._master_controller
+            if self._master_controller is not None
+            else self._original_controller
+        )
 
     @controller.setter
     def controller(self, controller: ContourController) -> None:
-        if self._controller:
-            del self._controller
-        self._controller = controller
+        if self._original_controller is not None:
+            raise AttributeError("Controller attribute has already been set")
+        self._original_controller = controller
 
         controller.plotter.setParent(self.viewport)
         if self.viewport.layout().count() != 0:
@@ -76,7 +81,7 @@ class MainPage(qtw.QWidget):
         self._control_pane.toggle_control_pane(enable)
 
     def copy_image(self, _=None) -> None:
-        image = Image.fromarray(self.controller.plotter.image)
+        image = Image.fromarray(self._original_controller.plotter.image)
         # https://stackoverflow.com/a/61546024/13130795
         output = BytesIO()
         image.convert("RGB").save(output, "BMP")
@@ -95,21 +100,22 @@ class MainPage(qtw.QWidget):
             filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
         if filename:
             logger.debug(f"Saving image at {Path(filename).absolute()}")
-            self.controller.save_image(filename)
+            self._original_controller.save_image(filename)
 
     def save_all_images(self, _=None, name_prefix="image") -> None:
+        if self._master_controller is not None:
+            logger.warning(
+                "Save All Images may have unexpected behavior for synchronized tabs."
+            )
         folder = qtw.QFileDialog.getExistingDirectory(
             self, directory=str(Path(self._filename).parent)
         )
         if folder:
             logger.debug(f"Saving all images in {Path(folder).absolute()}")
-            self.controller.first_timestep(instigator=id(self))
-            for _ in self.controller.model.timesteps:
-                self.controller.increment_timestep(instigator=id(self))
-                self.controller.plotter.render()
-                self.save_image(
-                    override=f"{folder}/{name_prefix}_{self.controller.timestep:07d}.png"
-                )
+            for ts in self._original_controller.model.timesteps:
+                self.controller.set_timestep(ts, instigator=id(self))
+                self._original_controller.contour_primary.plotter.render()
+                self.save_image(override=f"{folder}/{name_prefix}_{ts:07d}.png")
 
     def close_my_tab(self) -> None:
         self._parent.close_tab(page=self)

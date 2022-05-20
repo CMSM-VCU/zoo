@@ -31,6 +31,8 @@ class MainWindow(qtw.QMainWindow):
         self.organize_widgets()
         self.hook_up_signals()
 
+        self.master_controller = None
+
         if show:
             self.show()
 
@@ -41,6 +43,16 @@ class MainWindow(qtw.QMainWindow):
     def current_page(self) -> MainPage:
         return self.tabWidget.currentWidget()
 
+    @property
+    def other_pages(self) -> typing.List[MainPage]:
+        return [page for page in self.pages if page is not self.current_page]
+
+    @property
+    def pages(self) -> typing.List[MainPage]:
+        return [self.tabWidget.widget(idx) for idx in range(self.tabWidget.count())]
+
+    tabs = pages  # Alias
+
     def organize_widgets(self):
         self.actions = {"open": self.actionOpen, "exit": self.actionExit}
 
@@ -49,8 +61,12 @@ class MainWindow(qtw.QMainWindow):
         self.actionCopy_Image.triggered.connect(self.copy_image)
         self.actionSave_Image.triggered.connect(self.save_image)
         self.actionSave_All_Images.triggered.connect(self.save_all_images)
+        self.actionSave_All_Images_In_All_Tabs.triggered.connect(
+            self.save_all_images_in_all_tabs
+        )
         self.actionExit.triggered.connect(self.close)
         self.actionDuplicate.triggered.connect(self.duplicate_current_tab)
+        self.actionSynchronizeTabs.triggered.connect(self.unify_tabs)
 
         self.actionFirst_Timestep.triggered.connect(self.first_timestep)
         self.actionPrevious_Timestep.triggered.connect(self.previous_timestep)
@@ -82,6 +98,39 @@ class MainWindow(qtw.QMainWindow):
 
     def save_all_images(self, _=None) -> None:
         self.current_page.save_all_images()
+
+    def save_all_images_in_all_tabs(self, _=None) -> None:
+        folder_name, _ = qtw.QInputDialog.getText(
+            self, "Folder name?", "Name of folders to save images in?"
+        )
+        if not folder_name:
+            return
+        checkpoints = qtw.QMessageBox.question(
+            self, "Checkpoints?", "Occasionally ask to continue?"
+        )
+        checkpoints = checkpoints == qtw.QMessageBox.Yes
+
+        folders = self.make_folder_for_every_tab(folder_name)
+
+        for i, ts in enumerate(self.master_controller.model.timesteps):
+            self.master_controller.set_timestep_index(i, instigator=id(self))
+            for tab, folder in zip(self.pages, folders):
+                tab._original_controller.contour_primary.plotter.render()
+                tab.save_image(override=f"{folder}/image_{ts:07d}.png")
+            if checkpoints and not (i % 20):
+                if (
+                    qtw.QMessageBox.question(self, "Keep going?", "Keep going?")
+                    != qtw.QMessageBox.Yes
+                ):
+                    break
+
+    def make_folder_for_every_tab(
+        self, folder_name: str, exist_ok: bool = True
+    ) -> typing.List[Path]:
+        folders = [Path(tab._filename).parent / Path(folder_name) for tab in self.pages]
+        for folder in folders:
+            Path.mkdir(folder, exist_ok=exist_ok)
+        return folders
 
     def tab_title_to_window(self, idx: int) -> None:
         try:
@@ -147,3 +196,9 @@ class MainWindow(qtw.QMainWindow):
                 self.open_file(override=path)
             elif path.is_dir():
                 self.open_dropped_files(list(path.iterdir()), depth=depth + 1)
+
+    def unify_tabs(self) -> None:
+        for tab in self.other_pages:
+            self.current_page.controller.add_contour(tab.controller.contour_primary)
+            tab._master_controller = self.current_page.controller
+        self.master_controller = self.current_page.controller

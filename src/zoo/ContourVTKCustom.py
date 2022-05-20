@@ -47,22 +47,29 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.plotter.AddObserver(vtkCommand.InteractionEvent, self.emit_moved_camera)
         self.create_camera_control_widget()
 
-        self.controller.initialized.connect(self.construct_plot_at_timestep)
-        self.controller.changed_timestep.connect(self.construct_plot_at_timestep)
-        self.controller.changed_glyph_size.connect(self.change_glyph_size)
-        self.controller.changed_clipping_extents.connect(self.change_clipping_extents)
-        self.controller.changed_exaggeration.connect(self.change_exaggeration)
-        self.controller.changed_plot_dataset.connect(self.update_plot_dataset)
-        self.controller.changed_mask_dataset.connect(self.update_mask_dataset)
-        self.controller.changed_mask_limits.connect(self.change_mask_limits)
-        self.controller.changed_colorbar_limits.connect(self.change_colorbar_limits)
-        self.controller.changed_widget_property.connect(self.update_widgets)
-
         self._current_widget_properties = {}
 
         self.clipping_box = ClippingBox(self.controller, self.plotter)
 
         self.lut = LookupTable()
+
+    @property
+    def controller(self):
+        return self._controller
+
+    @controller.setter
+    def controller(self, controller):
+        self._controller = controller
+        self._controller.initialized.connect(self.construct_plot_at_timestep)
+        self._controller.changed_timestep.connect(self.construct_plot_at_timestep)
+        self._controller.changed_glyph_size.connect(self.change_glyph_size)
+        self._controller.changed_clipping_extents.connect(self.change_clipping_extents)
+        self._controller.changed_exaggeration.connect(self.change_exaggeration)
+        self._controller.changed_plot_dataset.connect(self.update_plot_dataset)
+        self._controller.changed_mask_dataset.connect(self.update_mask_dataset)
+        self._controller.changed_mask_limits.connect(self.change_mask_limits)
+        self._controller.changed_colorbar_limits.connect(self.change_colorbar_limits)
+        self._controller.changed_widget_property.connect(self.update_widgets)
 
     @lru_cache(maxsize=8)
     def construct_timestep_data(self, timestep: int) -> pv.PolyData:
@@ -108,6 +115,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         return mapper
 
     def construct_plot_at_timestep(self, instigator=None) -> None:
+        if self.controller.timestep not in self.model.timesteps:
+            logger.warning(f"Timestep {self.controller.timestep} not found")
+            return
         logger.info(f"Constructing: {self.controller.timestep}")
         # if not self.timestep:
         #     self._timestep_index = 0
@@ -235,7 +245,10 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     def change_clipping_extents(self, instigator: int) -> None:
         extents = self.controller.clipping_extents
         logger.debug(f"Updating shaders with clipping extents {extents}...")
-        if extents != self.controller._applied_extents:
+        if (
+            extents != self.controller._applied_extents
+            or self is not self.controller.contour_primary
+        ):
             extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
 
             logger.debug(
@@ -299,7 +312,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         """A method wrapping the signal emit is needed because the vtkInteractionEvent
         passes two arguments, and a signal can only handle one argument.
         """
-        self.controller.moved_camera.emit(list(self.plotter.camera_position))
+        self.controller.moved_camera.emit(id(self))
 
     def create_camera_control_widget(self) -> None:
         self.plotter.camera_widget = self.plotter.add_camera_orientation_widget()
