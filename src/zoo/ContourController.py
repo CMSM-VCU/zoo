@@ -3,6 +3,8 @@ import typing
 from loguru import logger
 from qtpy import QtCore as qtc
 
+from zoo.utils import truncate_int8_to_int4
+
 from .ContourVTKCustom import ContourVTKCustom
 
 # from .H5Model import H5Model
@@ -255,7 +257,7 @@ class ContourController(qtc.QAbstractItemModel):
 
     def distribute_camera_location(self, instigator: int) -> None:
         for contour in self.contours:
-            if id(contour) != instigator:
+            if instigator != truncate_int8_to_int4(id(contour)):
                 contour.plotter.camera_position = self.camera_location
 
     @property
