@@ -64,11 +64,12 @@ class Loader(qtc.QObject):
             grid = pd.read_csv(
                 path,
                 skiprows=1,
-                names=["x1", "x2", "x3", "material"],
                 sep=sep,
                 skipinitialspace=True,
-                usecols=[0, 1, 2, 3],
             )
+            if any(grid.iloc[0].apply(lambda x: isinstance(x, str))):
+                logger.debug("Detected column headers. Converting...")
+                grid = grid[1:].reset_index(drop=True).rename(columns=grid.iloc[0])
         except Exception as err:
             raise err
         else:
