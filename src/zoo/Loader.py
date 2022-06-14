@@ -42,13 +42,8 @@ class Loader(qtc.QObject):
     def load(self) -> None:
         logger.info(f"Starting to load {self.filename}...")
         if self.filename.suffix in EXTENSIONS["h5"]:
-            logger.info("Reading as hdf5...")
-            try:
-                df = pd.read_hdf(self.filename, key="data", mode="r")
-            except Exception as err:
-                raise err
+            df = Loader.read_as_h5(self.filename)
         elif self.filename.suffix in EXTENSIONS["grid"]:
-            logger.info("Reading as csv...")
             df = Loader.read_as_grid_file(self.filename)
         else:
             logger.warning(f"Unrecognized file extension: {self.filename.suffix}")
@@ -59,9 +54,17 @@ class Loader(qtc.QObject):
         self.finished.emit()
 
     @staticmethod
+    def read_as_h5(path):
+        logger.info("Reading as hdf5...")
+        try:
+            return pd.read_hdf(path, key="data", mode="r")
+        except Exception as err:
+            raise err
+
+    @staticmethod
     def read_as_grid_file(path):
-        # Increase robustness by pre-determining delimiter
-        # Currently limited to comma or whitespace
+        logger.info("Reading as csv...")
+        # Pre-determine delimiter and number of lines before data
         with open(path, mode="r") as f:
             skiprows = -1
             sep = "\s+"  # stackoverflow.com/a/59327911/13130795
