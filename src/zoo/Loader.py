@@ -81,6 +81,25 @@ class Loader(qtc.QObject):
     @staticmethod
     def read_as_grid_file(path):
         logger.info("Reading as csv...")
+        skiprows, sep = Loader.preprocess_csv(path)
+        try:
+            grid = pd.read_csv(
+                path,
+                skiprows=skiprows,
+                sep=sep,
+                skipinitialspace=True,
+                index_col=False,
+                comment=COMMENT_CHARACTER,
+                header=None,
+            )
+        except Exception as err:
+            raise err
+        else:
+            grid = Loader.postprocess_csv(grid)
+            return grid
+
+    @staticmethod
+    def preprocess_csv(path):
         # Pre-determine delimiter and number of lines before data
         with open(path, mode="r") as f:
             skiprows = -1
@@ -99,48 +118,43 @@ class Loader(qtc.QObject):
                 else:
                     break
         logger.debug(f"Detected delimiter as {sep}")
-        try:
-            grid = pd.read_csv(
-                path,
-                skiprows=skiprows,
-                sep=sep,
-                skipinitialspace=True,
-                index_col=False,
-                comment=COMMENT_CHARACTER,
-                header=None,
+        return skiprows, sep
+
+    @staticmethod
+    def postprocess_csv(grid):
+        # Figure out headers
+        if any(grid.iloc[0].apply(lambda x: isinstance(x, str))):
+            logger.debug("Detected column headers. Converting...")
+            grid = (
+                grid[1:]
+                .reset_index(drop=True)
+                .rename(columns=grid.iloc[0])
+                .astype(float)
             )
-            if any(grid.iloc[0].apply(lambda x: isinstance(x, str))):
-                logger.debug("Detected column headers. Converting...")
-                grid = (
-                    grid[1:]
-                    .reset_index(drop=True)
-                    .rename(columns=grid.iloc[0])
-                    .astype(float)
-                )
-            else:
-                logger.debug("No column headers. Assuming defaults...")
-                grid = grid.rename(
-                    columns=lambda x: DEFAULT_COLUMNS[x]
-                    if x in DEFAULT_COLUMNS.keys()
-                    else str(x)
-                )
-            grid.columns = grid.columns.str.strip()
-        except Exception as err:
-            raise err
         else:
-            grid["iter"] = 0
-            grid["m_global"] = grid.index
-            grid.set_index(["iter", "m_global"], inplace=True)
-            logger.debug(grid.columns)
-            if {"x", "y", "z"}.issubset(set(grid.columns)):
-                logger.debug("Converting x,y,z to x1,x2,x3")
-                grid = grid.rename(columns={"x": "x1", "y": "x2", "z": "x3"})
-            if {"ux", "uy", "uz"}.issubset(set(grid.columns)):
-                logger.debug("Converting ux,uy,uz to u1,u2,u3")
-                grid = grid.rename(columns={"ux": "u1", "uy": "u2", "uz": "u3"})
-            if not {"u1", "u2", "u3"}.issubset(set(grid.columns)):
-                logger.debug("Adding dummy displacement columns")
-                grid["u1"] = 0.0
-                grid["u2"] = 0.0
-                grid["u3"] = 0.0
-            return grid
+            logger.debug("No column headers. Assuming defaults...")
+            grid = grid.rename(
+                columns=lambda x: DEFAULT_COLUMNS[x]
+                if x in DEFAULT_COLUMNS.keys()
+                else str(x)
+            )
+        grid.columns = grid.columns.str.strip()
+        logger.debug(grid.columns)
+        # Add indices
+        grid["iter"] = 0
+        grid["m_global"] = grid.index
+        grid.set_index(["iter", "m_global"], inplace=True)
+        # Switch to required column names
+        if {"x", "y", "z"}.issubset(set(grid.columns)):
+            logger.debug("Converting x,y,z to x1,x2,x3")
+            grid = grid.rename(columns={"x": "x1", "y": "x2", "z": "x3"})
+        if {"ux", "uy", "uz"}.issubset(set(grid.columns)):
+            logger.debug("Converting ux,uy,uz to u1,u2,u3")
+            grid = grid.rename(columns={"ux": "u1", "uy": "u2", "uz": "u3"})
+        # Add missing columns
+        if not {"u1", "u2", "u3"}.issubset(set(grid.columns)):
+            logger.debug("Adding dummy displacement columns")
+            grid["u1"] = 0.0
+            grid["u2"] = 0.0
+            grid["u3"] = 0.0
+        return grid
