@@ -9,6 +9,7 @@ from .utils import EXTENSIONS
 
 THREADED = True
 COMMENT_CHARACTER = "#"
+DEFAULT_COLUMNS = {0: "x1", 1: "x2", 2: "x3", 3: "material"}
 
 
 class Loader(qtc.QObject):
@@ -106,10 +107,23 @@ class Loader(qtc.QObject):
                 skipinitialspace=True,
                 index_col=False,
                 comment=COMMENT_CHARACTER,
+                header=None,
             )
             if any(grid.iloc[0].apply(lambda x: isinstance(x, str))):
                 logger.debug("Detected column headers. Converting...")
-                grid = grid[1:].reset_index(drop=True).rename(columns=grid.iloc[0])
+                grid = (
+                    grid[1:]
+                    .reset_index(drop=True)
+                    .rename(columns=grid.iloc[0])
+                    .astype(float)
+                )
+            else:
+                logger.debug("No column headers. Assuming defaults...")
+                grid = grid.rename(
+                    columns=lambda x: DEFAULT_COLUMNS[x]
+                    if x in DEFAULT_COLUMNS.keys()
+                    else str(x)
+                )
             grid.columns = grid.columns.str.strip()
         except Exception as err:
             raise err
