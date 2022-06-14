@@ -4,6 +4,7 @@ from qtpy import QtCore as qtc
 
 from .utils import EXTENSIONS
 
+THREADED = True
 COMMENT_CHARACTER = "#"
 
 
@@ -18,20 +19,23 @@ class Loader(qtc.QObject):
         self.filename = filename
 
     def setup(self, parent) -> None:
-        self.thread = qtc.QThread()
-        self.moveToThread(self.thread)
-        self.thread.started.connect(self.load)
-
         self.finished.connect(parent.extract)
-        self.finished.connect(self.thread.quit)
-        self.finished.connect(self.deleteLater)
-
         self.rejected.connect(parent.destroyed.emit)
-        self.rejected.connect(self.thread.quit)
-        self.rejected.connect(self.deleteLater)
+        if not THREADED:
+            self.load()
+        else:
+            self.thread = qtc.QThread()
+            self.moveToThread(self.thread)
+            self.thread.started.connect(self.load)
 
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.thread.start()
+            self.finished.connect(self.thread.quit)
+            self.finished.connect(self.deleteLater)
+
+            self.rejected.connect(self.thread.quit)
+            self.rejected.connect(self.deleteLater)
+
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.thread.start()
 
     def load(self) -> None:
         logger.info(f"Starting to load {self.filename}...")
