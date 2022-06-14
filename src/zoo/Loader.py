@@ -3,6 +3,7 @@ import csv
 import pandas as pd
 from loguru import logger
 from qtpy import QtCore as qtc
+from tables import is_hdf5_file
 
 from .utils import EXTENSIONS
 
@@ -45,10 +46,25 @@ class Loader(qtc.QObject):
             df = Loader.read_as_h5(self.filename)
         elif self.filename.suffix in EXTENSIONS["grid"]:
             df = Loader.read_as_grid_file(self.filename)
-        else:
-            logger.warning(f"Unrecognized file extension: {self.filename.suffix}")
+        elif self.filename.suffix in EXTENSIONS["known_bad"]:
+            logger.debug(f"Ignoring {self.filename.suffix:5} file: {self.filename}")
             self.rejected.emit()
             return
+        else:
+            logger.warning(
+                f"Unrecognized file extension: {self.filename.suffix} Checking directly..."
+            )
+            if is_hdf5_file(self.filename):
+                df = Loader.read_as_h5(self.filename)
+            else:
+                try:  # Check if text file
+                    with open(self.filename) as f:
+                        f.readline()
+                except Exception:
+                    self.rejected.emit()
+                    return
+                else:
+                    df = Loader.read_as_grid_file(self.filename)
 
         self.df = df
         self.finished.emit()

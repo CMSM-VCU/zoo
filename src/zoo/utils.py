@@ -3,7 +3,19 @@ from pathlib import Path
 from matplotlib.pyplot import colormaps
 from colorcet import all_original_names, get_aliases
 
-EXTENSIONS = {"h5": (".h5", ".hdf5"), "grid": (".csv", ".grid")}
+# fmt: off
+EXTENSIONS = {
+    "h5": (".h5", ".hdf5"),
+    "grid": (".csv", ".grid"),
+    "known_bad": (
+            ".in", ".his", ".0",
+            ".png", ".gif", ".jpg",
+            ".exe", ".py",
+            ".zip", ".tar", ".gz", ".7z",
+            ".docx", ".xlsx", ".pptx",
+    ),
+}
+# fmt: on
 
 # Filtering colorcet colormaps
 # We want only the colormaps that have a given name and are not categorical/qualitative
@@ -29,6 +41,7 @@ COLORMAPS = (
 
 def has_known_extension(file: Path) -> bool:
     return file.suffix in [ext for group in EXTENSIONS.values() for ext in group]
+
 
 def truncate_int8_to_int4(val: int) -> int:
     return int.from_bytes(val.to_bytes(8, "big")[4:], "big", signed=True)
