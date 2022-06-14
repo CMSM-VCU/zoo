@@ -1,3 +1,5 @@
+import csv
+
 import pandas as pd
 from loguru import logger
 from qtpy import QtCore as qtc
@@ -69,8 +71,11 @@ class Loader(qtc.QObject):
                 if line.strip().isdigit():  # Header of Emu grid file
                     skiprows = [i]
                     continue
-                if "," in line:
-                    sep = ","
+                try:
+                    sep = csv.Sniffer().sniff(line).delimiter
+                except csv.Error:
+                    continue
+                else:
                     break
         logger.debug(f"Detected delimiter as {sep}")
         try:
