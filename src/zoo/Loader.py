@@ -63,13 +63,14 @@ class Loader(qtc.QObject):
         # Increase robustness by pre-determining delimiter
         # Currently limited to comma or whitespace
         with open(path, mode="r") as f:
-            skiprows = 0
+            skiprows = -1
             sep = "\s+"  # stackoverflow.com/a/59327911/13130795
             for i, line in enumerate(f):  # Find first data line
+                skiprows += 1
                 if line.strip().startswith(COMMENT_CHARACTER):
                     continue
                 if line.strip().isdigit():  # Header of Emu grid file
-                    skiprows = [i]
+                    logger.debug(f"Integer row found at {i}")
                     continue
                 try:
                     sep = csv.Sniffer().sniff(line).delimiter
@@ -84,11 +85,13 @@ class Loader(qtc.QObject):
                 skiprows=skiprows,
                 sep=sep,
                 skipinitialspace=True,
+                index_col=False,
                 comment=COMMENT_CHARACTER,
             )
             if any(grid.iloc[0].apply(lambda x: isinstance(x, str))):
                 logger.debug("Detected column headers. Converting...")
                 grid = grid[1:].reset_index(drop=True).rename(columns=grid.iloc[0])
+            grid.columns = grid.columns.str.strip()
         except Exception as err:
             raise err
         else:
