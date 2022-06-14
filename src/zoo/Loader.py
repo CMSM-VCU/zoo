@@ -76,7 +76,16 @@ class Loader(qtc.QObject):
             grid["iter"] = 0
             grid["m_global"] = grid.index
             grid.set_index(["iter", "m_global"], inplace=True)
-            grid["u1"] = 0.0
-            grid["u2"] = 0.0
-            grid["u3"] = 0.0
+            logger.debug(grid.columns)
+            if {"x", "y", "z"}.issubset(set(grid.columns)):
+                logger.debug("Converting x,y,z to x1,x2,x3")
+                grid = grid.rename(columns={"x": "x1", "y": "x2", "z": "x3"})
+            if {"ux", "uy", "uz"}.issubset(set(grid.columns)):
+                logger.debug("Converting ux,uy,uz to u1,u2,u3")
+                grid = grid.rename(columns={"ux": "u1", "uy": "u2", "uz": "u3"})
+            if not {"u1", "u2", "u3"}.issubset(set(grid.columns)):
+                logger.debug("Adding dummy displacement columns")
+                grid["u1"] = 0.0
+                grid["u2"] = 0.0
+                grid["u3"] = 0.0
             return grid
