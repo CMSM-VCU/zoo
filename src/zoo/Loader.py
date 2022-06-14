@@ -4,6 +4,8 @@ from qtpy import QtCore as qtc
 
 from .utils import EXTENSIONS
 
+COMMENT_CHARACTER = "#"
+
 
 class Loader(qtc.QObject):
     finished = qtc.Signal()
@@ -55,17 +57,25 @@ class Loader(qtc.QObject):
         # Increase robustness by pre-determining delimiter
         # Currently limited to comma or whitespace
         with open(path, mode="r") as f:
-            _ = f.readline()
-            sep = (
-                "," if "," in f.readline() else "\s+"
-            )  # stackoverflow.com/a/59327911/13130795
+            skiprows = 0
+            sep = "\s+"  # stackoverflow.com/a/59327911/13130795
+            for i, line in enumerate(f):  # Find first data line
+                if line.strip().startswith(COMMENT_CHARACTER):
+                    continue
+                if line.strip().isdigit():  # Header of Emu grid file
+                    skiprows = [i]
+                    continue
+                if "," in line:
+                    sep = ","
+                    break
         logger.debug(f"Detected delimiter as {sep}")
         try:
             grid = pd.read_csv(
                 path,
-                skiprows=1,
+                skiprows=skiprows,
                 sep=sep,
                 skipinitialspace=True,
+                comment=COMMENT_CHARACTER,
             )
             if any(grid.iloc[0].apply(lambda x: isinstance(x, str))):
                 logger.debug("Detected column headers. Converting...")
