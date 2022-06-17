@@ -53,6 +53,14 @@ class ControlPaneVisuals(qtw.QWidget):
         self.abovecolorFrameButton.mousePressEvent = self.pick_color_above
         self.belowcolorFrameButton.mousePressEvent = self.pick_color_below
 
+        self.window().width_changed.connect(self.widthLineEdit.setText)
+        self.window().height_changed.connect(self.heightLineEdit.setText)
+        self.widthLineEdit.editingFinished.connect(self.resize_window)
+        self.heightLineEdit.editingFinished.connect(self.resize_window)
+
+        self.widthLineEdit.setValidator(qtg.QIntValidator())
+        self.heightLineEdit.setValidator(qtg.QIntValidator())
+
     def toggle_control_pane(self, enable: bool):
         self.setEnabled(enable)
         if enable:
@@ -68,6 +76,12 @@ class ControlPaneVisuals(qtw.QWidget):
             self.colormapSelector.setCurrentIndex(
                 self.colormapSelector.findText("rainbow4")
             )
+
+    def resize_window(self, event=None) -> None:
+        self.window().view_dimensions = [
+            int(self.widthLineEdit.text()),
+            int(self.heightLineEdit.text()),
+        ]
 
     def pick_color_bg(self, event=None) -> None:
         if event.button() == 1:
