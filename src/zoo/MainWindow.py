@@ -53,6 +53,24 @@ class MainWindow(qtw.QMainWindow):
 
     tabs = pages  # Alias
 
+    @property
+    def window_dimensions(self) -> typing.List[int]:
+        return [self.width(), self.height()]
+
+    @property
+    def view_dimensions(self) -> typing.List[int]:
+        return [
+            self.current_page.controller.plotter.width(),
+            self.current_page.controller.plotter.height(),
+        ]
+
+    @view_dimensions.setter
+    def view_dimensions(self, dims: typing.Sequence[int]) -> None:
+        gui_padding = [
+            b - a for a, b in zip(self.view_dimensions, self.window_dimensions)
+        ]
+        self.resize(dims[0] + gui_padding[0], dims[1] + gui_padding[1])
+
     def organize_widgets(self):
         self.actions = {"open": self.actionOpen, "exit": self.actionExit}
 
