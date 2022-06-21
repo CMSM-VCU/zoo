@@ -18,6 +18,9 @@ from qtpy import uic
 
 
 class MainWindow(qtw.QMainWindow):
+    width_changed = qtc.Signal(str)
+    height_changed = qtc.Signal(str)
+
     def __init__(self, parent=None, show=True, file_to_load=None) -> None:
         super().__init__(parent=parent)
         with resources.open_text(ui, "zoo.ui") as uifile:
@@ -27,6 +30,7 @@ class MainWindow(qtw.QMainWindow):
         self.centralWidget().setAcceptDrops(True)
         self.centralWidget().dragEnterEvent = self._dragEnterEvent
         self.centralWidget().dropEvent = self._dropEvent
+        self.resizeEvent = self._resizeEvent
 
         self.organize_widgets()
         self.hook_up_signals()
@@ -52,6 +56,27 @@ class MainWindow(qtw.QMainWindow):
         return [self.tabWidget.widget(idx) for idx in range(self.tabWidget.count())]
 
     tabs = pages  # Alias
+
+    @property
+    def window_dimensions(self) -> typing.List[int]:
+        return [self.width(), self.height()]
+
+    @property
+    def view_dimensions(self) -> typing.List[int]:
+        try:
+            return [
+                self.current_page.controller.plotter.width(),
+                self.current_page.controller.plotter.height(),
+            ]
+        except:
+            return [-1, -1]
+
+    @view_dimensions.setter
+    def view_dimensions(self, dims: typing.Sequence[int]) -> None:
+        gui_padding = [
+            b - a for a, b in zip(self.view_dimensions, self.window_dimensions)
+        ]
+        self.resize(dims[0] + gui_padding[0], dims[1] + gui_padding[1])
 
     def organize_widgets(self):
         self.actions = {"open": self.actionOpen, "exit": self.actionExit}
@@ -184,6 +209,11 @@ class MainWindow(qtw.QMainWindow):
             )
         else:
             event.ignore()
+
+    def _resizeEvent(self, event):
+        qtw.QMainWindow.resizeEvent(self, event)
+        self.width_changed.emit(str(self.view_dimensions[0]))
+        self.height_changed.emit(str(self.view_dimensions[1]))
 
     def open_dropped_files(self, paths: typing.List, *, depth: int = 0) -> None:
         if depth > 1:

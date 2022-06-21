@@ -29,12 +29,12 @@
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="controls">
      <item>
-      <widget class="QGroupBox" name="contourDataGroup">
+      <widget class="QGroupBox" name="viewportGroup">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="title">
-        <string>Contour Data</string>
+        <string>Viewport</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <property name="spacing">
@@ -52,6 +52,49 @@
         <property name="bottomMargin">
          <number>4</number>
         </property>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="1" column="0">
+           <widget class="QLineEdit" name="widthLineEdit">
+            <property name="font">
+             <font>
+              <family>Consolas</family>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLineEdit" name="heightLineEdit">
+            <property name="font">
+             <font>
+              <family>Consolas</family>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Resolution</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>X</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
