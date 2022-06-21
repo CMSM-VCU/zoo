@@ -1,14 +1,19 @@
 import sys
+from importlib import resources
 from pathlib import Path
 
-from qtpy import QtWidgets, QtCore
+from qtpy import QtCore, QtWidgets
 
+from . import ui
 from .MainWindow import MainWindow
 
 
 def run():
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, on=True)
     app = QtWidgets.QApplication(sys.argv)
+    with resources.open_text(ui, "style.qss") as stylefile:
+        stylesheet = stylefile.read()
+        app.setStyleSheet(stylesheet)
     try:
         file_to_load = Path(sys.argv[1])
         assert file_to_load.is_file()
