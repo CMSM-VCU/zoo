@@ -136,7 +136,7 @@ class ContourController(qtc.QAbstractItemModel):
         if "timex" in self.model.datasets:
             return self.model.get_data_at_timestep("timex", self.timestep)[0]
         else:
-            return None
+            return -1.0
 
     @property
     def glyph_size(self) -> typing.Tuple[float]:
