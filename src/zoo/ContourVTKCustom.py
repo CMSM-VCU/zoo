@@ -1,6 +1,5 @@
 import typing
 from functools import lru_cache
-from importlib import resources
 
 import numpy as np
 import pyvista as pv
@@ -12,20 +11,15 @@ from vtkmodules.vtkCommonCore import vtkCommand, vtkPoints
 from vtkmodules.vtkCommonDataModel import vtkDataObject, vtkPolyData
 from vtkmodules.vtkFiltersGeneral import vtkVertexGlyphFilter
 from vtkmodules.vtkInteractionWidgets import vtkCameraOrientationWidget
-from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
-from vtkmodules.vtkRenderingOpenGL2 import vtkShader
-
-# from .ContourController import ContourController
+from vtkmodules.vtkRenderingCore import vtkPolyDataMapper
 
 from .ClippingBox import ClippingBox
-from .LookupTable import LookupTable
+from .GlyphActor import GlyphActor
 from .H5Model import H5Model
-from .utils import truncate_int8_to_int4
+from .LookupTable import LookupTable
 
 LARGE: float = 1e12
 EPSILON: float = 1e-6
-
-srcGS = resources.read_text(__package__, "cubeGS.glsl")
 
 
 class ContourVTKCustom(qtc.QAbstractItemModel):
@@ -144,11 +138,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             logger.debug(f"System span^2={np.linalg.norm(self._model_size)**2} > 1000")
             self.length_over_threshold = True
 
-        self.actor = vtkActor()
         mapper = self.construct_data_mapper(self.polydata)
-        self.actor.SetMapper(mapper)
-
-        self.shader_parameters = self.apply_shaders(self.actor)
+        self.actor = GlyphActor(mapper, self._original_extents, self.model.grid_spacing)
+        self.update_shader()
 
         self.plotter.add_actor(self.actor, name="primary", render=False)
         self.plotter.mapper = mapper
@@ -163,105 +155,33 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             self._original_extents, instigator=id(self)
         )
         self.controller.refresh()
-        # self.clipping_box.update(self._original_extents, instigator=instigator)
-        # self.update_plot_dataset()
-        # self.update_mask_dataset()
 
-    def apply_shaders(self, actor: vtkActor):
-        logger.debug("Applying shaders...")
-        shader_property = actor.GetShaderProperty()
-
-        shader_property.AddShaderReplacement(
-            vtkShader.Vertex,
-            "//VTK::PositionVC::Dec",
-            True,
-            "//VTK::PositionVC::Dec\n"
-            "out vec4 vertexMCVSOutput;\n"
-            "in vec3 _disp;\n"
-            "out vec4 dispMCVSOutput;\n"
-            "in float _scalar;\n"
-            "in float _mask_scalar;\n"
-            "out float scalarVSOutput;\n"
-            "out float maskscalarVSOutput;\n",
-            False,
-        )
-        shader_property.AddShaderReplacement(
-            vtkShader.Vertex,
-            "//VTK::PositionVC::Impl",
-            True,
-            "//VTK::PositionVC::Impl\n"
-            "vertexMCVSOutput = vertexMC;\n"
-            "dispMCVSOutput = vec4(_disp, 0.0);\n"
-            "scalarVSOutput = _scalar;\n"
-            "maskscalarVSOutput = _mask_scalar;\n",
-            False,
-        )
-        shader_property.SetGeometryShaderCode(srcGS)
-
-        shader_parameters = shader_property.GetGeometryCustomUniforms()
-        shader_parameters.SetUniform4f(
-            "glyph_scale", [*self.controller.glyph_size, 0.0]
-        )
-        shader_parameters.SetUniform4f(
-            "disp_scale", [*self.controller.exaggeration, 0.0]
-        )
-        shader_parameters.SetUniform2f("mask_limits", self.controller.mask_limits)
-        if self.length_over_threshold:
-            shader_parameters.SetUniform4f("modelSize", [*self._model_size, 1.0])
-            shader_parameters.SetUniform3f("bottomLeft", [-1.0, -1.0, -1.0])
-            shader_parameters.SetUniform3f("topRight", [1.0, 1.0, 1.0])
-            shader_parameters.SetUniform3f("epsilon_vector", [1e-3] * 3)
-        else:
-            shader_parameters.SetUniform4f("modelSize", [1.0, 1.0, 1.0, 1.0])
-            shader_parameters.SetUniform3f("bottomLeft", self._original_extents[::2])
-            shader_parameters.SetUniform3f("topRight", self._original_extents[1::2])
-            shader_parameters.SetUniform3f(
-                "epsilon_vector", [np.linalg.norm(self._model_size) / 1000.0] * 3
-            )
-
-        return shader_parameters
+    def update_shader(self):
+        self.change_glyph_size(self.controller.glyph_size)
+        self.change_exaggeration(self.controller.exaggeration)
+        self.change_mask_limits(self.controller.mask_limits)
+        self.change_clipping_extents(self.controller.clipping_extents)
 
     def change_glyph_size(
         self, glyph_size: typing.Tuple, instigator: int = None
     ) -> None:
-        logger.debug(f"Updating shaders with grid spacing {glyph_size}...")
-        self.shader_parameters.SetUniform4f("glyph_scale", [*glyph_size, 0.0])
+        self.actor.glyph_size = glyph_size
 
     def change_exaggeration(
         self, exaggeration: typing.Tuple, instigator: int = None
     ) -> None:
-        logger.debug(f"Updating shaders with exaggeration {exaggeration}...")
-        self.shader_parameters.SetUniform4f("disp_scale", [*exaggeration, 0.0])
+        self.actor.exaggeration = exaggeration
 
-    def change_mask_limits(self, mask_limits: typing.Tuple, instigator: int) -> None:
-        logger.debug(f"Updating shaders with mask limits {mask_limits}...")
-        self.shader_parameters.SetUniform2f("mask_limits", mask_limits)
+    def change_mask_limits(
+        self, mask_limits: typing.Tuple, instigator: int = None
+    ) -> None:
+        self.actor.mask_limits = mask_limits
 
-    def change_clipping_extents(self, extents: typing.Tuple, instigator: int) -> None:
-        logger.debug(f"Updating shaders with clipping extents {extents}...")
-        if (
-            extents != self.controller._applied_extents
-            or self is not self.controller.contour_primary
-        ):
-            extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
-
-            logger.debug(
-                f"Actual values sent to shaders: bottom left - {extents_MC[0]}, top right - {extents_MC[1]}"
-            )
-            if self.length_over_threshold:
-                self.shader_parameters.SetUniform3f("bottomLeft", extents_MC[0])
-                self.shader_parameters.SetUniform3f("topRight", extents_MC[1])
-            else:
-                self.shader_parameters.SetUniform3f("bottomLeft", extents[::2])
-                self.shader_parameters.SetUniform3f("topRight", extents[1::2])
-            self.controller._applied_extents = extents
-            self.clipping_box.update(
-                self.controller._applied_extents, instigator=instigator
-            )
-        else:
-            logger.debug(
-                f"Clipping extents {extents} same as current value. Update not applied."
-            )
+    def change_clipping_extents(
+        self, extents: typing.Tuple, instigator: int = None
+    ) -> None:
+        if self is not self.controller.contour_primary:
+            self.actor.clipping_extents = extents
 
     def update_plot_dataset(self, plot_dataset: str, instigator: int = None) -> None:
         logger.debug(f"Updating plot dataset to {plot_dataset}...")
