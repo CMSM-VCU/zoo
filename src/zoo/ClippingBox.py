@@ -1,3 +1,4 @@
+import typing
 import numpy as np
 from vtkmodules.vtkInteractionWidgets import vtkBoxWidget2
 
@@ -20,12 +21,12 @@ class ClippingBox(vtkBoxWidget2):
         self.AddObserver("InteractionEvent", self.callback)
         self.controller.changed_clipping_extents.connect(self.update)
 
-    def update(self, instigator: int):
+    def update(self, clipping_extents: typing.Tuple, instigator: int):
         if instigator == truncate_int8_to_int4(id(self)):
             return
 
         self.GetRepresentation().PlaceWidget(
-            np.array(self.controller.clipping_extents) * (1.0 + self.buffer_factor)
+            np.array(clipping_extents) * (1.0 + self.buffer_factor)
         )
 
     def callback(self, obj, event):
