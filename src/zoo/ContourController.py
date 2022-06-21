@@ -36,18 +36,19 @@ class ContourController(qtc.QAbstractItemModel):
     _mask_limits:         typing.List[float]  = [-LARGE, LARGE]
     _colorbar_limits:     typing.List[float]  = [-LARGE, LARGE]
 
-    initialized                      = qtc.Signal()
-    changed_timestep                 = qtc.Signal(int)
-    changed_glyph_size               = qtc.Signal(int)
-    changed_exaggeration             = qtc.Signal(int)
-    changed_plot_dataset             = qtc.Signal(int)
-    changed_mask_dataset             = qtc.Signal(int)
-    changed_clipping_extents         = qtc.Signal(int)
-    changed_mask_limits              = qtc.Signal(int)
-    changed_colorbar_limits          = qtc.Signal(int)
-    changed_widget_property          = qtc.Signal(int)
+    initialized                      = qtc.Signal(int)
+    changed_timestep                 = qtc.Signal(int, int)
+    changed_time                     = qtc.Signal(float, int)
+    changed_glyph_size               = qtc.Signal(tuple, int)
+    changed_exaggeration             = qtc.Signal(tuple, int)
+    changed_plot_dataset             = qtc.Signal(str, int)
+    changed_mask_dataset             = qtc.Signal(str, int)
+    changed_clipping_extents         = qtc.Signal(tuple, int)
+    changed_mask_limits              = qtc.Signal(tuple, int)
+    changed_colorbar_limits          = qtc.Signal(tuple, int)
+    changed_widget_property          = qtc.Signal(dict, int)
 
-    moved_camera                     = qtc.Signal(int)
+    moved_camera                     = qtc.Signal(list, int)
     # fmt: on
 
     def __init__(self, model: "H5Model") -> None:
@@ -72,7 +73,19 @@ class ContourController(qtc.QAbstractItemModel):
         self._mask_dataset = self._plot_dataset
         self._glyph_size = self.model.grid_spacing
 
-        self.initialized.emit()
+        self.initialized.emit(self.timestep)
+
+    def refresh(self):
+        # self.changed_timestep.emit(self.timestep, None)   # Nope! Infinite loop
+        self.changed_time.emit(self.time, None)
+        self.changed_glyph_size.emit(self.glyph_size, None)
+        self.changed_exaggeration.emit(self.exaggeration, None)
+        self.changed_plot_dataset.emit(self.plot_dataset, None)
+        self.changed_mask_dataset.emit(self.mask_dataset, None)
+        self.changed_clipping_extents.emit(self.clipping_extents, None)
+        self.changed_mask_limits.emit(self.mask_limits, None)
+        self.changed_colorbar_limits.emit(self.colorbar_limits, None)
+        self.changed_widget_property.emit(self.widget_properties, None)
 
     # @property
     # def plotter(self):
@@ -86,7 +99,8 @@ class ContourController(qtc.QAbstractItemModel):
         logger.debug(f"Setting timestep index to {value}...")
         value %= len(self.model.timesteps)
         self._timestep_index = max(0, min(len(self.model.timesteps) - 1, value))
-        self.changed_timestep.emit(instigator)
+        self.changed_timestep.emit(self.timestep, instigator)
+        self.changed_time.emit(self.time, instigator)
 
     @property
     def timestep(self) -> int:
@@ -101,7 +115,8 @@ class ContourController(qtc.QAbstractItemModel):
         else:
             logger.warning(f"{value} not found in timesteps")
             return
-        self.changed_timestep.emit(instigator)
+        self.changed_timestep.emit(self.timestep, instigator)
+        self.changed_time.emit(self.time, instigator)
 
     def increment_timestep(self, instigator: int) -> None:
         self.set_timestep_index(self.timestep_index + 1, instigator=instigator)
@@ -121,11 +136,11 @@ class ContourController(qtc.QAbstractItemModel):
         if "timex" in self.model.datasets:
             return self.model.get_data_at_timestep("timex", self.timestep)[0]
         else:
-            return None
+            return -1.0
 
     @property
-    def glyph_size(self) -> typing.List[float]:
-        return list(self._glyph_size)
+    def glyph_size(self) -> typing.Tuple[float]:
+        return tuple(self._glyph_size)
 
     def set_glyph_size(
         self, value: typing.Union[float, typing.Iterable[float]], instigator: int
@@ -138,11 +153,11 @@ class ContourController(qtc.QAbstractItemModel):
         else:
             logger.warning(f"Bad grid spacing value: {value}")
             return
-        self.changed_glyph_size.emit(instigator)
+        self.changed_glyph_size.emit(self.glyph_size, instigator)
 
     @property
-    def exaggeration(self) -> typing.List[float]:
-        return list(self._exaggeration)
+    def exaggeration(self) -> typing.Tuple[float]:
+        return tuple(self._exaggeration)
 
     def set_exaggeration(
         self, value: typing.Union[float, typing.Iterable[float]], instigator: int
@@ -155,7 +170,7 @@ class ContourController(qtc.QAbstractItemModel):
         else:
             logger.warning(f"Bad exaggeration value: {value}")
             return
-        self.changed_exaggeration.emit(instigator)
+        self.changed_exaggeration.emit(self.exaggeration, instigator)
 
     @property
     def plot_dataset(self) -> str:
@@ -168,7 +183,7 @@ class ContourController(qtc.QAbstractItemModel):
         else:
             logger.warning(f"{name} not found in datasets")
             return
-        self.changed_plot_dataset.emit(instigator)
+        self.changed_plot_dataset.emit(self.plot_dataset, instigator)
         if self.plot_and_mask_same_dataset:
             self.set_mask_dataset(name, instigator=id(self))
 
@@ -183,7 +198,7 @@ class ContourController(qtc.QAbstractItemModel):
         else:
             logger.warning(f"{name} not found in datasets")
             return
-        self.changed_mask_dataset.emit(instigator)
+        self.changed_mask_dataset.emit(self.mask_dataset, instigator)
 
     @property
     def clipping_extents(self) -> typing.Tuple[float]:
@@ -194,7 +209,7 @@ class ContourController(qtc.QAbstractItemModel):
     ) -> None:
         logger.debug(f"Setting clipping extents to {extents}...")
         self._clipping_extents = tuple(extents)
-        self.changed_clipping_extents.emit(instigator)
+        self.changed_clipping_extents.emit(self.clipping_extents, instigator)
 
     def replace_clipping_extents(
         self,
@@ -213,8 +228,8 @@ class ContourController(qtc.QAbstractItemModel):
         self.set_clipping_extents(tuple(extents), instigator)
 
     @property
-    def mask_limits(self) -> typing.List[float]:
-        return self._mask_limits
+    def mask_limits(self) -> typing.Tuple[float]:
+        return tuple(self._mask_limits)
 
     def set_mask_limits(self, value: typing.Iterable[float], instigator: int) -> None:
         logger.debug(f"Externally setting mask limits to {value}...")
@@ -225,11 +240,11 @@ class ContourController(qtc.QAbstractItemModel):
         else:
             logger.warning(f"Bad mask limits value: {value}")
             return
-        self.changed_mask_limits.emit(instigator)
+        self.changed_mask_limits.emit(self.mask_limits, instigator)
 
     @property
-    def colorbar_limits(self) -> typing.List[float]:
-        return self._colorbar_limits
+    def colorbar_limits(self) -> typing.Tuple[float]:
+        return tuple(self._colorbar_limits)
 
     def set_colorbar_limits(
         self, value: typing.Iterable[float], instigator: int
@@ -242,7 +257,7 @@ class ContourController(qtc.QAbstractItemModel):
         else:
             logger.warning(f"Bad colorbar limits value: {value}")
             return
-        self.changed_colorbar_limits.emit(instigator)
+        self.changed_colorbar_limits.emit(self.colorbar_limits, instigator)
 
     @property
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
@@ -255,10 +270,12 @@ class ContourController(qtc.QAbstractItemModel):
         for contour in self.contours:
             contour.plotter.camera_position = location
 
-    def distribute_camera_location(self, instigator: int) -> None:
+    def distribute_camera_location(
+        self, camera_location: typing.List, instigator: int
+    ) -> None:
         for contour in self.contours:
             if instigator != truncate_int8_to_int4(id(contour)):
-                contour.plotter.camera_position = self.camera_location
+                contour.plotter.camera_position = camera_location
 
     @property
     def background_color(self) -> typing.List[float]:
@@ -284,7 +301,7 @@ class ContourController(qtc.QAbstractItemModel):
         if widget not in self.widget_properties:
             self.widget_properties[widget] = {}
         self.widget_properties[widget][property_] = value
-        self.changed_widget_property.emit(instigator)
+        self.changed_widget_property.emit(self.widget_properties, instigator)
 
     def add_contour(self, contour) -> None:
         if contour not in self.contours:

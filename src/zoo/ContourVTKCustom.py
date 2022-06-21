@@ -114,15 +114,15 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
         return mapper
 
-    def construct_plot_at_timestep(self, instigator=None) -> None:
-        if self.controller.timestep not in self.model.timesteps:
-            logger.warning(f"Timestep {self.controller.timestep} not found")
+    def construct_plot_at_timestep(self, timestep: int, instigator=None) -> None:
+        if timestep not in self.model.timesteps:
+            logger.warning(f"Timestep {timestep} not found")
             return
-        logger.info(f"Constructing: {self.controller.timestep}")
+        logger.info(f"Constructing: {timestep}")
         # if not self.timestep:
         #     self._timestep_index = 0
         # logger.info(f"Actually: {self.timestep}")
-        self.polydata = self.construct_timestep_data(self.controller.timestep)
+        self.polydata = self.construct_timestep_data(timestep)
         self.polydata.GetPointData().SetActiveScalars(self.controller.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self._model_size = list(
@@ -162,9 +162,10 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.controller.set_clipping_extents(
             self._original_extents, instigator=id(self)
         )
-        self.clipping_box.update(self._original_extents)
-        self.update_plot_dataset()
-        self.update_mask_dataset()
+        self.controller.refresh()
+        # self.clipping_box.update(self._original_extents, instigator=instigator)
+        # self.update_plot_dataset()
+        # self.update_mask_dataset()
 
     def apply_shaders(self, actor: vtkActor):
         logger.debug("Applying shaders...")
@@ -220,30 +221,23 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
         return shader_parameters
 
-    def change_glyph_size(self, instigator: int = None) -> None:
-        logger.debug(
-            f"Updating shaders with grid spacing {self.controller.glyph_size}..."
-        )
-        self.shader_parameters.SetUniform4f(
-            "glyph_scale", [*self.controller.glyph_size, 0.0]
-        )
+    def change_glyph_size(
+        self, glyph_size: typing.Tuple, instigator: int = None
+    ) -> None:
+        logger.debug(f"Updating shaders with grid spacing {glyph_size}...")
+        self.shader_parameters.SetUniform4f("glyph_scale", [*glyph_size, 0.0])
 
-    def change_exaggeration(self, instigator: int = None) -> None:
-        logger.debug(
-            f"Updating shaders with exaggeration {self.controller.exaggeration}..."
-        )
-        self.shader_parameters.SetUniform4f(
-            "disp_scale", [*self.controller.exaggeration, 0.0]
-        )
+    def change_exaggeration(
+        self, exaggeration: typing.Tuple, instigator: int = None
+    ) -> None:
+        logger.debug(f"Updating shaders with exaggeration {exaggeration}...")
+        self.shader_parameters.SetUniform4f("disp_scale", [*exaggeration, 0.0])
 
-    def change_mask_limits(self, instigator: int) -> None:
-        logger.debug(
-            f"Updating shaders with mask limits {self.controller.mask_limits}..."
-        )
-        self.shader_parameters.SetUniform2f("mask_limits", self.controller.mask_limits)
+    def change_mask_limits(self, mask_limits: typing.Tuple, instigator: int) -> None:
+        logger.debug(f"Updating shaders with mask limits {mask_limits}...")
+        self.shader_parameters.SetUniform2f("mask_limits", mask_limits)
 
-    def change_clipping_extents(self, instigator: int) -> None:
-        extents = self.controller.clipping_extents
+    def change_clipping_extents(self, extents: typing.Tuple, instigator: int) -> None:
         logger.debug(f"Updating shaders with clipping extents {extents}...")
         if (
             extents != self.controller._applied_extents
@@ -261,58 +255,54 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
                 self.shader_parameters.SetUniform3f("bottomLeft", extents[::2])
                 self.shader_parameters.SetUniform3f("topRight", extents[1::2])
             self.controller._applied_extents = extents
-            self.clipping_box.update(self.controller._applied_extents)
+            self.clipping_box.update(
+                self.controller._applied_extents, instigator=instigator
+            )
         else:
             logger.debug(
                 f"Clipping extents {extents} same as current value. Update not applied."
             )
 
-    def update_plot_dataset(self, instigator: int = None) -> None:
-        logger.debug(f"Updating plot dataset to {self.controller.plot_dataset}...")
-        self._plot_dataset_limits = list(
-            self.polydata.get_data_range(self.controller.plot_dataset)
-        )
+    def update_plot_dataset(self, plot_dataset: str, instigator: int = None) -> None:
+        logger.debug(f"Updating plot dataset to {plot_dataset}...")
+        self._plot_dataset_limits = list(self.polydata.get_data_range(plot_dataset))
         logger.debug(f"Detected value range of {self._plot_dataset_limits}")
         self.controller.set_colorbar_limits(
             self._plot_dataset_limits, instigator=id(self)
         )
-        self.plotter.scalar_bar.SetTitle(self.controller.plot_dataset)
-        self.polydata.GetPointData().SetActiveScalars(self.controller.plot_dataset)
+        self.plotter.scalar_bar.SetTitle(plot_dataset)
+        self.polydata.GetPointData().SetActiveScalars(plot_dataset)
         self.plotter.render()
 
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
-            "_scalar",
-            self.controller.plot_dataset,
-            vtkDataObject.FIELD_ASSOCIATION_POINTS,
-            -1,
+            "_scalar", plot_dataset, vtkDataObject.FIELD_ASSOCIATION_POINTS, -1,
         )
 
-    def update_mask_dataset(self, instigator: int = None) -> None:
-        logger.debug(f"Updating mask dataset to {self.controller.mask_dataset}...")
-        self._mask_dataset_limits = list(
-            self.polydata.get_data_range(self.controller.mask_dataset)
-        )
+    def update_mask_dataset(self, mask_dataset: str, instigator: int = None) -> None:
+        logger.debug(f"Updating mask dataset to {mask_dataset}...")
+        self._mask_dataset_limits = list(self.polydata.get_data_range(mask_dataset))
         logger.debug(f"Detected value range of {self._plot_dataset_limits}")
         self.controller.set_mask_limits(self._mask_dataset_limits, instigator=id(self))
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
-            "_mask_scalar",
-            self.controller.mask_dataset,
-            vtkDataObject.FIELD_ASSOCIATION_POINTS,
-            -1,
+            "_mask_scalar", mask_dataset, vtkDataObject.FIELD_ASSOCIATION_POINTS, -1,
         )
 
-    def change_colorbar_limits(self, instigator: int) -> None:
-        if self.controller.colorbar_limits[0] <= self.controller.colorbar_limits[1]:
+    def change_colorbar_limits(
+        self, colorbar_limits: typing.Tuple, instigator: int
+    ) -> None:
+        if colorbar_limits[0] <= colorbar_limits[1]:
             logger.debug(
-                f"Colorbar limits {self.controller.colorbar_limits} in correct order. Applying..."
+                f"Colorbar limits {colorbar_limits} in correct order. Applying..."
             )
-            self.plotter.update_scalar_bar_range(self.controller.colorbar_limits)
+            self.plotter.update_scalar_bar_range(colorbar_limits)
 
     def emit_moved_camera(self, *args) -> None:
         """A method wrapping the signal emit is needed because the vtkInteractionEvent
         passes two arguments, and a signal can only handle one argument.
         """
-        self.controller.moved_camera.emit(id(self))
+        self.controller.moved_camera.emit(
+            list(self.controller.camera_location), id(self)
+        )
 
     def create_camera_control_widget(self) -> None:
         self.plotter.camera_widget = self.plotter.add_camera_orientation_widget()
@@ -329,16 +319,14 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     def save_image(self, filename) -> None:
         self.plotter.screenshot(filename=filename)
 
-    def update_widgets(self, instigator: int) -> None:
+    def update_widgets(self, widget_properties: typing.Dict, instigator: int) -> None:
         self.plotter.camera_widget.SetEnabled(
-            self.controller.widget_properties.get("orientation", {}).get(
-                "visible", True
-            )
+            widget_properties.get("orientation", {}).get("visible", True)
         )
         self.plotter.scalar_bars["primary"].SetVisibility(
-            self.controller.widget_properties.get("scalarbar", {}).get("visible", True)
+            widget_properties.get("scalarbar", {}).get("visible", True)
         )
-        self._current_widget_properties = self.controller.widget_properties
+        self._current_widget_properties = widget_properties
 
 
 def bbox_to_model_coordinates(bbox_bounds, base_bounds):

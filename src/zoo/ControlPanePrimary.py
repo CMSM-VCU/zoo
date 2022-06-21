@@ -40,7 +40,8 @@ class ControlPanePrimary(qtw.QWidget):
             return None
 
     def _connect_contour_controller(self, controller: ContourController) -> None:
-        controller.changed_timestep.connect(self.update_time_value)
+        controller.changed_timestep.connect(self.update_timestep_value)
+        controller.changed_time.connect(self.update_time_value)
         controller.changed_mask_dataset.connect(self.update_maskdataset_box)
         controller.changed_clipping_extents.connect(self.update_extents_boxes)
         controller.changed_colorbar_limits.connect(self.update_colorlimit_boxes)
@@ -126,7 +127,7 @@ class ControlPanePrimary(qtw.QWidget):
             self.timeStepSelector.addItems(
                 [str(i) for i in self.controller.model.timesteps]
             )
-            self.update_time_value()
+            # self.update_time_value()
 
             self.plotdatasetSelector.clear()
             self.plotdatasetSelector.addItems(self.controller.model.datasets)
@@ -206,40 +207,46 @@ class ControlPanePrimary(qtw.QWidget):
             enable=enable,
         )
 
-    def update_maskdataset_box(self, instigator: int) -> None:
+    def update_maskdataset_box(self, mask_dataset: str, instigator: int) -> None:
         if instigator == truncate_int8_to_int4(id(self)):
             return
 
-        self.maskdatasetSelector.setCurrentText(self.controller.mask_dataset)
+        self.maskdatasetSelector.setCurrentText(mask_dataset)
 
-    def update_extents_boxes(self, instigator: int) -> None:
+    def update_extents_boxes(
+        self, clipping_extents: typing.Tuple, instigator: int
+    ) -> None:
         if instigator == truncate_int8_to_int4(id(self)):
             return
 
-        for i, extent in enumerate(self.controller.clipping_extents):
+        for i, extent in enumerate(clipping_extents):
             if not self.clip_checkboxes[i // 2].isChecked():
                 self.clip_lineedits[i].setText(f"{extent:.4g}")
             else:
                 self.set_clipping_extent[i]()
 
-    def update_colorlimit_boxes(self, instigator: int) -> None:
+    def update_colorlimit_boxes(
+        self, colorbar_limits: typing.Tuple, instigator: int
+    ) -> None:
         if instigator == truncate_int8_to_int4(id(self)):
             return
 
         if not self.colorCheckBox.isChecked():
-            self.colorminLineEdit.setText(str(self.controller.colorbar_limits[0]))
-            self.colormaxLineEdit.setText(str(self.controller.colorbar_limits[1]))
+            self.colorminLineEdit.setText(str(colorbar_limits[0]))
+            self.colormaxLineEdit.setText(str(colorbar_limits[1]))
         else:
             self.set_color_min()
             self.set_color_max()
 
-    def update_masklimit_boxes(self, instigator: int) -> None:
+    def update_masklimit_boxes(
+        self, mask_limits: typing.Tuple, instigator: int
+    ) -> None:
         if instigator == truncate_int8_to_int4(id(self)):
             return
 
         if not self.maskCheckBox.isChecked():
-            self.maskminLineEdit.setText(str(self.controller.mask_limits[0]))
-            self.maskmaxLineEdit.setText(str(self.controller.mask_limits[1]))
+            self.maskminLineEdit.setText(str(mask_limits[0]))
+            self.maskmaxLineEdit.setText(str(mask_limits[1]))
         else:
             self.set_mask_min()
             self.set_mask_max()
@@ -381,7 +388,7 @@ class ControlPanePrimary(qtw.QWidget):
 
     @staticmethod
     def set_grid_spacing_n(obj, index):
-        gs_vector = obj.controller.glyph_size
+        gs_vector = list(obj.controller.glyph_size)
         gs_vector[index] = float_or_zero(obj.gs_lineedits[index].text())
         obj.controller.set_glyph_size(gs_vector, instigator=id(obj))
 
@@ -390,7 +397,7 @@ class ControlPanePrimary(qtw.QWidget):
 
     @staticmethod
     def set_exaggeration_n(obj, index):
-        new_exag = obj.controller.exaggeration
+        new_exag = list(obj.controller.exaggeration)
         new_exag[index] = obj.exag_spinboxes[index].value()
         obj.controller.set_exaggeration(new_exag, instigator=id(obj))
 
@@ -408,19 +415,21 @@ class ControlPanePrimary(qtw.QWidget):
             partial(self.set_clipping_extent_n, self, i) for i in range(6)
         )
 
-    def update_camera_readout(self, instigator: int) -> None:
-        data = self.controller.camera_location
-        pos = data[0]
-        foc = data[1]
-        up = data[2]
+    def update_camera_readout(
+        self, camera_location: typing.List, instigator: int
+    ) -> None:
+        pos = camera_location[0]
+        foc = camera_location[1]
+        up = camera_location[2]
         self.positionValue.setText(f"{pos[0]:.2f}, {pos[1]:.2f}, {pos[2]:.2f}")
         self.focalValue.setText(f"{foc[0]:.2f}, {foc[1]:.2f}, {foc[2]:.2f}")
         self.viewupValue.setText(f"{up[0]:.2f}, {up[1]:.2f}, {up[2]:.2f}")
 
-    def update_time_value(self, instigator=None) -> None:
-        self.timeStepSelector.setCurrentText(str(self.controller.timestep))
+    def update_timestep_value(self, timestep: int, instigator=None) -> None:
+        self.timeStepSelector.setCurrentText(str(timestep))
+
+    def update_time_value(self, time: float, instigator=None) -> None:
         try:
-            time = self.controller.time
             self.timeLabel.setText(f"{time:.3e}")
             self.timeLabel.setToolTip(f"{time:.8e}")
         except TypeError:
@@ -446,7 +455,9 @@ class ControlPanePrimary(qtw.QWidget):
                 print(err)
             else:
                 self.controller.camera_location = paste_data
-                self.controller.moved_camera.emit(id(self))
+                self.controller.moved_camera.emit(
+                    self.controller.camera_location, id(self)
+                )
                 self.update_camera_readout(instigator=id(self))
                 print("Pasted!")
 
