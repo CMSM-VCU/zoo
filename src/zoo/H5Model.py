@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 from qtpy import QtCore as qtc
-from scipy.spatial import cKDTree
+from scipy.spatial import KDTree
 from scipy.stats import mode
 
 from .Loader import Loader
@@ -48,7 +48,7 @@ class H5Model(qtc.QAbstractItemModel):
 
     def guess_grid_spacing(self) -> typing.Tuple[float, float, float]:
         coords = self.get_data_at_timestep(["x1", "x2", "x3"], self.timesteps[0])
-        tree = cKDTree(coords)
+        tree = KDTree(coords)
         distances = tree.query(coords, k=2, workers=-1)[0][:, 1]
         return (mode(distances)[0][0],) * 3
 
