@@ -92,6 +92,9 @@ class Loader(qtc.QObject):
                 comment=COMMENT_CHARACTER,
                 header=None,
             )
+            if grid.isnull().values.any():
+                logger.warning(f"Ignoring NaN values found in {path}")
+                grid = grid.dropna(how="any")
         except Exception as err:
             raise err
         else:
