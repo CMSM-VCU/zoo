@@ -17,6 +17,7 @@ from .ClippingBox import ClippingBox
 from .GlyphActor import GlyphActor
 from .H5Model import H5Model
 from .LookupTable import LookupTable
+from .utils import truncate_int8_to_int4
 
 LARGE: float = 1e12
 EPSILON: float = 1e-6
@@ -119,6 +120,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.polydata = self.construct_timestep_data(timestep)
         self.polydata.GetPointData().SetActiveScalars(self.controller.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
+        self.controller.set_clipping_extents(self._original_extents, instigator=id(self))
         self._model_size = list(
             (
                 np.array(self._original_extents[1::2])
@@ -180,7 +182,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     def change_clipping_extents(
         self, extents: typing.Tuple, instigator: int = None
     ) -> None:
-        if self is not self.controller.contour_primary:
+        if instigator != truncate_int8_to_int4(id(self)):
             self.actor.clipping_extents = extents
 
     def update_plot_dataset(self, plot_dataset: str, instigator: int = None) -> None:

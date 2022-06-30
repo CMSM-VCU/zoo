@@ -114,6 +114,11 @@ class GlyphActor(vtkActor):
                 f"Clipping extents {extents} same as current value. Update not applied."
             )
             return
+        if not any(extents):
+            logger.debug(
+                f"Invalid clipping extents {extents}. Update not applied."
+            )
+            return
         logger.debug(f"Updating shaders with clipping extents {extents}...")
         if self.use_model_coords:
             extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
