@@ -146,6 +146,11 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
         self.plotter.add_actor(self.actor, name="primary", render=False)
         self.plotter.mapper = mapper
+        self.plotter.ren_win.SetAlphaBitPlanes(True)
+        self.plotter.ren_win.SetMultiSamples(0)
+        self.plotter.renderer.SetUseDepthPeeling(True)
+        self.plotter.renderer.SetMaximumNumberOfPeels(200)
+        self.plotter.renderer.SetOcclusionRatio(0.0)
         if not self.shown_first_plot:
             self.plotter.reset_camera(render=False)
             self.shown_first_plot = True

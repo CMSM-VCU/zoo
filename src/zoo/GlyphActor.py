@@ -20,6 +20,9 @@ class GlyphActor(vtkActor):
     ) -> None:
         super().__init__()
         self.SetMapper(mapper)
+        self.GetProperty().SetBackfaceCulling(True)
+        self.SetForceTranslucent(True)
+
         _shader_property = self.GetShaderProperty()
         _shader_property.AddShaderReplacement(
             vtkShader.Vertex,
