@@ -20,6 +20,8 @@ class GlyphActor(vtkActor):
     ) -> None:
         super().__init__()
         self.SetMapper(mapper)
+        self.GetProperty().SetBackfaceCulling(True)
+
         _shader_property = self.GetShaderProperty()
         _shader_property.AddShaderReplacement(
             vtkShader.Vertex,
@@ -115,9 +117,7 @@ class GlyphActor(vtkActor):
             )
             return
         if not any(extents):
-            logger.debug(
-                f"Invalid clipping extents {extents}. Update not applied."
-            )
+            logger.debug(f"Invalid clipping extents {extents}. Update not applied.")
             return
         logger.debug(f"Updating shaders with clipping extents {extents}...")
         if self.use_model_coords:
@@ -132,6 +132,35 @@ class GlyphActor(vtkActor):
         self.shader_params.SetUniform3f("bottomLeft", extents_MC[0])
         self.shader_params.SetUniform3f("topRight", extents_MC[1])
         self._applied_clipping_extents = extents
+
+    @property
+    def opacity_enabled(self) -> bool:
+        return self.GetForceTranslucent()
+
+    @opacity_enabled.setter
+    def opacity_enabled(self, enabled: bool) -> None:
+        logger.debug(f"Setting opacity enabled to {enabled}...")
+        self.SetForceTranslucent(enabled)
+
+    @property
+    def mask_opacity(self) -> float:
+        return self._applied_mask_opacity
+
+    @mask_opacity.setter
+    def mask_opacity(self, opacity: float) -> None:
+        logger.debug(f"Updating shaders with mask_opacity {opacity}...")
+        self.shader_params.SetUniformf("mask_opacity", opacity)
+        self._applied_mask_opacity = opacity
+
+    @property
+    def clip_opacity(self) -> float:
+        return self._applied_clip_opacity
+
+    @clip_opacity.setter
+    def clip_opacity(self, opacity: float) -> None:
+        logger.debug(f"Updating shaders with clip_opacity {opacity}...")
+        self.shader_params.SetUniformf("clip_opacity", opacity)
+        self._applied_clip_opacity = opacity
 
 
 def bbox_to_model_coordinates(

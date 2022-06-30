@@ -61,6 +61,10 @@ class ControlPaneVisuals(qtw.QWidget):
         self.widthLineEdit.setValidator(qtg.QIntValidator())
         self.heightLineEdit.setValidator(qtg.QIntValidator())
 
+        self.opacityCheckBox.stateChanged.connect(self.toggle_opacity_control)
+        self.maskopacitySlider.valueChanged.connect(self.update_mask_opacity_value)
+        self.clipopacitySlider.valueChanged.connect(self.update_clip_opacity_value)
+
     def toggle_control_pane(self, enable: bool):
         self.setEnabled(enable)
         if enable:
@@ -76,6 +80,8 @@ class ControlPaneVisuals(qtw.QWidget):
             self.colormapSelector.setCurrentIndex(
                 self.colormapSelector.findText("rainbow4")
             )
+            self.update_mask_opacity_value()
+            self.update_clip_opacity_value()
 
     def resize_window(self, event=None) -> None:
         self.window().view_dimensions = [
@@ -159,6 +165,30 @@ class ControlPaneVisuals(qtw.QWidget):
 
     def toggle_orientation_move(self, enable: int) -> None:
         self._widget_property_toggle("orientation", "movable", state=bool(enable))
+
+    def toggle_opacity_control(self, enable: bool) -> None:
+        self.opacitycontrolFrame.setEnabled(enable)
+        self.controller.set_opacity_enabled(enable, instigator=id(self))
+        if enable:
+            self.update_mask_opacity_value()
+            self.update_clip_opacity_value()
+        else:
+            self.controller.set_mask_opacity(0.0, instigator=id(self))
+            self.controller.set_clip_opacity(0.0, instigator=id(self))
+
+    def update_mask_opacity_value(self, _=None) -> None:
+        self.maskopacityvalueLabel.setText(f"{self.maskopacitySlider.value()*5}%")
+        self.controller.set_mask_opacity(
+            self.maskopacitySlider.value() / self.maskopacitySlider.maximum(),
+            instigator=id(self),
+        )
+
+    def update_clip_opacity_value(self, _=None) -> None:
+        self.clipopacityvalueLabel.setText(f"{self.clipopacitySlider.value()*5}%")
+        self.controller.set_clip_opacity(
+            self.clipopacitySlider.value() / self.clipopacitySlider.maximum(),
+            instigator=id(self),
+        )
 
     @staticmethod
     def _pick_color(button) -> typing.Tuple:
