@@ -495,19 +495,25 @@
          <number>4</number>
         </property>
         <item>
-         <widget class="QLabel" name="colorLabel">
+         <widget class="QCheckBox" name="opacityCheckBox">
           <property name="font">
            <font>
             <pointsize>8</pointsize>
            </font>
           </property>
+          <property name="toolTip">
+           <string>WARNING: Seriously impacts performance!</string>
+          </property>
           <property name="text">
-           <string>Opacity</string>
+           <string>Opacity ⚠</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QFrame" name="">
+         <widget class="QFrame" name="opacitycontrolFrame">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="toolTip">
            <string>Clipped opacity overrides masked opacity</string>
           </property>

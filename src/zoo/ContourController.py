@@ -21,6 +21,7 @@ class ContourController(qtc.QAbstractItemModel):
     clipping_extents: typing.Tuple[float]
     mask_limits: typing.Tuple[float]
     colorbar_limits: typing.Tuple[float]
+    opacity_enabled: bool
     mask_opacity: float
     clip_opacity: float
 
@@ -37,6 +38,7 @@ class ContourController(qtc.QAbstractItemModel):
     _applied_extents:     typing.Tuple[float] = (None,) * 6
     _mask_limits:         typing.List[float]  = [-LARGE, LARGE]
     _colorbar_limits:     typing.List[float]  = [-LARGE, LARGE]
+    _opacity_enabled: bool = False
     _mask_opacity: float = 0.0
     _clip_opacity: float = 0.0
 
@@ -51,6 +53,7 @@ class ContourController(qtc.QAbstractItemModel):
     changed_mask_limits              = qtc.Signal(tuple, int)
     changed_colorbar_limits          = qtc.Signal(tuple, int)
     changed_widget_property          = qtc.Signal(dict, int)
+    changed_opacity_enabled          = qtc.Signal(bool, int)
     changed_mask_opacity             = qtc.Signal(float, int)
     changed_clip_opacity             = qtc.Signal(float, int)
 
@@ -92,6 +95,7 @@ class ContourController(qtc.QAbstractItemModel):
         self.changed_mask_limits.emit(self.mask_limits, None)
         self.changed_colorbar_limits.emit(self.colorbar_limits, None)
         self.changed_widget_property.emit(self.widget_properties, None)
+        self.changed_opacity_enabled.emit(self.opacity_enabled, None)
         self.changed_mask_opacity.emit(self.mask_opacity, None)
         self.changed_clip_opacity.emit(self.clip_opacity, None)
 
@@ -266,6 +270,14 @@ class ContourController(qtc.QAbstractItemModel):
             logger.warning(f"Bad colorbar limits value: {value}")
             return
         self.changed_colorbar_limits.emit(self.colorbar_limits, instigator)
+
+    @property
+    def opacity_enabled(self) -> bool:
+        return self._opacity_enabled
+
+    def set_opacity_enabled(self, enabled: bool, instigator: int) -> None:
+        self._opacity_enabled = enabled
+        self.changed_opacity_enabled.emit(self.opacity_enabled, instigator)
 
     @property
     def mask_opacity(self) -> float:

@@ -21,7 +21,6 @@ class GlyphActor(vtkActor):
         super().__init__()
         self.SetMapper(mapper)
         self.GetProperty().SetBackfaceCulling(True)
-        self.SetForceTranslucent(True)
 
         _shader_property = self.GetShaderProperty()
         _shader_property.AddShaderReplacement(
@@ -118,9 +117,7 @@ class GlyphActor(vtkActor):
             )
             return
         if not any(extents):
-            logger.debug(
-                f"Invalid clipping extents {extents}. Update not applied."
-            )
+            logger.debug(f"Invalid clipping extents {extents}. Update not applied.")
             return
         logger.debug(f"Updating shaders with clipping extents {extents}...")
         if self.use_model_coords:
@@ -135,6 +132,15 @@ class GlyphActor(vtkActor):
         self.shader_params.SetUniform3f("bottomLeft", extents_MC[0])
         self.shader_params.SetUniform3f("topRight", extents_MC[1])
         self._applied_clipping_extents = extents
+
+    @property
+    def opacity_enabled(self) -> bool:
+        return self.GetForceTranslucent()
+
+    @opacity_enabled.setter
+    def opacity_enabled(self, enabled: bool) -> None:
+        logger.debug(f"Setting opacity enabled to {enabled}...")
+        self.SetForceTranslucent(enabled)
 
     @property
     def mask_opacity(self) -> float:
