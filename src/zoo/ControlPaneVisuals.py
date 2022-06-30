@@ -61,6 +61,9 @@ class ControlPaneVisuals(qtw.QWidget):
         self.widthLineEdit.setValidator(qtg.QIntValidator())
         self.heightLineEdit.setValidator(qtg.QIntValidator())
 
+        self.maskopacitySlider.valueChanged.connect(self.update_mask_opacity_value)
+        self.clipopacitySlider.valueChanged.connect(self.update_clip_opacity_value)
+
     def toggle_control_pane(self, enable: bool):
         self.setEnabled(enable)
         if enable:
@@ -76,6 +79,8 @@ class ControlPaneVisuals(qtw.QWidget):
             self.colormapSelector.setCurrentIndex(
                 self.colormapSelector.findText("rainbow4")
             )
+            self.update_mask_opacity_value()
+            self.update_clip_opacity_value()
 
     def resize_window(self, event=None) -> None:
         self.window().view_dimensions = [
@@ -159,6 +164,15 @@ class ControlPaneVisuals(qtw.QWidget):
 
     def toggle_orientation_move(self, enable: int) -> None:
         self._widget_property_toggle("orientation", "movable", state=bool(enable))
+
+    def update_mask_opacity_value(self, value:int = 0) -> None:
+        self.maskopacityvalueLabel.setText(f"{self.maskopacitySlider.value()*5}%")
+        self.controller.set_mask_opacity(value/self.maskopacitySlider.maximum(), instigator=id(self))
+
+    def update_clip_opacity_value(self, value:int = 0) -> None:
+        self.clipopacityvalueLabel.setText(f"{self.clipopacitySlider.value()*5}%")
+        self.controller.set_clip_opacity(value/self.clipopacitySlider.maximum(), instigator=id(self))
+
 
     @staticmethod
     def _pick_color(button) -> typing.Tuple:

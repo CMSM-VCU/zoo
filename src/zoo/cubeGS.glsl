@@ -86,12 +86,14 @@ void main()
     vec4 center = gl_in[0].gl_Position; // i.e. vertexDCVSOutput - display coordinates
 
     if (maskscalarVSOutput[0] < mask_limits[0] || maskscalarVSOutput[0] > mask_limits[1]) {
+        vertexColorGSOutput.a = mask_opacity;
         // vertexColorGSOutput = vec4(255,0.0,0.0,1.0);
-        return;
+        // return;
     }
     if (insideBox3D(vertexMCVSOutput[0], bottomLeft-epsilon_vector, topRight+epsilon_vector) == 0.0) {
+        vertexColorGSOutput.a = clip_opacity;
         // vertexColorGSOutput = vec4(255,0.0,0.0,1.0);
-        return;
+        // return;
     }
 
     for (int i = 0; i<24; i++) {

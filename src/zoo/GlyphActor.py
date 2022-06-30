@@ -136,6 +136,26 @@ class GlyphActor(vtkActor):
         self.shader_params.SetUniform3f("topRight", extents_MC[1])
         self._applied_clipping_extents = extents
 
+    @property
+    def mask_opacity(self) -> float:
+        return self._applied_mask_opacity
+
+    @mask_opacity.setter
+    def mask_opacity(self, opacity: float) -> None:
+        logger.debug(f"Updating shaders with mask_opacity {opacity}...")
+        self.shader_params.SetUniformf("mask_opacity", opacity)
+        self._applied_mask_opacity = opacity
+
+    @property
+    def clip_opacity(self) -> float:
+        return self._applied_clip_opacity
+
+    @clip_opacity.setter
+    def clip_opacity(self, opacity: float) -> None:
+        logger.debug(f"Updating shaders with clip_opacity {opacity}...")
+        self.shader_params.SetUniformf("clip_opacity", opacity)
+        self._applied_clip_opacity = opacity
+
 
 def bbox_to_model_coordinates(
     bbox_bounds: typing.Tuple[float], base_bounds: typing.Tuple[float]

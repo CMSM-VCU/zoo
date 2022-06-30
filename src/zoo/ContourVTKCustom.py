@@ -65,6 +65,8 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self._controller.changed_mask_limits.connect(self.change_mask_limits)
         self._controller.changed_colorbar_limits.connect(self.change_colorbar_limits)
         self._controller.changed_widget_property.connect(self.update_widgets)
+        self._controller.changed_mask_opacity.connect(self.change_mask_opacity)
+        self._controller.changed_clip_opacity.connect(self.change_clip_opacity)
 
     @lru_cache(maxsize=8)
     def construct_timestep_data(self, timestep: int) -> pv.PolyData:
@@ -168,6 +170,8 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.change_exaggeration(self.controller.exaggeration)
         self.change_mask_limits(self.controller.mask_limits)
         self.change_clipping_extents(self.controller.clipping_extents)
+        self.change_mask_opacity(self.controller.mask_opacity)
+        self.change_clip_opacity(self.controller.clip_opacity)
 
     def change_glyph_size(
         self, glyph_size: typing.Tuple, instigator: int = None
@@ -189,6 +193,18 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     ) -> None:
         if instigator != truncate_int8_to_int4(id(self)):
             self.actor.clipping_extents = extents
+
+    def change_mask_opacity(
+        self, opacity: float, instigator: int = None
+    ) -> None:
+        if instigator != truncate_int8_to_int4(id(self)):
+            self.actor.mask_opacity = opacity
+
+    def change_clip_opacity(
+        self, opacity: float, instigator: int = None
+    ) -> None:
+        if instigator != truncate_int8_to_int4(id(self)):
+            self.actor.clip_opacity = opacity
 
     def update_plot_dataset(self, plot_dataset: str, instigator: int = None) -> None:
         logger.debug(f"Updating plot dataset to {plot_dataset}...")

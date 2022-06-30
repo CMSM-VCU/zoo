@@ -21,6 +21,8 @@ class ContourController(qtc.QAbstractItemModel):
     clipping_extents: typing.Tuple[float]
     mask_limits: typing.Tuple[float]
     colorbar_limits: typing.Tuple[float]
+    mask_opacity: float
+    clip_opacity: float
 
     plot_and_mask_same_dataset: bool = True
 
@@ -35,6 +37,8 @@ class ContourController(qtc.QAbstractItemModel):
     _applied_extents:     typing.Tuple[float] = (None,) * 6
     _mask_limits:         typing.List[float]  = [-LARGE, LARGE]
     _colorbar_limits:     typing.List[float]  = [-LARGE, LARGE]
+    _mask_opacity: float = 0.0
+    _clip_opacity: float = 0.0
 
     initialized                      = qtc.Signal(int)
     changed_timestep                 = qtc.Signal(int, int)
@@ -47,6 +51,8 @@ class ContourController(qtc.QAbstractItemModel):
     changed_mask_limits              = qtc.Signal(tuple, int)
     changed_colorbar_limits          = qtc.Signal(tuple, int)
     changed_widget_property          = qtc.Signal(dict, int)
+    changed_mask_opacity             = qtc.Signal(float, int)
+    changed_clip_opacity             = qtc.Signal(float, int)
 
     moved_camera                     = qtc.Signal(list, int)
     # fmt: on
@@ -86,6 +92,8 @@ class ContourController(qtc.QAbstractItemModel):
         self.changed_mask_limits.emit(self.mask_limits, None)
         self.changed_colorbar_limits.emit(self.colorbar_limits, None)
         self.changed_widget_property.emit(self.widget_properties, None)
+        self.changed_mask_opacity.emit(self.mask_opacity, None)
+        self.changed_clip_opacity.emit(self.clip_opacity, None)
 
     # @property
     # def plotter(self):
@@ -258,6 +266,24 @@ class ContourController(qtc.QAbstractItemModel):
             logger.warning(f"Bad colorbar limits value: {value}")
             return
         self.changed_colorbar_limits.emit(self.colorbar_limits, instigator)
+
+    @property
+    def mask_opacity(self) -> float:
+        return self._mask_opacity
+
+    def set_mask_opacity(self, value: float, instigator: int) -> None:
+        _value = max(min(value, 1.0), 0.0)  # clamped
+        self._mask_opacity = _value
+        self.changed_mask_opacity.emit(self.mask_opacity, instigator)
+
+    @property
+    def clip_opacity(self) -> float:
+        return self._clip_opacity
+
+    def set_clip_opacity(self, value: float, instigator: int) -> None:
+        _value = max(min(value, 1.0), 0.0)  # clamped
+        self._clip_opacity = _value
+        self.changed_clip_opacity.emit(self.clip_opacity, instigator)
 
     @property
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
