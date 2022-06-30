@@ -261,7 +261,7 @@ class ContourController(qtc.QAbstractItemModel):
 
     @property
     def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
-        return self.contour_primary.plotter.camera_position
+        return list(self.contour_primary.plotter.camera_position)
 
     @camera_location.setter
     def camera_location(

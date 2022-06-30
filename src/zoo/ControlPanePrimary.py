@@ -449,7 +449,7 @@ class ControlPanePrimary(qtw.QWidget):
                     isinstance(item, typing.Iterable) and len(item) == 3
                     for item in paste_data
                 ), "Each item in paste data must be a vector of length 3."
-            except SyntaxError:
+            except (SyntaxError, ValueError):
                 print("Bad paste data - syntax")
             except AssertionError as err:
                 print(err)
@@ -458,7 +458,7 @@ class ControlPanePrimary(qtw.QWidget):
                 self.controller.moved_camera.emit(
                     self.controller.camera_location, id(self)
                 )
-                self.update_camera_readout(instigator=id(self))
+                self.update_camera_readout(self.controller.camera_location, instigator=id(self))
                 print("Pasted!")
 
     def toggle_clipping_box(self, enable: bool):
