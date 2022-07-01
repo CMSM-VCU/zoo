@@ -22,7 +22,7 @@ from qtpy import uic
 class ControlPanePrimary(qtw.QWidget):
     _parent = None
 
-    def __init__(self, parent: typing.Optional["qtw.QWidget"] = None,) -> None:
+    def __init__(self, parent: typing.Optional["qtw.QWidget"] = None) -> None:
         super().__init__(parent=parent)
         with resources.open_text(ui, "controlpane_primary.ui") as uifile:
             uic.loadUi(uifile, self)
@@ -458,7 +458,9 @@ class ControlPanePrimary(qtw.QWidget):
                 self.controller.moved_camera.emit(
                     self.controller.camera_location, id(self)
                 )
-                self.update_camera_readout(self.controller.camera_location, instigator=id(self))
+                self.update_camera_readout(
+                    self.controller.camera_location, instigator=id(self)
+                )
                 print("Pasted!")
 
     def toggle_clipping_box(self, enable: bool):
