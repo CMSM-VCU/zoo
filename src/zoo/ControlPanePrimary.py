@@ -108,7 +108,7 @@ class ControlPanePrimary(qtw.QWidget):
 
         # QGroupBox only emits clicked signal if it is checkable. Bypass this by
         # binding directly to the mousePressEvent.
-        self.cameraLocationGroup.mousePressEvent = self.copypaste_camera_location
+        self.cameralocationdummyWidget.mousePressEvent = self.copypaste_camera_location
 
         self.xgsLineEdit.setValidator(qtg.QDoubleValidator())
         self.ygsLineEdit.setValidator(qtg.QDoubleValidator())
