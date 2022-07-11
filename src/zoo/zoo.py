@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-from qtpy import QtWidgets, QtCore
+from qtpy import QtCore, QtWidgets
 
 from .MainWindow import MainWindow
 

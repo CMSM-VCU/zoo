@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 
 import numpy as np
-import pandas as pd
 from loguru import logger
 from qtpy import QtCore as qtc
 from scipy.spatial import KDTree

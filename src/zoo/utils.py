@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from matplotlib.pyplot import colormaps
 from colorcet import all_original_names, get_aliases
+from matplotlib.pyplot import colormaps
 
 # fmt: off
 EXTENSIONS = {

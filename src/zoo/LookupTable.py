@@ -1,7 +1,8 @@
 import numpy as np
 from pyvista.plotting import get_cmap_safe, parse_color
-from vtkmodules.vtkCommonCore import vtkLookupTable
 from vtkmodules.util.numpy_support import numpy_to_vtk
+from vtkmodules.vtkCommonCore import vtkLookupTable
+
 
 # Drawing heavily from PyVista's `mapper.set_scalars` method
 # github.com/pyvista/pyvista/blob/main/pyvista/plotting/mapper.py

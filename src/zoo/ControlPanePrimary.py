@@ -3,9 +3,9 @@ import os
 from collections.abc import Callable, Iterable
 from functools import partial
 from importlib import resources
-from loguru import logger
 
 import pyperclip
+from loguru import logger
 
 from . import ui
 from .ContourController import ContourController

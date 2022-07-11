@@ -1,4 +1,5 @@
 import typing
+
 from qtpy import QtWidgets as qtw
 
 
