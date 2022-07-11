@@ -3,7 +3,7 @@ channels:
     - conda-forge
     - defaults
 dependencies:
-    - python=3.7
+    - python=3.10
     - pandas
     - pytables
     - pyqt
@@ -14,3 +14,4 @@ dependencies:
     - pyperclip
     - pywin32
     - colorcet
+    - matplotlib
