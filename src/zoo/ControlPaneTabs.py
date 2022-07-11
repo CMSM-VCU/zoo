@@ -15,7 +15,7 @@ class ControlPaneTabs(qtw.QWidget):
 
     def __init__(
         self,
-        parent: "qtw.QWidget" | None = None,
+        parent: qtw.QWidget | None = None,
     ) -> None:
         super().__init__(parent=parent)
         with resources.open_text(ui, "controlpane_tabs.ui") as uifile:

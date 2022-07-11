@@ -16,7 +16,7 @@ from qtpy import uic
 class ControlPaneVisuals(qtw.QWidget):
     _parent = None
 
-    def __init__(self, parent: "qtw.QWidget" | None = None) -> None:
+    def __init__(self, parent: qtw.QWidget | None = None) -> None:
         super().__init__(parent=parent)
         with resources.open_text(ui, "controlpane_visuals.ui") as uifile:
             uic.loadUi(uifile, self)
