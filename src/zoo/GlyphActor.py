@@ -1,4 +1,3 @@
-import typing
 from importlib import resources
 
 import numpy as np
@@ -15,8 +14,8 @@ class GlyphActor(vtkActor):
     def __init__(
         self,
         mapper,
-        original_extents: typing.Tuple[float],
-        grid_spacing: typing.Tuple[float],
+        original_extents: tuple[float],
+        grid_spacing: tuple[float],
     ) -> None:
         super().__init__()
         self.SetMapper(mapper)
@@ -76,41 +75,41 @@ class GlyphActor(vtkActor):
         self.clipping_extents = self._original_extents
 
     @property
-    def glyph_size(self) -> typing.Tuple[float]:
+    def glyph_size(self) -> tuple[float]:
         return self._applied_glyph_size
 
     @glyph_size.setter
-    def glyph_size(self, size: typing.Tuple[float]) -> None:
+    def glyph_size(self, size: tuple[float]) -> None:
         logger.debug(f"Updating shaders with grid spacing {size}...")
         self.shader_params.SetUniform4f("glyph_scale", [*size, 0.0])
         self._applied_glyph_size = size
 
     @property
-    def exaggeration(self) -> typing.Tuple[float]:
+    def exaggeration(self) -> tuple[float]:
         return self._applied_exaggeration
 
     @exaggeration.setter
-    def exaggeration(self, exag: typing.Tuple[float]) -> None:
+    def exaggeration(self, exag: tuple[float]) -> None:
         logger.debug(f"Updating shaders with exaggeration {exag}...")
         self.shader_params.SetUniform4f("disp_scale", [*exag, 0.0])
         self._applied_exaggeration = exag
 
     @property
-    def mask_limits(self) -> typing.Tuple[float]:
+    def mask_limits(self) -> tuple[float]:
         return self._applied_mask_limits
 
     @mask_limits.setter
-    def mask_limits(self, limits: typing.Tuple[float]) -> None:
+    def mask_limits(self, limits: tuple[float]) -> None:
         logger.debug(f"Updating shaders with mask limits {limits}...")
         self.shader_params.SetUniform2f("mask_limits", limits)
         self._applied_mask_limits = limits
 
     @property
-    def clipping_extents(self) -> typing.Tuple[float]:
+    def clipping_extents(self) -> tuple[float]:
         return self._applied_clipping_extents
 
     @clipping_extents.setter
-    def clipping_extents(self, extents: typing.Tuple[float]) -> None:
+    def clipping_extents(self, extents: tuple[float]) -> None:
         if extents == self._applied_clipping_extents:
             logger.debug(
                 f"Clipping extents {extents} same as current value. Update not applied."
@@ -164,8 +163,8 @@ class GlyphActor(vtkActor):
 
 
 def bbox_to_model_coordinates(
-    bbox_bounds: typing.Tuple[float], base_bounds: typing.Tuple[float]
-) -> typing.Tuple[typing.List[float]]:
+    bbox_bounds: tuple[float], base_bounds: tuple[float]
+) -> tuple[list[float]]:
     base_bottom_left = np.array(base_bounds[::2])
     base_top_right = np.array(base_bounds[1::2])
 

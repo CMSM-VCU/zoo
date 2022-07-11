@@ -1,5 +1,4 @@
 import os
-import typing
 from importlib import resources
 
 from . import ui
@@ -17,7 +16,7 @@ from qtpy import uic
 class ControlPaneVisuals(qtw.QWidget):
     _parent = None
 
-    def __init__(self, parent: typing.Optional["qtw.QWidget"] = None) -> None:
+    def __init__(self, parent: "qtw.QWidget" | None = None) -> None:
         super().__init__(parent=parent)
         with resources.open_text(ui, "controlpane_visuals.ui") as uifile:
             uic.loadUi(uifile, self)
@@ -191,7 +190,7 @@ class ControlPaneVisuals(qtw.QWidget):
         )
 
     @staticmethod
-    def _pick_color(button) -> typing.Tuple:
+    def _pick_color(button) -> tuple:
         color = qtw.QColorDialog.getColor()
         button.setStyleSheet(f"background-color: rgb{color.getRgb()[:3]}")
         return color.getRgbF()

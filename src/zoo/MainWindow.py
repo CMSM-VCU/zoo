@@ -1,5 +1,5 @@
 import os
-import typing
+from collections.abc import Sequence
 from importlib import resources
 from pathlib import Path
 
@@ -48,21 +48,21 @@ class MainWindow(qtw.QMainWindow):
         return self.tabWidget.currentWidget()
 
     @property
-    def other_pages(self) -> typing.List[MainPage]:
+    def other_pages(self) -> list[MainPage]:
         return [page for page in self.pages if page is not self.current_page]
 
     @property
-    def pages(self) -> typing.List[MainPage]:
+    def pages(self) -> list[MainPage]:
         return [self.tabWidget.widget(idx) for idx in range(self.tabWidget.count())]
 
     tabs = pages  # Alias
 
     @property
-    def window_dimensions(self) -> typing.List[int]:
+    def window_dimensions(self) -> list[int]:
         return [self.width(), self.height()]
 
     @property
-    def view_dimensions(self) -> typing.List[int]:
+    def view_dimensions(self) -> list[int]:
         try:
             return [
                 self.current_page.controller.plotter.width(),
@@ -72,7 +72,7 @@ class MainWindow(qtw.QMainWindow):
             return [-1, -1]
 
     @view_dimensions.setter
-    def view_dimensions(self, dims: typing.Sequence[int]) -> None:
+    def view_dimensions(self, dims: Sequence[int]) -> None:
         gui_padding = [
             b - a for a, b in zip(self.view_dimensions, self.window_dimensions)
         ]
@@ -151,7 +151,7 @@ class MainWindow(qtw.QMainWindow):
 
     def make_folder_for_every_tab(
         self, folder_name: str, exist_ok: bool = True
-    ) -> typing.List[Path]:
+    ) -> list[Path]:
         folders = [Path(tab._filename).parent / Path(folder_name) for tab in self.pages]
         for folder in folders:
             Path.mkdir(folder, exist_ok=exist_ok)
@@ -215,7 +215,7 @@ class MainWindow(qtw.QMainWindow):
         self.width_changed.emit(str(self.view_dimensions[0]))
         self.height_changed.emit(str(self.view_dimensions[1]))
 
-    def open_dropped_files(self, paths: typing.List, *, depth: int = 0) -> None:
+    def open_dropped_files(self, paths: list, *, depth: int = 0) -> None:
         if depth > 1:
             logger.warning(f"Directory recursion depth at {depth}.")
         if len(paths) > 10:
