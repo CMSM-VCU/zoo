@@ -1,11 +1,11 @@
 import ast
 import os
-import typing
+from collections.abc import Callable, Iterable
 from functools import partial
 from importlib import resources
-from loguru import logger
 
 import pyperclip
+from loguru import logger
 
 from . import ui
 from .ContourController import ContourController
@@ -22,7 +22,7 @@ from qtpy import uic
 class ControlPanePrimary(qtw.QWidget):
     _parent = None
 
-    def __init__(self, parent: typing.Optional["qtw.QWidget"] = None) -> None:
+    def __init__(self, parent: qtw.QWidget | None = None) -> None:
         super().__init__(parent=parent)
         with resources.open_text(ui, "controlpane_primary.ui") as uifile:
             uic.loadUi(uifile, self)
@@ -145,9 +145,9 @@ class ControlPanePrimary(qtw.QWidget):
 
     @staticmethod
     def _template_toggle_uniform_vector_spinbox(
-        spinboxes: typing.List,
-        component_funcs: typing.List[typing.Callable],
-        uniform_func: typing.Callable,
+        spinboxes: list,
+        component_funcs: list[Callable],
+        uniform_func: Callable,
         enable: bool,
     ) -> None:
         if enable:
@@ -169,9 +169,9 @@ class ControlPanePrimary(qtw.QWidget):
 
     @staticmethod
     def _template_toggle_uniform_vector_lineedit(
-        lineedits: typing.List,
-        component_funcs: typing.List[typing.Callable],
-        uniform_func: typing.Callable,
+        lineedits: list,
+        component_funcs: list[Callable],
+        uniform_func: Callable,
         enable: bool,
     ) -> None:
         if enable:
@@ -213,9 +213,7 @@ class ControlPanePrimary(qtw.QWidget):
 
         self.maskdatasetSelector.setCurrentText(mask_dataset)
 
-    def update_extents_boxes(
-        self, clipping_extents: typing.Tuple, instigator: int
-    ) -> None:
+    def update_extents_boxes(self, clipping_extents: tuple, instigator: int) -> None:
         if instigator == truncate_int8_to_int4(id(self)):
             return
 
@@ -225,9 +223,7 @@ class ControlPanePrimary(qtw.QWidget):
             else:
                 self.set_clipping_extent[i]()
 
-    def update_colorlimit_boxes(
-        self, colorbar_limits: typing.Tuple, instigator: int
-    ) -> None:
+    def update_colorlimit_boxes(self, colorbar_limits: tuple, instigator: int) -> None:
         if instigator == truncate_int8_to_int4(id(self)):
             return
 
@@ -238,9 +234,7 @@ class ControlPanePrimary(qtw.QWidget):
             self.set_color_min()
             self.set_color_max()
 
-    def update_masklimit_boxes(
-        self, mask_limits: typing.Tuple, instigator: int
-    ) -> None:
+    def update_masklimit_boxes(self, mask_limits: tuple, instigator: int) -> None:
         if instigator == truncate_int8_to_int4(id(self)):
             return
 
@@ -415,9 +409,7 @@ class ControlPanePrimary(qtw.QWidget):
             partial(self.set_clipping_extent_n, self, i) for i in range(6)
         )
 
-    def update_camera_readout(
-        self, camera_location: typing.List, instigator: int
-    ) -> None:
+    def update_camera_readout(self, camera_location: list, instigator: int) -> None:
         pos = camera_location[0]
         foc = camera_location[1]
         up = camera_location[2]
@@ -443,11 +435,10 @@ class ControlPanePrimary(qtw.QWidget):
             try:
                 paste_data = ast.literal_eval(pyperclip.paste().strip())
                 assert (
-                    isinstance(paste_data, typing.Iterable) and len(paste_data) == 3
+                    isinstance(paste_data, Iterable) and len(paste_data) == 3
                 ), "Paste data must contain 3 items."
                 assert all(
-                    isinstance(item, typing.Iterable) and len(item) == 3
-                    for item in paste_data
+                    isinstance(item, Iterable) and len(item) == 3 for item in paste_data
                 ), "Each item in paste data must be a vector of length 3."
             except (SyntaxError, ValueError):
                 print("Bad paste data - syntax")

@@ -1,4 +1,3 @@
-import typing
 from importlib import resources
 
 from qtpy import QtWidgets as qtw
@@ -14,7 +13,10 @@ class ControlPaneTabs(qtw.QWidget):
     _parent = None
     panes = dict()
 
-    def __init__(self, parent: typing.Optional["qtw.QWidget"] = None,) -> None:
+    def __init__(
+        self,
+        parent: qtw.QWidget | None = None,
+    ) -> None:
         super().__init__(parent=parent)
         with resources.open_text(ui, "controlpane_tabs.ui") as uifile:
             uic.loadUi(uifile, self)

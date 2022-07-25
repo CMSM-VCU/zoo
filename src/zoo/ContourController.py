@@ -1,4 +1,5 @@
-import typing
+from collections.abc import Iterable, Sequence
+from typing import Any
 
 from loguru import logger
 from qtpy import QtCore as qtc
@@ -16,11 +17,11 @@ class ContourController(qtc.QAbstractItemModel):
     plot_dataset: str
     mask_dataset: str
     timestep_index: int
-    glyph_size: typing.Tuple[float]
-    exaggeration: typing.Tuple[float]
-    clipping_extents: typing.Tuple[float]
-    mask_limits: typing.Tuple[float]
-    colorbar_limits: typing.Tuple[float]
+    glyph_size: tuple[float]
+    exaggeration: tuple[float]
+    clipping_extents: tuple[float]
+    mask_limits: tuple[float]
+    colorbar_limits: tuple[float]
     opacity_enabled: bool
     mask_opacity: float
     clip_opacity: float
@@ -29,15 +30,15 @@ class ContourController(qtc.QAbstractItemModel):
 
     _timestep_index: int = 0
 
-    camera_location: typing.List[typing.Tuple[float, float, float]]
+    camera_location: list[tuple[float, float, float]]
 
     # fmt: off
-    _glyph_size:          typing.List[float]  = [None, None, None]
-    _exaggeration:        typing.List[float]  = [0.0, 0.0, 0.0]
-    _clipping_extents:    typing.Tuple[float] = (None,) * 6
-    _applied_extents:     typing.Tuple[float] = (None,) * 6
-    _mask_limits:         typing.List[float]  = [-LARGE, LARGE]
-    _colorbar_limits:     typing.List[float]  = [-LARGE, LARGE]
+    _glyph_size:          list[float]  = [None, None, None]
+    _exaggeration:        list[float]  = [0.0, 0.0, 0.0]
+    _clipping_extents:    tuple[float] = (None,) * 6
+    _applied_extents:     tuple[float] = (None,) * 6
+    _mask_limits:         list[float]  = [-LARGE, LARGE]
+    _colorbar_limits:     list[float]  = [-LARGE, LARGE]
     _opacity_enabled: bool = False
     _mask_opacity: float = 0.0
     _clip_opacity: float = 0.0
@@ -151,14 +152,12 @@ class ContourController(qtc.QAbstractItemModel):
             return -1.0
 
     @property
-    def glyph_size(self) -> typing.Tuple[float]:
+    def glyph_size(self) -> tuple[float]:
         return tuple(self._glyph_size)
 
-    def set_glyph_size(
-        self, value: typing.Union[float, typing.Iterable[float]], instigator: int
-    ) -> None:
+    def set_glyph_size(self, value: float | Iterable[float], instigator: int) -> None:
         logger.debug(f"Setting grid spacing index to {value}...")
-        if isinstance(value, typing.Iterable) and len(value) == 3:
+        if isinstance(value, Iterable) and len(value) == 3:
             self._glyph_size = list(value)
         elif isinstance(value, float):
             self._glyph_size = [value, value, value]
@@ -168,14 +167,12 @@ class ContourController(qtc.QAbstractItemModel):
         self.changed_glyph_size.emit(self.glyph_size, instigator)
 
     @property
-    def exaggeration(self) -> typing.Tuple[float]:
+    def exaggeration(self) -> tuple[float]:
         return tuple(self._exaggeration)
 
-    def set_exaggeration(
-        self, value: typing.Union[float, typing.Iterable[float]], instigator: int
-    ) -> None:
+    def set_exaggeration(self, value: float | Iterable[float], instigator: int) -> None:
         logger.debug(f"Setting exaggeration to {value}...")
-        if isinstance(value, typing.Iterable) and len(value) == 3:
+        if isinstance(value, Iterable) and len(value) == 3:
             self._exaggeration = list(value)
         elif isinstance(value, float):
             self._exaggeration = [value, value, value]
@@ -213,20 +210,18 @@ class ContourController(qtc.QAbstractItemModel):
         self.changed_mask_dataset.emit(self.mask_dataset, instigator)
 
     @property
-    def clipping_extents(self) -> typing.Tuple[float]:
+    def clipping_extents(self) -> tuple[float]:
         return self._clipping_extents
 
-    def set_clipping_extents(
-        self, extents: typing.Sequence[float], instigator: int
-    ) -> None:
+    def set_clipping_extents(self, extents: Sequence[float], instigator: int) -> None:
         logger.debug(f"Setting clipping extents to {extents}...")
         self._clipping_extents = tuple(extents)
         self.changed_clipping_extents.emit(self.clipping_extents, instigator)
 
     def replace_clipping_extents(
         self,
-        indeces: typing.Sequence[int],
-        values: typing.Sequence[float],
+        indeces: Sequence[int],
+        values: Sequence[float],
         instigator: int,
     ) -> None:
         logger.debug(f"Replacing clipping extents {indeces} with {values}...")
@@ -240,12 +235,12 @@ class ContourController(qtc.QAbstractItemModel):
         self.set_clipping_extents(tuple(extents), instigator)
 
     @property
-    def mask_limits(self) -> typing.Tuple[float]:
+    def mask_limits(self) -> tuple[float]:
         return tuple(self._mask_limits)
 
-    def set_mask_limits(self, value: typing.Iterable[float], instigator: int) -> None:
+    def set_mask_limits(self, value: Iterable[float], instigator: int) -> None:
         logger.debug(f"Externally setting mask limits to {value}...")
-        if isinstance(value, typing.Iterable) and len(value) == 2:
+        if isinstance(value, Iterable) and len(value) == 2:
             self._mask_limits = list(value)
         elif value is None:
             self._mask_limits = [-LARGE, LARGE]
@@ -255,14 +250,12 @@ class ContourController(qtc.QAbstractItemModel):
         self.changed_mask_limits.emit(self.mask_limits, instigator)
 
     @property
-    def colorbar_limits(self) -> typing.Tuple[float]:
+    def colorbar_limits(self) -> tuple[float]:
         return tuple(self._colorbar_limits)
 
-    def set_colorbar_limits(
-        self, value: typing.Iterable[float], instigator: int
-    ) -> None:
+    def set_colorbar_limits(self, value: Iterable[float], instigator: int) -> None:
         logger.debug(f"Externally setting colorbar limits to {value}...")
-        if isinstance(value, typing.Iterable) and len(value) == 2:
+        if isinstance(value, Iterable) and len(value) == 2:
             self._colorbar_limits = list(value)
         elif value is None:
             self._colorbar_limits = self.contour_primary._plot_dataset_limits
@@ -298,41 +291,39 @@ class ContourController(qtc.QAbstractItemModel):
         self.changed_clip_opacity.emit(self.clip_opacity, instigator)
 
     @property
-    def camera_location(self) -> typing.List[typing.Tuple[float, float, float]]:
+    def camera_location(self) -> list[tuple[float, float, float]]:
         return list(self.contour_primary.plotter.camera_position)
 
     @camera_location.setter
-    def camera_location(
-        self, location: typing.List[typing.Tuple[float, float, float]]
-    ) -> None:
+    def camera_location(self, location: list[tuple[float, float, float]]) -> None:
         for contour in self.contours:
             contour.plotter.camera_position = location
 
     def distribute_camera_location(
-        self, camera_location: typing.List, instigator: int
+        self, camera_location: list, instigator: int
     ) -> None:
         for contour in self.contours:
             if instigator != truncate_int8_to_int4(id(contour)):
                 contour.plotter.camera_position = camera_location
 
     @property
-    def background_color(self) -> typing.List[float]:
+    def background_color(self) -> list[float]:
         return self.contour_primary.plotter.background_color.float_rgb
 
     @background_color.setter
-    def background_color(self, color: typing.Sequence[float]) -> None:
+    def background_color(self, color: Sequence[float]) -> None:
         for contour in self.contours:
             contour.plotter.set_background(color)
 
     @property
-    def widgets(self) -> typing.Dict:
+    def widgets(self) -> dict:
         return {
             "scalarbar": self.plotter.scalar_bars["primary"],
             "orientation": self.plotter.camera_widget,
         }
 
     def set_widget_property(
-        self, widget: str, property_: str, value: typing.Any, instigator: int
+        self, widget: str, property_: str, value: Any, instigator: int
     ) -> None:
         widget = widget.lower()
         property_ = property_.lower()

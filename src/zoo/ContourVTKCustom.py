@@ -1,4 +1,3 @@
-import typing
 from functools import lru_cache
 
 import numpy as np
@@ -26,9 +25,9 @@ EPSILON: float = 1e-6
 class ContourVTKCustom(qtc.QAbstractItemModel):
     plotter: "InteractorLike"  # e.g. QtInteractor, vtkInteractor
 
-    _original_extents: typing.Tuple[float] = (None,) * 6
-    _plot_dataset_limits: typing.List[float] = [-LARGE, LARGE]
-    _mask_dataset_limits: typing.List[float] = [-LARGE, LARGE]
+    _original_extents: tuple[float] = (None,) * 6
+    _plot_dataset_limits: list[float] = [-LARGE, LARGE]
+    _mask_dataset_limits: list[float] = [-LARGE, LARGE]
 
     destroyed = qtc.Signal()
 
@@ -123,7 +122,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.polydata = self.construct_timestep_data(timestep)
         self.polydata.GetPointData().SetActiveScalars(self.controller.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
-        self.controller.set_clipping_extents(self._original_extents, instigator=id(self))
+        self.controller.set_clipping_extents(
+            self._original_extents, instigator=id(self)
+        )
         self._model_size = list(
             (
                 np.array(self._original_extents[1::2])
@@ -175,24 +176,16 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.change_mask_opacity(self.controller.mask_opacity)
         self.change_clip_opacity(self.controller.clip_opacity)
 
-    def change_glyph_size(
-        self, glyph_size: typing.Tuple, instigator: int = None
-    ) -> None:
+    def change_glyph_size(self, glyph_size: tuple, instigator: int = None) -> None:
         self.actor.glyph_size = glyph_size
 
-    def change_exaggeration(
-        self, exaggeration: typing.Tuple, instigator: int = None
-    ) -> None:
+    def change_exaggeration(self, exaggeration: tuple, instigator: int = None) -> None:
         self.actor.exaggeration = exaggeration
 
-    def change_mask_limits(
-        self, mask_limits: typing.Tuple, instigator: int = None
-    ) -> None:
+    def change_mask_limits(self, mask_limits: tuple, instigator: int = None) -> None:
         self.actor.mask_limits = mask_limits
 
-    def change_clipping_extents(
-        self, extents: typing.Tuple, instigator: int = None
-    ) -> None:
+    def change_clipping_extents(self, extents: tuple, instigator: int = None) -> None:
         if instigator != truncate_int8_to_int4(id(self)):
             self.actor.clipping_extents = extents
 
@@ -220,7 +213,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.plotter.render()
 
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
-            "_scalar", plot_dataset, vtkDataObject.FIELD_ASSOCIATION_POINTS, -1,
+            "_scalar", plot_dataset, vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
         )
 
     def update_mask_dataset(self, mask_dataset: str, instigator: int = None) -> None:
@@ -229,12 +222,10 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         logger.debug(f"Detected value range of {self._plot_dataset_limits}")
         self.controller.set_mask_limits(self._mask_dataset_limits, instigator=id(self))
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
-            "_mask_scalar", mask_dataset, vtkDataObject.FIELD_ASSOCIATION_POINTS, -1,
+            "_mask_scalar", mask_dataset, vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
         )
 
-    def change_colorbar_limits(
-        self, colorbar_limits: typing.Tuple, instigator: int
-    ) -> None:
+    def change_colorbar_limits(self, colorbar_limits: tuple, instigator: int) -> None:
         if colorbar_limits[0] <= colorbar_limits[1]:
             logger.debug(
                 f"Colorbar limits {colorbar_limits} in correct order. Applying..."
@@ -264,7 +255,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     def save_image(self, filename) -> None:
         self.plotter.screenshot(filename=filename)
 
-    def update_widgets(self, widget_properties: typing.Dict, instigator: int) -> None:
+    def update_widgets(self, widget_properties: dict, instigator: int) -> None:
         self.plotter.camera_widget.SetEnabled(
             widget_properties.get("orientation", {}).get("visible", True)
         )

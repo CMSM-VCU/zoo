@@ -2,14 +2,14 @@ import os
 from importlib import resources
 from io import BytesIO
 from pathlib import Path
-from loguru import logger
 
 import win32clipboard
+from loguru import logger
 from PIL import Image
 
 from . import ui
-from .ControlPaneTabs import ControlPaneTabs
 from .ContourController import ContourController
+from .ControlPaneTabs import ControlPaneTabs
 from .H5Model import H5Model
 
 os.environ["QT_API"] = "pyqt5"
