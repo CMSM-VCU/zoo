@@ -124,6 +124,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         #     self._timestep_index = 0
         # logger.info(f"Actually: {self.timestep}")
         self.polydata = self.construct_timestep_data(timestep)
+        logger.debug(f"Timestep cache: {self.construct_timestep_data.cache_info()}")
         self.polydata.GetPointData().SetActiveScalars(self.controller.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self.controller.set_clipping_extents(
