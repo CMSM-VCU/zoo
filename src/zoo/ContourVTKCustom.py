@@ -12,6 +12,7 @@ from vtkmodules.vtkFiltersGeneral import vtkVertexGlyphFilter
 from vtkmodules.vtkInteractionWidgets import vtkCameraOrientationWidget
 from vtkmodules.vtkRenderingCore import vtkPolyDataMapper
 
+from . import config
 from .ClippingBox import ClippingBox
 from .GlyphActor import GlyphActor
 from .H5Model import H5Model
@@ -47,6 +48,10 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
         self.lut = LookupTable()
 
+        self.construct_timestep_data = lru_cache(maxsize=config.cache_size)(
+            self.construct_timestep_data
+        )  # Setting cache size at runtime requires this alternate usage
+
     @property
     def controller(self):
         return self._controller
@@ -68,7 +73,6 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self._controller.changed_mask_opacity.connect(self.change_mask_opacity)
         self._controller.changed_clip_opacity.connect(self.change_clip_opacity)
 
-    @lru_cache(maxsize=8)
     def construct_timestep_data(self, timestep: int) -> pv.PolyData:
         logger.debug("Constructing data object...")
         coords = self.model.get_data_at_timestep(("x1", "x2", "x3"), timestep)
@@ -120,6 +124,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         #     self._timestep_index = 0
         # logger.info(f"Actually: {self.timestep}")
         self.polydata = self.construct_timestep_data(timestep)
+        logger.debug(f"Timestep cache: {self.construct_timestep_data.cache_info()}")
         self.polydata.GetPointData().SetActiveScalars(self.controller.plot_dataset)
         self._original_extents = self.polydata.GetPoints().GetBounds()
         self.controller.set_clipping_extents(
