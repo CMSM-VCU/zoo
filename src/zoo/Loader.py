@@ -74,9 +74,24 @@ class Loader(qtc.QObject):
     def read_as_h5(path):
         logger.info("Reading as hdf5...")
         try:
-            return pd.read_hdf(path, key="data", mode="r")
+            df = pd.read_hdf(path, key="data", mode="r")
         except Exception as err:
+            logger.critical(f"Failed to read: {path}")
             raise err
+
+        logger.info("Converting to categorical datasets...")
+        _size_before = int(df.memory_usage(deep=True).sum()/1e6)
+
+        eligible = df.nunique() < len(df) / 10
+        for col, _ in eligible[eligible].items():
+            df[col] = df[col].astype("category")
+
+        _size_after = int(df.memory_usage(deep=True).sum()/1e6)
+        _percent = int((1-(_size_after/_size_before))*100)
+        logger.debug(f"Size reduction: {_size_before}->{_size_after} MB ({_percent}% reduction)")
+
+        return df
+
 
     @staticmethod
     def read_as_grid_file(path):
