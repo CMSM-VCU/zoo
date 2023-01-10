@@ -7,7 +7,8 @@ from tables import is_hdf5_file
 
 from .utils import EXTENSIONS
 
-THREADED = True
+THREADED = True  # TODO: Expose as command line option
+DEFLATE_DATA = True  # TODO: Expose as command line option
 COMMENT_CHARACTER = "#"
 DEFAULT_COLUMNS = {0: "x1", 1: "x2", 2: "x3", 3: "material"}
 
@@ -67,6 +68,11 @@ class Loader(qtc.QObject):
                 else:
                     df = Loader.read_as_grid_file(self.filename)
 
+        if df is None:
+            logger.warning("Data is `None`, rejecting...")
+            self.rejected.emit()
+            return
+
         self.df = df
         self.finished.emit()
 
@@ -74,9 +80,29 @@ class Loader(qtc.QObject):
     def read_as_h5(path):
         logger.info("Reading as hdf5...")
         try:
-            return pd.read_hdf(path, key="data", mode="r")
+            df = pd.read_hdf(path, key="data", mode="r")
+        except MemoryError as err:
+            logger.critical(f"Out of memory: {path}")
+            return None
         except Exception as err:
+            logger.critical(f"Failed to read: {path}")
             raise err
+
+        if DEFLATE_DATA:
+            logger.info("Converting to categorical datasets...")
+            _size_before = int(df.memory_usage(deep=True).sum() / 1e6)
+
+            eligible = df.nunique() < len(df) / 10
+            eligible = list(eligible[eligible].index)
+            df[eligible] = df[eligible].astype("category")
+
+            _size_after = int(df.memory_usage(deep=True).sum() / 1e6)
+            _percent = int((1 - (_size_after / _size_before)) * 100)
+            logger.debug(
+                f"Size reduction: {_size_before}->{_size_after} MB ({_percent}% reduction)"
+            )
+
+        return df
 
     @staticmethod
     def read_as_grid_file(path):

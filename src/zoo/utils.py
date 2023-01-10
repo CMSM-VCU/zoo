@@ -4,9 +4,11 @@ from colorcet import all_original_names, get_aliases
 from matplotlib.pyplot import colormaps
 
 # fmt: off
-EXTENSIONS = {
+EXTENSIONS_GOOD = {
     "h5": (".h5", ".hdf5"),
     "grid": (".csv", ".grid"),
+}
+EXTENSIONS_BAD = {
     "known_bad": (
             ".in", ".his", ".0",
             ".png", ".gif", ".jpg",
@@ -15,6 +17,7 @@ EXTENSIONS = {
             ".docx", ".xlsx", ".pptx",
     ),
 }
+EXTENSIONS = EXTENSIONS_GOOD | EXTENSIONS_BAD
 # fmt: on
 
 # Filtering colorcet colormaps
@@ -39,8 +42,9 @@ COLORMAPS = (
 )
 
 
-def has_known_extension(file: Path) -> bool:
-    return file.suffix in [ext for group in EXTENSIONS.values() for ext in group]
+def has_known_extension(file: Path, exclude_known_bad: bool = True) -> bool:
+    check = EXTENSIONS_GOOD if exclude_known_bad else EXTENSIONS
+    return file.suffix in [ext for group in check.values() for ext in group]
 
 
 def truncate_int8_to_int4(val: int) -> int:
