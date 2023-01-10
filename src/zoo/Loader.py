@@ -93,8 +93,8 @@ class Loader(qtc.QObject):
             _size_before = int(df.memory_usage(deep=True).sum()/1e6)
 
             eligible = df.nunique() < len(df) / 10
-            for col, _ in eligible[eligible].items():
-                df[col] = df[col].astype("category")
+            eligible = list(eligible[eligible].index)
+            df[eligible] = df[eligible].astype("category")
 
             _size_after = int(df.memory_usage(deep=True).sum()/1e6)
             _percent = int((1-(_size_after/_size_before))*100)
