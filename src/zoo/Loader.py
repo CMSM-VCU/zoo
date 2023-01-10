@@ -7,8 +7,8 @@ from tables import is_hdf5_file
 
 from .utils import EXTENSIONS
 
-THREADED = True    # TODO: Expose as command line option
-DEFLATE_DATA = True # TODO: Expose as command line option
+THREADED = True  # TODO: Expose as command line option
+DEFLATE_DATA = True  # TODO: Expose as command line option
 COMMENT_CHARACTER = "#"
 DEFAULT_COLUMNS = {0: "x1", 1: "x2", 2: "x3", 3: "material"}
 
@@ -90,18 +90,19 @@ class Loader(qtc.QObject):
 
         if DEFLATE_DATA:
             logger.info("Converting to categorical datasets...")
-            _size_before = int(df.memory_usage(deep=True).sum()/1e6)
+            _size_before = int(df.memory_usage(deep=True).sum() / 1e6)
 
             eligible = df.nunique() < len(df) / 10
             eligible = list(eligible[eligible].index)
             df[eligible] = df[eligible].astype("category")
 
-            _size_after = int(df.memory_usage(deep=True).sum()/1e6)
-            _percent = int((1-(_size_after/_size_before))*100)
-            logger.debug(f"Size reduction: {_size_before}->{_size_after} MB ({_percent}% reduction)")
+            _size_after = int(df.memory_usage(deep=True).sum() / 1e6)
+            _percent = int((1 - (_size_after / _size_before)) * 100)
+            logger.debug(
+                f"Size reduction: {_size_before}->{_size_after} MB ({_percent}% reduction)"
+            )
 
         return df
-
 
     @staticmethod
     def read_as_grid_file(path):
