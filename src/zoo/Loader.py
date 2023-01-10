@@ -68,6 +68,11 @@ class Loader(qtc.QObject):
                 else:
                     df = Loader.read_as_grid_file(self.filename)
 
+        if df is None:
+            logger.warning("Data is `None`, rejecting...")
+            self.rejected.emit()
+            return
+
         self.df = df
         self.finished.emit()
 
@@ -76,6 +81,9 @@ class Loader(qtc.QObject):
         logger.info("Reading as hdf5...")
         try:
             df = pd.read_hdf(path, key="data", mode="r")
+        except MemoryError as err:
+            logger.critical(f"Out of memory: {path}")
+            return None
         except Exception as err:
             logger.critical(f"Failed to read: {path}")
             raise err
