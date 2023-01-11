@@ -42,6 +42,11 @@ class LookupTable(vtkLookupTable):
     def num_colors(self):
         return self._num_colors
 
+    # Compatibility with PyVista LookupTable class
+    @property
+    def n_values(self):
+        return self._num_colors
+
     @cmap.setter
     def cmap(self, cmap):
         if cmap == "rainbow (legacy)":
