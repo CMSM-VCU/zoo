@@ -105,10 +105,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         vertexGlyphFilter.AddInputDataObject(polydata)
         vertexGlyphFilter.Update()
 
-        mapper = pv.mapper.make_mapper(vtkPolyDataMapper)
+        mapper = PolyDataMapper()
         mapper.SetInputConnection(vertexGlyphFilter.GetOutputPort())
-        mapper.SetLookupTable(self.lut)
-
+        mapper.lookup_table = self.lut
         mapper.MapDataArrayToVertexAttribute(
             "_disp", "_displacement", vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
         )
@@ -284,6 +283,9 @@ def bbox_to_model_coordinates(bbox_bounds, base_bounds):
     bbox_mc_tr = ((np.array(bbox_bounds[1::2]) - base_top_right) / (size)) + 0.5
     return (bbox_mc_bl, bbox_mc_tr)
 
+
+class PolyDataMapper(vtkPolyDataMapper, pv.mapper._BaseMapper):
+    pass
 
 if __name__ == "__main__":
     import sys
