@@ -7,10 +7,10 @@ import win32clipboard
 from loguru import logger
 from PIL import Image
 
+from ..ContourController import ContourController
+from ..H5Model import H5Model
 from . import ui
-from .ContourController import ContourController
 from .ControlPaneTabs import ControlPaneTabs
-from .H5Model import H5Model
 
 os.environ["QT_API"] = "pyqt5"
 

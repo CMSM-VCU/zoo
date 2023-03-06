@@ -1,9 +1,9 @@
 import os
 from importlib import resources
 
+from ..ContourController import ContourController
+from ..utils import COLORMAPS
 from . import ui
-from .ContourController import ContourController
-from .utils import COLORMAPS
 
 os.environ["QT_API"] = "pyqt5"
 

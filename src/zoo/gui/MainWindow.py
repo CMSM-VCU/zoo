@@ -5,7 +5,8 @@ from pathlib import Path
 
 from loguru import logger
 
-from . import ui, utils
+from .. import utils
+from . import ui
 from .MainPage import MainPage
 
 os.environ["QT_API"] = "pyqt5"

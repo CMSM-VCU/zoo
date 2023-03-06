@@ -6,7 +6,7 @@ from loguru import logger
 from qtpy import QtCore, QtWidgets
 
 from . import config
-from .MainWindow import MainWindow
+from .gui.MainWindow import MainWindow
 
 
 def path_is_file(path: str) -> Path | None:

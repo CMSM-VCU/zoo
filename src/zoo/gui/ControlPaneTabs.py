@@ -3,10 +3,9 @@ from importlib import resources
 from qtpy import QtWidgets as qtw
 from qtpy import uic
 
-from zoo.ControlPaneVisuals import ControlPaneVisuals
-
 from . import ui
 from .ControlPanePrimary import ControlPanePrimary
+from .ControlPaneVisuals import ControlPaneVisuals
 
 
 class ControlPaneTabs(qtw.QWidget):

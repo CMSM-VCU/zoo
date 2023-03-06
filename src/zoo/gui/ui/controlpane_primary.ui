@@ -1230,7 +1230,7 @@ Right Click to paste</string>
   <customwidget>
    <class>FoldingGroupBox</class>
    <extends>QGroupBox</extends>
-   <header location="global">zoo.ui.foldinggroupbox</header>
+   <header location="global">zoo.gui.ui.foldinggroupbox</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

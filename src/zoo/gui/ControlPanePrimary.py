@@ -7,9 +7,9 @@ from importlib import resources
 import pyperclip
 from loguru import logger
 
+from ..ContourController import ContourController
+from ..utils import truncate_int8_to_int4
 from . import ui
-from .ContourController import ContourController
-from .utils import truncate_int8_to_int4
 
 os.environ["QT_API"] = "pyqt5"
 
