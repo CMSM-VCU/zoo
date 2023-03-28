@@ -1,68 +1,54 @@
-# -*- coding: utf-8 -*-
+from PySide6.QtCore import QMetaObject, QRect
+from PySide6.QtGui import QAction, QFont
+from PySide6.QtWidgets import QGridLayout, QMenu, QMenuBar, QTabWidget, QWidget
 
-################################################################################
-## Form generated from reading UI file 'zoo.ui'
-##
-## Created by: Qt User Interface Compiler version 6.4.2
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
-
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
-    QCursor, QFont, QFontDatabase, QGradient,
-    QIcon, QImage, QKeySequence, QLinearGradient,
-    QPainter, QPalette, QPixmap, QRadialGradient,
-    QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QMainWindow, QMenu,
-    QMenuBar, QSizePolicy, QTabWidget, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
+            MainWindow.setObjectName("MainWindow")
         MainWindow.resize(925, 743)
         font = QFont()
-        font.setFamilies([u"Segoe UI"])
+        font.setFamilies(["Segoe UI"])
         font.setPointSize(10)
         font.setBold(False)
         MainWindow.setFont(font)
         self.actionOpen = QAction(MainWindow)
-        self.actionOpen.setObjectName(u"actionOpen")
+        self.actionOpen.setObjectName("actionOpen")
         self.actionExit = QAction(MainWindow)
-        self.actionExit.setObjectName(u"actionExit")
+        self.actionExit.setObjectName("actionExit")
         self.actionDuplicate = QAction(MainWindow)
-        self.actionDuplicate.setObjectName(u"actionDuplicate")
+        self.actionDuplicate.setObjectName("actionDuplicate")
         self.actionSynchronizeTabs = QAction(MainWindow)
-        self.actionSynchronizeTabs.setObjectName(u"actionSynchronizeTabs")
+        self.actionSynchronizeTabs.setObjectName("actionSynchronizeTabs")
         self.actionSave_Image = QAction(MainWindow)
-        self.actionSave_Image.setObjectName(u"actionSave_Image")
+        self.actionSave_Image.setObjectName("actionSave_Image")
         self.actionCopy_Image = QAction(MainWindow)
-        self.actionCopy_Image.setObjectName(u"actionCopy_Image")
+        self.actionCopy_Image.setObjectName("actionCopy_Image")
         self.actionSave_All_Images = QAction(MainWindow)
-        self.actionSave_All_Images.setObjectName(u"actionSave_All_Images")
+        self.actionSave_All_Images.setObjectName("actionSave_All_Images")
         self.actionSave_All_Images_In_All_Tabs = QAction(MainWindow)
-        self.actionSave_All_Images_In_All_Tabs.setObjectName(u"actionSave_All_Images_In_All_Tabs")
+        self.actionSave_All_Images_In_All_Tabs.setObjectName(
+            "actionSave_All_Images_In_All_Tabs"
+        )
         self.actionNext_Timestep = QAction(MainWindow)
-        self.actionNext_Timestep.setObjectName(u"actionNext_Timestep")
+        self.actionNext_Timestep.setObjectName("actionNext_Timestep")
         self.actionPrevious_Timestep = QAction(MainWindow)
-        self.actionPrevious_Timestep.setObjectName(u"actionPrevious_Timestep")
+        self.actionPrevious_Timestep.setObjectName("actionPrevious_Timestep")
         self.actionFirst_Timestep = QAction(MainWindow)
-        self.actionFirst_Timestep.setObjectName(u"actionFirst_Timestep")
+        self.actionFirst_Timestep.setObjectName("actionFirst_Timestep")
         self.actionLast_Timestep = QAction(MainWindow)
-        self.actionLast_Timestep.setObjectName(u"actionLast_Timestep")
+        self.actionLast_Timestep.setObjectName("actionLast_Timestep")
         self.centralwidget = QWidget(MainWindow)
-        self.centralwidget.setObjectName(u"centralwidget")
+        self.centralwidget.setObjectName("centralwidget")
         self.centralwidget.setEnabled(True)
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setSpacing(6)
         self.gridLayout.setContentsMargins(4, 4, 4, 4)
-        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setObjectName("gridLayout")
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.tabWidget = QTabWidget(self.centralwidget)
-        self.tabWidget.setObjectName(u"tabWidget")
+        self.tabWidget.setObjectName("tabWidget")
         self.tabWidget.setDocumentMode(True)
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.setMovable(True)
@@ -71,17 +57,17 @@ class Ui_MainWindow(object):
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
-        self.menubar.setObjectName(u"menubar")
+        self.menubar.setObjectName("menubar")
         self.menubar.setGeometry(QRect(0, 0, 925, 21))
         font1 = QFont()
         font1.setPointSize(9)
         self.menubar.setFont(font1)
         self.menuFile = QMenu(self.menubar)
-        self.menuFile.setObjectName(u"menuFile")
+        self.menuFile.setObjectName("menuFile")
         self.menuView = QMenu(self.menubar)
-        self.menuView.setObjectName(u"menuView")
+        self.menuView.setObjectName("menuView")
         self.menuNavigation = QMenu(self.menubar)
-        self.menuNavigation.setObjectName(u"menuNavigation")
+        self.menuNavigation.setObjectName("menuNavigation")
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.menuFile.menuAction())
@@ -105,53 +91,4 @@ class Ui_MainWindow(object):
 
         self.tabWidget.setCurrentIndex(-1)
 
-
         QMetaObject.connectSlotsByName(MainWindow)
-    # setupUi
-
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Zoo", None))
-        self.actionOpen.setText(QCoreApplication.translate("MainWindow", u"Open", None))
-#if QT_CONFIG(shortcut)
-        self.actionOpen.setShortcut(QCoreApplication.translate("MainWindow", u"Ctrl+O", None))
-#endif // QT_CONFIG(shortcut)
-        self.actionExit.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
-#if QT_CONFIG(shortcut)
-        self.actionExit.setShortcut(QCoreApplication.translate("MainWindow", u"Ctrl+Q", None))
-#endif // QT_CONFIG(shortcut)
-        self.actionDuplicate.setText(QCoreApplication.translate("MainWindow", u"Duplicate Tab", None))
-        self.actionSynchronizeTabs.setText(QCoreApplication.translate("MainWindow", u"Synchronize Tabs", None))
-        self.actionSave_Image.setText(QCoreApplication.translate("MainWindow", u"Save Image", None))
-#if QT_CONFIG(shortcut)
-        self.actionSave_Image.setShortcut(QCoreApplication.translate("MainWindow", u"Ctrl+S", None))
-#endif // QT_CONFIG(shortcut)
-        self.actionCopy_Image.setText(QCoreApplication.translate("MainWindow", u"Copy Image", None))
-#if QT_CONFIG(shortcut)
-        self.actionCopy_Image.setShortcut(QCoreApplication.translate("MainWindow", u"Ctrl+C", None))
-#endif // QT_CONFIG(shortcut)
-        self.actionSave_All_Images.setText(QCoreApplication.translate("MainWindow", u"Save All Images", None))
-#if QT_CONFIG(shortcut)
-        self.actionSave_All_Images.setShortcut(QCoreApplication.translate("MainWindow", u"Ctrl+Shift+S", None))
-#endif // QT_CONFIG(shortcut)
-        self.actionSave_All_Images_In_All_Tabs.setText(QCoreApplication.translate("MainWindow", u"Save All Images in All Tabs", None))
-        self.actionNext_Timestep.setText(QCoreApplication.translate("MainWindow", u"Next Timestep", None))
-#if QT_CONFIG(shortcut)
-        self.actionNext_Timestep.setShortcut(QCoreApplication.translate("MainWindow", u"PgDown", None))
-#endif // QT_CONFIG(shortcut)
-        self.actionPrevious_Timestep.setText(QCoreApplication.translate("MainWindow", u"Previous Timestep", None))
-#if QT_CONFIG(shortcut)
-        self.actionPrevious_Timestep.setShortcut(QCoreApplication.translate("MainWindow", u"PgUp", None))
-#endif // QT_CONFIG(shortcut)
-        self.actionFirst_Timestep.setText(QCoreApplication.translate("MainWindow", u"First Timestep", None))
-#if QT_CONFIG(shortcut)
-        self.actionFirst_Timestep.setShortcut(QCoreApplication.translate("MainWindow", u"Home", None))
-#endif // QT_CONFIG(shortcut)
-        self.actionLast_Timestep.setText(QCoreApplication.translate("MainWindow", u"Last Timestep", None))
-#if QT_CONFIG(shortcut)
-        self.actionLast_Timestep.setShortcut(QCoreApplication.translate("MainWindow", u"End", None))
-#endif // QT_CONFIG(shortcut)
-        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
-        self.menuView.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
-        self.menuNavigation.setTitle(QCoreApplication.translate("MainWindow", u"Navigation", None))
-    # retranslateUi
-
