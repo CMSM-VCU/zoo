@@ -1,5 +1,4 @@
 from PySide6.QtCore import QMetaObject, QSize, Qt
-from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -15,7 +14,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from zoo.gui.ui.foldinggroupbox import FoldingGroupBox
+from .foldinggroupbox import FoldingGroupBox
+from .style import Fonts
 
 
 class Ui_ControlPane_Visuals(object):
@@ -46,24 +46,19 @@ class Ui_ControlPane_Visuals(object):
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.widthLineEdit = QLineEdit(self.verticalWidget)
         self.widthLineEdit.setObjectName("widthLineEdit")
-        font = QFont()
-        font.setFamilies(["Consolas"])
-        font.setPointSize(8)
-        self.widthLineEdit.setFont(font)
+        self.widthLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_3.addWidget(self.widthLineEdit, 1, 0, 1, 1)
 
         self.heightLineEdit = QLineEdit(self.verticalWidget)
         self.heightLineEdit.setObjectName("heightLineEdit")
-        self.heightLineEdit.setFont(font)
+        self.heightLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_3.addWidget(self.heightLineEdit, 1, 2, 1, 1)
 
         self.label = QLabel(self.verticalWidget)
         self.label.setObjectName("label")
-        font1 = QFont()
-        font1.setPointSize(8)
-        self.label.setFont(font1)
+        self.label.setFont(Fonts.label_small)
 
         self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
 
@@ -89,7 +84,7 @@ class Ui_ControlPane_Visuals(object):
 
         self.bgcolorLabel = QLabel(self.verticalWidget)
         self.bgcolorLabel.setObjectName("bgcolorLabel")
-        self.bgcolorLabel.setFont(font1)
+        self.bgcolorLabel.setFont(Fonts.label_small)
 
         self.horizontalLayout_2.addWidget(self.bgcolorLabel)
 
@@ -152,7 +147,7 @@ class Ui_ControlPane_Visuals(object):
         self.abovecolorLabel = QLabel(self.verticalWidget1)
         self.abovecolorLabel.setObjectName("abovecolorLabel")
         self.abovecolorLabel.setEnabled(False)
-        self.abovecolorLabel.setFont(font1)
+        self.abovecolorLabel.setFont(Fonts.label_small)
 
         self.horizontalLayout_3.addWidget(self.abovecolorLabel)
 
@@ -175,7 +170,7 @@ class Ui_ControlPane_Visuals(object):
         self.belowcolorLabel = QLabel(self.verticalWidget1)
         self.belowcolorLabel.setObjectName("belowcolorLabel")
         self.belowcolorLabel.setEnabled(False)
-        self.belowcolorLabel.setFont(font1)
+        self.belowcolorLabel.setFont(Fonts.label_small)
 
         self.horizontalLayout_4.addWidget(self.belowcolorLabel)
 
@@ -215,10 +210,7 @@ class Ui_ControlPane_Visuals(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.eyeLabel.sizePolicy().hasHeightForWidth())
         self.eyeLabel.setSizePolicy(sizePolicy)
-        font2 = QFont()
-        font2.setFamilies(["Segoe Fluent Icons"])
-        font2.setPointSize(14)
-        self.eyeLabel.setFont(font2)
+        self.eyeLabel.setFont(Fonts.icon_normal)
         self.eyeLabel.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_2.addWidget(self.eyeLabel, 0, 0, 1, 1)
@@ -269,7 +261,7 @@ class Ui_ControlPane_Visuals(object):
         self.moveLabel.setObjectName("moveLabel")
         sizePolicy.setHeightForWidth(self.moveLabel.sizePolicy().hasHeightForWidth())
         self.moveLabel.setSizePolicy(sizePolicy)
-        self.moveLabel.setFont(font2)
+        self.moveLabel.setFont(Fonts.icon_normal)
         self.moveLabel.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_2.addWidget(self.moveLabel, 0, 1, 1, 1)
@@ -302,7 +294,7 @@ class Ui_ControlPane_Visuals(object):
         self.verticalLayout_8.setContentsMargins(4, 4, 4, 4)
         self.opacityCheckBox = QCheckBox(self.verticalWidget_3)
         self.opacityCheckBox.setObjectName("opacityCheckBox")
-        self.opacityCheckBox.setFont(font1)
+        self.opacityCheckBox.setFont(Fonts.label_small)
 
         self.verticalLayout_8.addWidget(self.opacityCheckBox)
 
@@ -322,7 +314,7 @@ class Ui_ControlPane_Visuals(object):
             self.orientationLabel_2.sizePolicy().hasHeightForWidth()
         )
         self.orientationLabel_2.setSizePolicy(sizePolicy1)
-        self.orientationLabel_2.setFont(font1)
+        self.orientationLabel_2.setFont(Fonts.label_small)
 
         self.gridLayout_4.addWidget(self.orientationLabel_2, 1, 0, 1, 1)
 
@@ -377,7 +369,7 @@ class Ui_ControlPane_Visuals(object):
             self.scalarbarLabel_2.sizePolicy().hasHeightForWidth()
         )
         self.scalarbarLabel_2.setSizePolicy(sizePolicy1)
-        self.scalarbarLabel_2.setFont(font1)
+        self.scalarbarLabel_2.setFont(Fonts.label_small)
 
         self.gridLayout_4.addWidget(self.scalarbarLabel_2, 0, 0, 1, 1)
 

@@ -1,5 +1,5 @@
 from PySide6.QtCore import QMetaObject, QSize, Qt
-from PySide6.QtGui import QCursor, QFont
+from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -16,7 +16,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from zoo.gui.ui.foldinggroupbox import FoldingGroupBox
+from .foldinggroupbox import FoldingGroupBox
+from .style import Fonts
 
 
 class Ui_ControlPane_Primary(object):
@@ -51,12 +52,7 @@ class Ui_ControlPane_Primary(object):
         self.nextTimeStep.setSizePolicy(sizePolicy)
         self.nextTimeStep.setMaximumSize(QSize(24, 16777215))
         self.nextTimeStep.setBaseSize(QSize(16, 16))
-        font = QFont()
-        font.setFamilies(["Segoe Fluent Icons"])
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setStrikeOut(False)
-        self.nextTimeStep.setFont(font)
+        self.nextTimeStep.setFont(Fonts.icon_small)
         self.nextTimeStep.setCheckable(False)
         self.nextTimeStep.setAutoRepeat(False)
         self.nextTimeStep.setFlat(False)
@@ -69,16 +65,13 @@ class Ui_ControlPane_Primary(object):
         self.prevTimeStep.setSizePolicy(sizePolicy)
         self.prevTimeStep.setMaximumSize(QSize(24, 16777215))
         self.prevTimeStep.setBaseSize(QSize(16, 16))
-        self.prevTimeStep.setFont(font)
+        self.prevTimeStep.setFont(Fonts.icon_small)
 
         self.gridLayout_6.addWidget(self.prevTimeStep, 0, 0, 1, 1)
 
         self.timeStepSelector = QComboBox(self.timestepdummyWidget)
         self.timeStepSelector.setObjectName("timeStepSelector")
-        font1 = QFont()
-        font1.setFamilies(["Consolas"])
-        font1.setPointSize(11)
-        self.timeStepSelector.setFont(font1)
+        self.timeStepSelector.setFont(Fonts.numeric_normal)
         self.timeStepSelector.setEditable(False)
 
         self.gridLayout_6.addWidget(self.timeStepSelector, 0, 1, 1, 1)
@@ -87,15 +80,13 @@ class Ui_ControlPane_Primary(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.timelabelLabel = QLabel(self.timestepdummyWidget)
         self.timelabelLabel.setObjectName("timelabelLabel")
-        font2 = QFont()
-        font2.setPointSize(8)
-        self.timelabelLabel.setFont(font2)
+        self.timelabelLabel.setFont(Fonts.label_small)
 
         self.horizontalLayout_4.addWidget(self.timelabelLabel)
 
         self.timeLabel = QLabel(self.timestepdummyWidget)
         self.timeLabel.setObjectName("timeLabel")
-        self.timeLabel.setFont(font2)
+        self.timeLabel.setFont(Fonts.label_small)
         self.timeLabel.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.horizontalLayout_4.addWidget(self.timeLabel)
@@ -128,7 +119,7 @@ class Ui_ControlPane_Primary(object):
         self.verticalLayout_6.setContentsMargins(4, 4, 4, 4)
         self.colorLabel = QLabel(self.verticalWidget)
         self.colorLabel.setObjectName("colorLabel")
-        self.colorLabel.setFont(font2)
+        self.colorLabel.setFont(Fonts.label_small)
 
         self.verticalLayout_6.addWidget(self.colorLabel)
 
@@ -139,9 +130,7 @@ class Ui_ControlPane_Primary(object):
         self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.plotdatasetSelector = QComboBox(self.contourdummyWidget2_2)
         self.plotdatasetSelector.setObjectName("plotdatasetSelector")
-        font3 = QFont()
-        font3.setPointSize(10)
-        self.plotdatasetSelector.setFont(font3)
+        self.plotdatasetSelector.setFont(Fonts.label_normal)
 
         self.horizontalLayout_3.addWidget(self.plotdatasetSelector)
 
@@ -160,17 +149,14 @@ class Ui_ControlPane_Primary(object):
         self.colorminLineEdit = QLineEdit(self.contourdummyWidget1)
         self.colorminLineEdit.setObjectName("colorminLineEdit")
         self.colorminLineEdit.setEnabled(False)
-        font4 = QFont()
-        font4.setFamilies(["Consolas"])
-        font4.setPointSize(8)
-        self.colorminLineEdit.setFont(font4)
+        self.colorminLineEdit.setFont(Fonts.numeric_small)
 
         self.horizontalLayout_6.addWidget(self.colorminLineEdit)
 
         self.colormaxLineEdit = QLineEdit(self.contourdummyWidget1)
         self.colormaxLineEdit.setObjectName("colormaxLineEdit")
         self.colormaxLineEdit.setEnabled(False)
-        self.colormaxLineEdit.setFont(font4)
+        self.colormaxLineEdit.setFont(Fonts.numeric_small)
 
         self.horizontalLayout_6.addWidget(self.colormaxLineEdit)
 
@@ -178,7 +164,7 @@ class Ui_ControlPane_Primary(object):
 
         self.maskingLabel = QLabel(self.verticalWidget)
         self.maskingLabel.setObjectName("maskingLabel")
-        self.maskingLabel.setFont(font2)
+        self.maskingLabel.setFont(Fonts.label_small)
 
         self.verticalLayout_6.addWidget(self.maskingLabel)
 
@@ -190,7 +176,7 @@ class Ui_ControlPane_Primary(object):
         self.maskdatasetSelector = QComboBox(self.contourdummyWidget2)
         self.maskdatasetSelector.setObjectName("maskdatasetSelector")
         self.maskdatasetSelector.setEnabled(False)
-        self.maskdatasetSelector.setFont(font3)
+        self.maskdatasetSelector.setFont(Fonts.label_normal)
 
         self.horizontalLayout_2.addWidget(self.maskdatasetSelector)
 
@@ -204,10 +190,7 @@ class Ui_ControlPane_Primary(object):
         )
         self.maskdatasetLockButton.setSizePolicy(sizePolicy1)
         self.maskdatasetLockButton.setMaximumSize(QSize(24, 16777215))
-        font5 = QFont()
-        font5.setFamilies(["Segoe Fluent Icons"])
-        font5.setPointSize(11)
-        self.maskdatasetLockButton.setFont(font5)
+        self.maskdatasetLockButton.setFont(Fonts.icon_small)
         self.maskdatasetLockButton.setCheckable(True)
         self.maskdatasetLockButton.setChecked(True)
 
@@ -228,14 +211,14 @@ class Ui_ControlPane_Primary(object):
         self.maskminLineEdit = QLineEdit(self.contourdummyWidget3)
         self.maskminLineEdit.setObjectName("maskminLineEdit")
         self.maskminLineEdit.setEnabled(False)
-        self.maskminLineEdit.setFont(font4)
+        self.maskminLineEdit.setFont(Fonts.numeric_small)
 
         self.horizontalLayout_7.addWidget(self.maskminLineEdit)
 
         self.maskmaxLineEdit = QLineEdit(self.contourdummyWidget3)
         self.maskmaxLineEdit.setObjectName("maskmaxLineEdit")
         self.maskmaxLineEdit.setEnabled(False)
-        self.maskmaxLineEdit.setFont(font4)
+        self.maskmaxLineEdit.setFont(Fonts.numeric_small)
 
         self.horizontalLayout_7.addWidget(self.maskmaxLineEdit)
 
@@ -264,22 +247,19 @@ class Ui_ControlPane_Primary(object):
         self.gridLayout_5.setContentsMargins(4, 4, 4, 4)
         self.xgsLineEdit = QLineEdit(self.gsdummyWidget)
         self.xgsLineEdit.setObjectName("xgsLineEdit")
-        font6 = QFont()
-        font6.setFamilies(["Consolas"])
-        font6.setPointSize(9)
-        self.xgsLineEdit.setFont(font6)
+        self.xgsLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_5.addWidget(self.xgsLineEdit, 1, 1, 1, 1)
 
         self.ygsLineEdit = QLineEdit(self.gsdummyWidget)
         self.ygsLineEdit.setObjectName("ygsLineEdit")
-        self.ygsLineEdit.setFont(font6)
+        self.ygsLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_5.addWidget(self.ygsLineEdit, 2, 1, 1, 1)
 
         self.zgsLineEdit = QLineEdit(self.gsdummyWidget)
         self.zgsLineEdit.setObjectName("zgsLineEdit")
-        self.zgsLineEdit.setFont(font6)
+        self.zgsLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_5.addWidget(self.zgsLineEdit, 3, 1, 1, 1)
 
@@ -290,7 +270,7 @@ class Ui_ControlPane_Primary(object):
         )
         self.gsLockButton.setSizePolicy(sizePolicy1)
         self.gsLockButton.setMaximumSize(QSize(24, 16777215))
-        self.gsLockButton.setFont(font5)
+        self.gsLockButton.setFont(Fonts.icon_small)
         self.gsLockButton.setCheckable(True)
         self.gsLockButton.setChecked(True)
 
@@ -331,7 +311,7 @@ class Ui_ControlPane_Primary(object):
         )
         self.xexagSpinBox.setSizePolicy(sizePolicy2)
         self.xexagSpinBox.setMinimumSize(QSize(45, 0))
-        self.xexagSpinBox.setFont(font4)
+        self.xexagSpinBox.setFont(Fonts.numeric_small)
         self.xexagSpinBox.setDecimals(1)
         self.xexagSpinBox.setMaximum(1000.000000000000000)
 
@@ -344,7 +324,7 @@ class Ui_ControlPane_Primary(object):
         )
         self.yexagSpinBox.setSizePolicy(sizePolicy2)
         self.yexagSpinBox.setMinimumSize(QSize(45, 0))
-        self.yexagSpinBox.setFont(font4)
+        self.yexagSpinBox.setFont(Fonts.numeric_small)
         self.yexagSpinBox.setKeyboardTracking(False)
         self.yexagSpinBox.setDecimals(1)
         self.yexagSpinBox.setMaximum(1000.000000000000000)
@@ -358,7 +338,7 @@ class Ui_ControlPane_Primary(object):
         )
         self.zexagSpinBox.setSizePolicy(sizePolicy2)
         self.zexagSpinBox.setMinimumSize(QSize(45, 0))
-        self.zexagSpinBox.setFont(font4)
+        self.zexagSpinBox.setFont(Fonts.numeric_small)
         self.zexagSpinBox.setDecimals(1)
         self.zexagSpinBox.setMaximum(1000.000000000000000)
 
@@ -371,7 +351,7 @@ class Ui_ControlPane_Primary(object):
         )
         self.exagLockButton.setSizePolicy(sizePolicy1)
         self.exagLockButton.setMaximumSize(QSize(24, 16777215))
-        self.exagLockButton.setFont(font5)
+        self.exagLockButton.setFont(Fonts.icon_small)
         self.exagLockButton.setCheckable(True)
         self.exagLockButton.setChecked(True)
 
@@ -408,42 +388,42 @@ class Ui_ControlPane_Primary(object):
         self.xminLineEdit = QLineEdit(self.extentsdummyWidget)
         self.xminLineEdit.setObjectName("xminLineEdit")
         self.xminLineEdit.setEnabled(False)
-        self.xminLineEdit.setFont(font4)
+        self.xminLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_2.addWidget(self.xminLineEdit, 0, 2, 1, 1)
 
         self.yminLineEdit = QLineEdit(self.extentsdummyWidget)
         self.yminLineEdit.setObjectName("yminLineEdit")
         self.yminLineEdit.setEnabled(False)
-        self.yminLineEdit.setFont(font4)
+        self.yminLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_2.addWidget(self.yminLineEdit, 2, 2, 1, 1)
 
         self.zminLineEdit = QLineEdit(self.extentsdummyWidget)
         self.zminLineEdit.setObjectName("zminLineEdit")
         self.zminLineEdit.setEnabled(False)
-        self.zminLineEdit.setFont(font4)
+        self.zminLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_2.addWidget(self.zminLineEdit, 3, 2, 1, 1)
 
         self.xmaxLineEdit = QLineEdit(self.extentsdummyWidget)
         self.xmaxLineEdit.setObjectName("xmaxLineEdit")
         self.xmaxLineEdit.setEnabled(False)
-        self.xmaxLineEdit.setFont(font4)
+        self.xmaxLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_2.addWidget(self.xmaxLineEdit, 0, 3, 1, 1)
 
         self.ymaxLineEdit = QLineEdit(self.extentsdummyWidget)
         self.ymaxLineEdit.setObjectName("ymaxLineEdit")
         self.ymaxLineEdit.setEnabled(False)
-        self.ymaxLineEdit.setFont(font4)
+        self.ymaxLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_2.addWidget(self.ymaxLineEdit, 2, 3, 1, 1)
 
         self.zmaxLineEdit = QLineEdit(self.extentsdummyWidget)
         self.zmaxLineEdit.setObjectName("zmaxLineEdit")
         self.zmaxLineEdit.setEnabled(False)
-        self.zmaxLineEdit.setFont(font4)
+        self.zmaxLineEdit.setFont(Fonts.numeric_small)
 
         self.gridLayout_2.addWidget(self.zmaxLineEdit, 3, 3, 1, 1)
 
@@ -454,7 +434,7 @@ class Ui_ControlPane_Primary(object):
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.xLabel.sizePolicy().hasHeightForWidth())
         self.xLabel.setSizePolicy(sizePolicy3)
-        self.xLabel.setFont(font2)
+        self.xLabel.setFont(Fonts.label_small)
         self.xLabel.setScaledContents(False)
 
         self.gridLayout_2.addWidget(self.xLabel, 0, 0, 1, 1)
@@ -463,7 +443,7 @@ class Ui_ControlPane_Primary(object):
         self.zLabel.setObjectName("zLabel")
         sizePolicy3.setHeightForWidth(self.zLabel.sizePolicy().hasHeightForWidth())
         self.zLabel.setSizePolicy(sizePolicy3)
-        self.zLabel.setFont(font2)
+        self.zLabel.setFont(Fonts.label_small)
         self.zLabel.setScaledContents(False)
 
         self.gridLayout_2.addWidget(self.zLabel, 3, 0, 1, 1)
@@ -477,7 +457,7 @@ class Ui_ControlPane_Primary(object):
         self.yLabel.setObjectName("yLabel")
         sizePolicy3.setHeightForWidth(self.yLabel.sizePolicy().hasHeightForWidth())
         self.yLabel.setSizePolicy(sizePolicy3)
-        self.yLabel.setFont(font2)
+        self.yLabel.setFont(Fonts.label_small)
         self.yLabel.setScaledContents(False)
 
         self.gridLayout_2.addWidget(self.yLabel, 2, 0, 1, 1)
@@ -523,9 +503,7 @@ class Ui_ControlPane_Primary(object):
         self.viewupLabel = QLabel(self.cameralocationdummyWidget)
         self.viewupLabel.setObjectName("viewupLabel")
         self.viewupLabel.setMaximumSize(QSize(65, 16777215))
-        font7 = QFont()
-        font7.setPointSize(9)
-        self.viewupLabel.setFont(font7)
+        self.viewupLabel.setFont(Fonts.label_small)
         self.viewupLabel.setAlignment(
             Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter
         )
@@ -535,7 +513,7 @@ class Ui_ControlPane_Primary(object):
         self.positionLabel = QLabel(self.cameralocationdummyWidget)
         self.positionLabel.setObjectName("positionLabel")
         self.positionLabel.setMaximumSize(QSize(65, 16777215))
-        self.positionLabel.setFont(font7)
+        self.positionLabel.setFont(Fonts.label_small)
         self.positionLabel.setAlignment(
             Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter
         )
@@ -545,26 +523,26 @@ class Ui_ControlPane_Primary(object):
         self.focalLabel = QLabel(self.cameralocationdummyWidget)
         self.focalLabel.setObjectName("focalLabel")
         self.focalLabel.setMaximumSize(QSize(65, 16777215))
-        self.focalLabel.setFont(font7)
+        self.focalLabel.setFont(Fonts.label_small)
         self.focalLabel.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.gridLayout_7.addWidget(self.focalLabel, 2, 0, 1, 1)
 
         self.focalValue = QLabel(self.cameralocationdummyWidget)
         self.focalValue.setObjectName("focalValue")
-        self.focalValue.setFont(font4)
+        self.focalValue.setFont(Fonts.numeric_small)
 
         self.gridLayout_7.addWidget(self.focalValue, 2, 1, 1, 1)
 
         self.positionValue = QLabel(self.cameralocationdummyWidget)
         self.positionValue.setObjectName("positionValue")
-        self.positionValue.setFont(font4)
+        self.positionValue.setFont(Fonts.numeric_small)
 
         self.gridLayout_7.addWidget(self.positionValue, 1, 1, 1, 1)
 
         self.viewupValue = QLabel(self.cameralocationdummyWidget)
         self.viewupValue.setObjectName("viewupValue")
-        self.viewupValue.setFont(font4)
+        self.viewupValue.setFont(Fonts.numeric_small)
 
         self.gridLayout_7.addWidget(self.viewupValue, 0, 1, 1, 1)
 

@@ -2,17 +2,15 @@ from PySide6.QtCore import QMetaObject, QRect
 from PySide6.QtGui import QAction, QFont
 from PySide6.QtWidgets import QGridLayout, QMenu, QMenuBar, QTabWidget, QWidget
 
+from .style import Fonts
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName("MainWindow")
         MainWindow.resize(925, 743)
-        font = QFont()
-        font.setFamilies(["Segoe UI"])
-        font.setPointSize(10)
-        font.setBold(False)
-        MainWindow.setFont(font)
+        MainWindow.setFont(Fonts.label_normal)
         self.actionOpen = QAction(MainWindow)
         self.actionOpen.setObjectName("actionOpen")
         self.actionExit = QAction(MainWindow)
@@ -59,9 +57,7 @@ class Ui_MainWindow(object):
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
         self.menubar.setGeometry(QRect(0, 0, 925, 21))
-        font1 = QFont()
-        font1.setPointSize(9)
-        self.menubar.setFont(font1)
+        self.menubar.setFont(Fonts.label_small)
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
         self.menuView = QMenu(self.menubar)
