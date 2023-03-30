@@ -87,8 +87,6 @@ class Ui_MainWindow(object):
         self.menuNavigation.addAction(self.actionNext_Timestep)
         self.menuNavigation.addAction(self.actionLast_Timestep)
 
-        self.retranslateUi(MainWindow)
-
         self.tabWidget.setCurrentIndex(-1)
 
         QMetaObject.connectSlotsByName(MainWindow)

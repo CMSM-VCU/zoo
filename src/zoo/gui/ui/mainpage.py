@@ -39,6 +39,4 @@ class Ui_MainPage(object):
 
         self.horizontalLayout.addWidget(self.line)
 
-        self.retranslateUi(MainPage)
-
         QMetaObject.connectSlotsByName(MainPage)

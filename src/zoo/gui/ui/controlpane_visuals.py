@@ -407,6 +407,4 @@ class Ui_ControlPane_Visuals(object):
 
         self.gridLayout.addLayout(self.controls, 0, 0, 1, 1)
 
-        self.retranslateUi(ControlPane_Visuals)
-
         QMetaObject.connectSlotsByName(ControlPane_Visuals)

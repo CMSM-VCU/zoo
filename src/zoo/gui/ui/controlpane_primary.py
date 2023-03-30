@@ -576,6 +576,4 @@ class Ui_ControlPane_Primary(object):
 
         self.gridLayout.addLayout(self.controls, 0, 0, 1, 1)
 
-        self.retranslateUi(ControlPane_Primary)
-
         QMetaObject.connectSlotsByName(ControlPane_Primary)

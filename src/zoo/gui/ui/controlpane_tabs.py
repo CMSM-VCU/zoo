@@ -24,6 +24,4 @@ class Ui_ControlPane_Tabs(object):
 
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
 
-        self.retranslateUi(ControlPane_Tabs)
-
         QMetaObject.connectSlotsByName(ControlPane_Tabs)
