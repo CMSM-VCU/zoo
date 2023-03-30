@@ -1,4 +1,4 @@
-from PySide6.QtCore import QMetaObject, QSize
+from PySide6.QtCore import QCoreApplication, QMetaObject, QSize
 from PySide6.QtWidgets import QGridLayout, QSizePolicy, QTabWidget
 
 
@@ -23,5 +23,11 @@ class Ui_ControlPane_Tabs(object):
         self.tabWidget.setDocumentMode(True)
 
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+        self.retranslateUi(ControlPane_Tabs)
 
         QMetaObject.connectSlotsByName(ControlPane_Tabs)
+
+    def retranslateUi(self, ControlPane_Tabs):
+        ControlPane_Tabs.setWindowTitle(
+            QCoreApplication.translate("ControlPane_Tabs", "Form", None)
+        )

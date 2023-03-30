@@ -1,4 +1,4 @@
-from PySide6.QtCore import QMetaObject, QSize, Qt
+from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -398,5 +398,97 @@ class Ui_ControlPane_Visuals(object):
         self.controls.addItem(self.verticalSpacer)
 
         self.gridLayout.addLayout(self.controls, 0, 0, 1, 1)
+        self.retranslateUi(ControlPane_Visuals)
 
         QMetaObject.connectSlotsByName(ControlPane_Visuals)
+
+    # setupUi
+
+    def retranslateUi(self, ControlPane_Visuals):
+        ControlPane_Visuals.setWindowTitle(
+            QCoreApplication.translate("ControlPane_Visuals", "Form", None)
+        )
+        self.viewportGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Visuals", "Viewport", None)
+        )
+        self.label.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "Resolution", None)
+        )
+        self.label_2.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "X", None)
+        )
+        self.bgcolorLabel.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "Background Color", None)
+        )
+        self.colormapGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Visuals", "Colormap", None)
+        )
+        self.reverseCheckBox.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "Reverse colormap", None)
+        )
+        self.outofrangeCheckBox.setText(
+            QCoreApplication.translate(
+                "ControlPane_Visuals", "Out-of-range colors", None
+            )
+        )
+        self.abovecolorLabel.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "Above-Range Color", None)
+        )
+        self.belowcolorLabel.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "Below-Range Color", None)
+        )
+        self.widgetsGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Visuals", "Widgets", None)
+        )
+        self.eyeLabel.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "\ue7b3", None)
+        )
+        self.orientationLabel.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "Orientation", None)
+        )
+        self.scalarbarvisCheckBox.setText("")
+        self.scalarbarmoveCheckBox.setText("")
+        self.orientationmoveCheckBox.setText("")
+        self.orientationvisCheckBox.setText("")
+        self.scalarbarLabel.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "Scalar bar", None)
+        )
+        self.moveLabel.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "\ue759", None)
+        )
+        self.glyphsGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Visuals", "Glyphs", None)
+        )
+        self.opacityCheckBox.setToolTip(
+            QCoreApplication.translate(
+                "ControlPane_Visuals", "WARNING: Seriously impacts performance!", None
+            )
+        )
+        self.opacityCheckBox.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "Opacity \u26a0", None)
+        )
+        self.opacitycontrolFrame.setToolTip(
+            QCoreApplication.translate(
+                "ControlPane_Visuals", "Clipped opacity overrides masked opacity", None
+            )
+        )
+        self.orientationLabel_2.setText(
+            QCoreApplication.translate(
+                "ControlPane_Visuals",
+                '<html><head/><body><p align="right">Clipped</p></body></html>',
+                None,
+            )
+        )
+        self.maskopacityvalueLabel.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "100%", None)
+        )
+        self.scalarbarLabel_2.setText(
+            QCoreApplication.translate(
+                "ControlPane_Visuals",
+                '<html><head/><body><p align="right">Masked</p></body></html>',
+                None,
+            )
+        )
+        self.clipopacityvalueLabel.setText(
+            QCoreApplication.translate("ControlPane_Visuals", "0%", None)
+        )

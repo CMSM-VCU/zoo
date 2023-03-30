@@ -1,4 +1,4 @@
-from PySide6.QtCore import QMetaObject, QSize
+from PySide6.QtCore import QCoreApplication, QMetaObject, QSize
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QSizePolicy
 
 
@@ -39,4 +39,9 @@ class Ui_MainPage(object):
 
         self.horizontalLayout.addWidget(self.line)
 
+        self.retranslateUi(MainPage)
+
         QMetaObject.connectSlotsByName(MainPage)
+
+    def retranslateUi(self, MainPage):
+        MainPage.setWindowTitle(QCoreApplication.translate("MainPage", "Form", None))

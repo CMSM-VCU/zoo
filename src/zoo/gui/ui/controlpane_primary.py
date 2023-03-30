@@ -1,4 +1,4 @@
-from PySide6.QtCore import QMetaObject, QSize, Qt
+from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -554,4 +554,113 @@ class Ui_ControlPane_Primary(object):
 
         self.gridLayout.addLayout(self.controls, 0, 0, 1, 1)
 
+        self.retranslateUi(ControlPane_Primary)
+
         QMetaObject.connectSlotsByName(ControlPane_Primary)
+
+    def retranslateUi(self, ControlPane_Primary):
+        ControlPane_Primary.setWindowTitle(
+            QCoreApplication.translate("ControlPane_Primary", "Form", None)
+        )
+        self.timeStepGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Primary", "Time Step", None)
+        )
+        self.nextTimeStep.setText(
+            QCoreApplication.translate("ControlPane_Primary", "\ue72a", None)
+        )
+        self.nextTimeStep.setShortcut(
+            QCoreApplication.translate("ControlPane_Primary", "Ctrl+Right", None)
+        )
+        self.prevTimeStep.setText(
+            QCoreApplication.translate("ControlPane_Primary", "\ue72b", None)
+        )
+        self.prevTimeStep.setShortcut(
+            QCoreApplication.translate("ControlPane_Primary", "Ctrl+Left", None)
+        )
+        self.timeStepSelector.setCurrentText("")
+        self.timelabelLabel.setText(
+            QCoreApplication.translate("ControlPane_Primary", "Time:", None)
+        )
+        self.timeLabel.setText("")
+        self.contourDataGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Primary", "Contour Data", None)
+        )
+        self.colorLabel.setText(
+            QCoreApplication.translate("ControlPane_Primary", "Color", None)
+        )
+        self.colorCheckBox.setText("")
+        self.maskingLabel.setText(
+            QCoreApplication.translate("ControlPane_Primary", "Masking", None)
+        )
+        self.maskdatasetLockButton.setToolTip(
+            QCoreApplication.translate(
+                "ControlPane_Primary", "Toggle separate mask and plot datasets", None
+            )
+        )
+        self.maskdatasetLockButton.setText(
+            QCoreApplication.translate("ControlPane_Primary", "\ue72e", None)
+        )
+        self.maskCheckBox.setText("")
+        self.gsGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Primary", "Grid Spacing", None)
+        )
+        self.gsLockButton.setToolTip(
+            QCoreApplication.translate(
+                "ControlPane_Primary", "Toggle uniform/non-uniform grid spacing", None
+            )
+        )
+        self.gsLockButton.setText(
+            QCoreApplication.translate("ControlPane_Primary", "\ue72e", None)
+        )
+        self.exagGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Primary", "Exaggeration", None)
+        )
+        self.yexagSpinBox.setSuffix("")
+        self.exagLockButton.setToolTip(
+            QCoreApplication.translate(
+                "ControlPane_Primary", "Toggle uniform/non-uniform exaggeration", None
+            )
+        )
+        self.exagLockButton.setText(
+            QCoreApplication.translate("ControlPane_Primary", "\ue72e", None)
+        )
+        self.extentsGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Primary", "Clipping Extents", None)
+        )
+        self.clippingboxButton.setText(
+            QCoreApplication.translate("ControlPane_Primary", "\u26f6", None)
+        )
+        self.xLabel.setText(
+            QCoreApplication.translate("ControlPane_Primary", "X", None)
+        )
+        self.zLabel.setText(
+            QCoreApplication.translate("ControlPane_Primary", "Z", None)
+        )
+        self.zclipCheckBox.setText("")
+        self.yLabel.setText(
+            QCoreApplication.translate("ControlPane_Primary", "Y", None)
+        )
+        self.yclipCheckBox.setText("")
+        self.xclipCheckBox.setText("")
+        self.cameraLocationGroup.setTitle(
+            QCoreApplication.translate("ControlPane_Primary", "Camera Location", None)
+        )
+        self.cameralocationdummyWidget.setToolTip(
+            QCoreApplication.translate(
+                "ControlPane_Primary",
+                "Left Click to copy camera location\n" "Right Click to paste",
+                None,
+            )
+        )
+        self.viewupLabel.setText(
+            QCoreApplication.translate("ControlPane_Primary", "View-up:", None)
+        )
+        self.positionLabel.setText(
+            QCoreApplication.translate("ControlPane_Primary", "Position:", None)
+        )
+        self.focalLabel.setText(
+            QCoreApplication.translate("ControlPane_Primary", "Focal point:", None)
+        )
+        self.focalValue.setText("")
+        self.positionValue.setText("")
+        self.viewupValue.setText("")
