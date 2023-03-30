@@ -1,20 +1,13 @@
-import os
 from collections.abc import Sequence
-from importlib import resources
 from pathlib import Path
 
 from loguru import logger
+from qtpy import QtCore as qtc
+from qtpy import QtWidgets as qtw
 
 from .. import utils
-from . import ui
 from .MainPage import MainPage
-
-os.environ["QT_API"] = "pyqt5"
-
-from qtpy import QtCore as qtc
-from qtpy import QtGui as qtg
-from qtpy import QtWidgets as qtw
-from qtpy import uic
+from .ui.mainwindow import Ui_MainWindow
 
 
 class MainWindow(qtw.QMainWindow):
@@ -23,8 +16,9 @@ class MainWindow(qtw.QMainWindow):
 
     def __init__(self, parent=None, show=True, file_to_load=None) -> None:
         super().__init__(parent=parent)
-        with resources.open_text(ui, "zoo.ui") as uifile:
-            uic.loadUi(uifile, self)
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
         self._base_window_title = self.windowTitle()
 
         self.centralWidget().setAcceptDrops(True)
@@ -45,7 +39,7 @@ class MainWindow(qtw.QMainWindow):
 
     @property
     def current_page(self) -> MainPage:
-        return self.tabWidget.currentWidget()
+        return self.ui.tabWidget.currentWidget()
 
     @property
     def other_pages(self) -> list[MainPage]:
@@ -53,7 +47,9 @@ class MainWindow(qtw.QMainWindow):
 
     @property
     def pages(self) -> list[MainPage]:
-        return [self.tabWidget.widget(idx) for idx in range(self.tabWidget.count())]
+        return [
+            self.ui.tabWidget.widget(idx) for idx in range(self.ui.tabWidget.count())
+        ]
 
     tabs = pages  # Alias
 
@@ -79,27 +75,27 @@ class MainWindow(qtw.QMainWindow):
         self.resize(dims[0] + gui_padding[0], dims[1] + gui_padding[1])
 
     def organize_widgets(self):
-        self.actions = {"open": self.actionOpen, "exit": self.actionExit}
+        self.actions = {"open": self.ui.actionOpen, "exit": self.ui.actionExit}
 
     def hook_up_signals(self):
-        self.actionOpen.triggered.connect(self.open_file)
-        self.actionCopy_Image.triggered.connect(self.copy_image)
-        self.actionSave_Image.triggered.connect(self.save_image)
-        self.actionSave_All_Images.triggered.connect(self.save_all_images)
-        self.actionSave_All_Images_In_All_Tabs.triggered.connect(
+        self.ui.actionOpen.triggered.connect(self.open_file)
+        self.ui.actionCopy_Image.triggered.connect(self.copy_image)
+        self.ui.actionSave_Image.triggered.connect(self.save_image)
+        self.ui.actionSave_All_Images.triggered.connect(self.save_all_images)
+        self.ui.actionSave_All_Images_In_All_Tabs.triggered.connect(
             self.save_all_images_in_all_tabs
         )
-        self.actionExit.triggered.connect(self.close)
-        self.actionDuplicate.triggered.connect(self.duplicate_current_tab)
-        self.actionSynchronizeTabs.triggered.connect(self.unify_tabs)
+        self.ui.actionExit.triggered.connect(self.close)
+        self.ui.actionDuplicate.triggered.connect(self.duplicate_current_tab)
+        self.ui.actionSynchronizeTabs.triggered.connect(self.unify_tabs)
 
-        self.actionFirst_Timestep.triggered.connect(self.first_timestep)
-        self.actionPrevious_Timestep.triggered.connect(self.previous_timestep)
-        self.actionNext_Timestep.triggered.connect(self.next_timestep)
-        self.actionLast_Timestep.triggered.connect(self.last_timestep)
+        self.ui.actionFirst_Timestep.triggered.connect(self.first_timestep)
+        self.ui.actionPrevious_Timestep.triggered.connect(self.previous_timestep)
+        self.ui.actionNext_Timestep.triggered.connect(self.next_timestep)
+        self.ui.actionLast_Timestep.triggered.connect(self.last_timestep)
 
-        self.tabWidget.tabCloseRequested.connect(self.close_tab)
-        self.tabWidget.currentChanged.connect(self.tab_title_to_window)
+        self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
+        self.ui.tabWidget.currentChanged.connect(self.tab_title_to_window)
 
     def open_file(self, *, override=None):
         # stackoverflow.com/a/44076057/13130795
@@ -111,9 +107,9 @@ class MainWindow(qtw.QMainWindow):
             self.setWindowTitle(f"Opening {Path(filename).name}...")
             new_page = MainPage(parent=self)
             new_page.open_file(filename)
-            new_idx = self.tabWidget.addTab(new_page, new_page.windowTitle())
-            self.tabWidget.setTabToolTip(new_idx, f"{filename}")
-            self.tabWidget.setCurrentIndex(new_idx)
+            new_idx = self.ui.tabWidget.addTab(new_page, new_page.windowTitle())
+            self.ui.tabWidget.setTabToolTip(new_idx, f"{filename}")
+            self.ui.tabWidget.setCurrentIndex(new_idx)
 
     def copy_image(self, _=None) -> None:
         self.current_page.copy_image()
@@ -160,18 +156,18 @@ class MainWindow(qtw.QMainWindow):
     def tab_title_to_window(self, idx: int) -> None:
         try:
             self.setWindowTitle(
-                f"{self.tabWidget.widget(idx).tab_name} - {self._base_window_title}"
+                f"{self.ui.tabWidget.widget(idx).tab_name} - {self._base_window_title}"
             )
         except:
             self.setWindowTitle(self._base_window_title)
 
     def close_tab(self, idx=None, *, page=None) -> None:
         if page:
-            idx = self.tabWidget.indexOf(page)
+            idx = self.ui.tabWidget.indexOf(page)
         else:
-            page = self.tabWidget.widget(idx)
+            page = self.ui.tabWidget.widget(idx)
         page.clean_up()
-        self.tabWidget.removeTab(idx)
+        self.ui.tabWidget.removeTab(idx)
 
     def duplicate_current_tab(self, _=None) -> None:
         if self.current_page:

@@ -1,11 +1,8 @@
-from importlib import resources
-
 from qtpy import QtWidgets as qtw
-from qtpy import uic
 
-from . import ui
 from .ControlPanePrimary import ControlPanePrimary
 from .ControlPaneVisuals import ControlPaneVisuals
+from .ui.controlpane_tabs import Ui_ControlPane_Tabs
 
 
 class ControlPaneTabs(qtw.QWidget):
@@ -17,15 +14,16 @@ class ControlPaneTabs(qtw.QWidget):
         parent: qtw.QWidget | None = None,
     ) -> None:
         super().__init__(parent=parent)
-        with resources.open_text(ui, "controlpane_tabs.ui") as uifile:
-            uic.loadUi(uifile, self)
+        self.ui = Ui_ControlPane_Tabs()
+        self.ui.setupUi(self)
+
         self.panes = {}
 
         self._parent = parent
         self.panes["primary"] = ControlPanePrimary(parent=self._parent)
         self.panes["visuals"] = ControlPaneVisuals(parent=self._parent)
-        self.tabWidget.addTab(self.panes["primary"], "Primary")
-        self.tabWidget.addTab(self.panes["visuals"], "Visuals")
+        self.ui.tabWidget.addTab(self.panes["primary"], "Primary")
+        self.ui.tabWidget.addTab(self.panes["visuals"], "Visuals")
 
     def toggle_control_pane(self, enable: bool):
         for pane in self.panes.values():

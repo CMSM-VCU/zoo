@@ -1,22 +1,16 @@
-import os
-from importlib import resources
 from io import BytesIO
 from pathlib import Path
 
 import win32clipboard
 from loguru import logger
 from PIL import Image
+from qtpy import QtCore as qtc
+from qtpy import QtWidgets as qtw
 
 from ..ContourController import ContourController
 from ..H5Model import H5Model
-from . import ui
 from .ControlPaneTabs import ControlPaneTabs
-
-os.environ["QT_API"] = "pyqt5"
-
-from qtpy import QtCore as qtc
-from qtpy import QtWidgets as qtw
-from qtpy import uic
+from .ui.mainpage import Ui_MainPage
 
 
 class MainPage(qtw.QWidget):
@@ -27,13 +21,14 @@ class MainPage(qtw.QWidget):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent=parent)
-        with resources.open_text(ui, "mainpage.ui") as uifile:
-            uic.loadUi(uifile, self)
+        self.ui = Ui_MainPage()
+        self.ui.setupUi(self)
+
         self.setAttribute(qtc.Qt.WA_DeleteOnClose, True)
         self._parent = parent
         self._base_window_title = self.windowTitle()
         self._control_pane = ControlPaneTabs(parent=self)
-        self.horizontalLayout.addWidget(self._control_pane)
+        self.ui.horizontalLayout.addWidget(self._control_pane)
 
         self.toggle_control_pane(enable=False)
 
@@ -51,11 +46,11 @@ class MainPage(qtw.QWidget):
             raise AttributeError("Controller attribute has already been set")
         self._original_controller = controller
 
-        controller.plotter.setParent(self.viewport)
-        if self.viewport.layout().count() != 0:
-            old = self.viewport.layout().takeAt(0)
+        controller.plotter.setParent(self.ui.viewport)
+        if self.ui.viewport.layout().count() != 0:
+            old = self.ui.viewport.layout().takeAt(0)
             del old
-        self.viewport.layout().addWidget(controller.plotter.interactor)
+        self.ui.viewport.layout().addWidget(controller.plotter.interactor)
 
         controller.model.loaded_file.connect(self.toggle_control_pane)
         self._control_pane._connect_contour_controller(controller)

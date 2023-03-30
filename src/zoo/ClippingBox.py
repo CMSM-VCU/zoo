@@ -1,7 +1,8 @@
 import numpy as np
+from qtpy import QtCore as qtc
 from vtkmodules.vtkInteractionWidgets import vtkBoxWidget2
 
-from .utils import truncate_int8_to_int4
+from .utils import instigator_type, truncate_int8_to_int4
 
 
 class ClippingBox(vtkBoxWidget2):
@@ -20,6 +21,7 @@ class ClippingBox(vtkBoxWidget2):
         self.AddObserver("InteractionEvent", self.callback)
         self.controller.changed_clipping_extents.connect(self.update)
 
+    @qtc.Slot(tuple, instigator_type)
     def update(self, clipping_extents: tuple, instigator: int):
         if instigator == truncate_int8_to_int4(id(self)):
             return

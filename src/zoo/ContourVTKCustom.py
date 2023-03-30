@@ -17,7 +17,7 @@ from .ClippingBox import ClippingBox
 from .GlyphActor import GlyphActor
 from .H5Model import H5Model
 from .LookupTable import LookupTable
-from .utils import truncate_int8_to_int4
+from .utils import instigator_type, truncate_int8_to_int4
 
 LARGE: float = 1e12
 EPSILON: float = 1e-6
@@ -189,6 +189,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
     def change_mask_limits(self, mask_limits: tuple, instigator: int = None) -> None:
         self.actor.mask_limits = mask_limits
 
+    @qtc.Slot(tuple, instigator_type)
     def change_clipping_extents(self, extents: tuple, instigator: int = None) -> None:
         if instigator != truncate_int8_to_int4(id(self)):
             self.actor.clipping_extents = extents
@@ -286,6 +287,7 @@ def bbox_to_model_coordinates(bbox_bounds, base_bounds):
 
 class PolyDataMapper(vtkPolyDataMapper, pv.mapper._BaseMapper):
     pass
+
 
 if __name__ == "__main__":
     import sys
