@@ -24,6 +24,52 @@ class Ui_ControlPane_Visuals(object):
         self.gridLayout = QGridLayout(ControlPane_Visuals)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.controls = QVBoxLayout()
+        self.create_viewport_group(ControlPane_Visuals)
+
+        self.controls.addWidget(self.viewportGroup)
+
+        self.verticalSpacer_7 = QSpacerItem(
+            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
+        )
+
+        self.controls.addItem(self.verticalSpacer_7)
+
+        self.create_colormap_group(ControlPane_Visuals)
+
+        self.controls.addWidget(self.colormapGroup)
+
+        self.verticalSpacer_8 = QSpacerItem(
+            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
+        )
+
+        self.controls.addItem(self.verticalSpacer_8)
+
+        self.create_widgets_group(ControlPane_Visuals)
+
+        self.controls.addWidget(self.widgetsGroup)
+
+        self.verticalSpacer_9 = QSpacerItem(
+            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
+        )
+
+        self.controls.addItem(self.verticalSpacer_9)
+
+        self.create_glyphs_group(ControlPane_Visuals)
+
+        self.controls.addWidget(self.glyphsGroup)
+
+        self.verticalSpacer = QSpacerItem(
+            20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
+        )
+
+        self.controls.addItem(self.verticalSpacer)
+
+        self.gridLayout.addLayout(self.controls, 0, 0, 1, 1)
+        self.retranslateUi(ControlPane_Visuals)
+
+        QMetaObject.connectSlotsByName(ControlPane_Visuals)
+
+    def create_viewport_group(self, ControlPane_Visuals):
         self.viewportGroup = FoldingGroupBox(ControlPane_Visuals)
         self.viewportGroup.setEnabled(True)
         self.viewportGroup.setAlignment(Qt.AlignCenter)
@@ -76,14 +122,7 @@ class Ui_ControlPane_Visuals(object):
 
         self.verticalLayout_4.addWidget(self.verticalWidget)
 
-        self.controls.addWidget(self.viewportGroup)
-
-        self.verticalSpacer_7 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_7)
-
+    def create_colormap_group(self, ControlPane_Visuals):
         self.colormapGroup = FoldingGroupBox(ControlPane_Visuals)
         self.colormapGroup.setEnabled(True)
         self.colormapGroup.setAlignment(Qt.AlignCenter)
@@ -149,14 +188,7 @@ class Ui_ControlPane_Visuals(object):
 
         self.verticalLayout_5.addWidget(self.verticalWidget1)
 
-        self.controls.addWidget(self.colormapGroup)
-
-        self.verticalSpacer_8 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_8)
-
+    def create_widgets_group(self, ControlPane_Visuals):
         self.widgetsGroup = FoldingGroupBox(ControlPane_Visuals)
         self.widgetsGroup.setEnabled(True)
         self.widgetsGroup.setAlignment(Qt.AlignCenter)
@@ -228,14 +260,7 @@ class Ui_ControlPane_Visuals(object):
 
         self.verticalLayout_6.addWidget(self.verticalWidget_2)
 
-        self.controls.addWidget(self.widgetsGroup)
-
-        self.verticalSpacer_9 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_9)
-
+    def create_glyphs_group(self, ControlPane_Visuals):
         self.glyphsGroup = FoldingGroupBox(ControlPane_Visuals)
         self.glyphsGroup.setEnabled(True)
         self.glyphsGroup.setAlignment(Qt.AlignCenter)
@@ -333,19 +358,6 @@ class Ui_ControlPane_Visuals(object):
         self.verticalLayout_8.addWidget(self.opacitycontrolFrame)
 
         self.verticalLayout_7.addWidget(self.verticalWidget_3)
-
-        self.controls.addWidget(self.glyphsGroup)
-
-        self.verticalSpacer = QSpacerItem(
-            20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
-        )
-
-        self.controls.addItem(self.verticalSpacer)
-
-        self.gridLayout.addLayout(self.controls, 0, 0, 1, 1)
-        self.retranslateUi(ControlPane_Visuals)
-
-        QMetaObject.connectSlotsByName(ControlPane_Visuals)
 
     def retranslateUi(self, ControlPane_Visuals):
         ControlPane_Visuals.setWindowTitle(

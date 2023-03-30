@@ -26,6 +26,68 @@ class Ui_ControlPane_Primary(object):
         self.gridLayout = QGridLayout(ControlPane_Primary)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.controls = QVBoxLayout()
+
+        self.create_timestep_group(ControlPane_Primary)
+
+        self.controls.addWidget(self.timeStepGroup)
+
+        self.verticalSpacer_3 = QSpacerItem(
+            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
+        )
+
+        self.controls.addItem(self.verticalSpacer_3)
+
+        self.create_contour_data_group(ControlPane_Primary)
+
+        self.controls.addWidget(self.contourDataGroup)
+
+        self.verticalSpacer_4 = QSpacerItem(
+            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
+        )
+
+        self.controls.addItem(self.verticalSpacer_4)
+
+        self.create_grid_spacing_group(ControlPane_Primary)
+
+        self.controls.addWidget(self.gsGroup)
+
+        self.verticalSpacer_5 = QSpacerItem(
+            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
+        )
+
+        self.controls.addItem(self.verticalSpacer_5)
+
+        self.create_exaggeration_group(ControlPane_Primary)
+
+        self.controls.addWidget(self.exagGroup)
+
+        self.verticalSpacer_2 = QSpacerItem(
+            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
+        )
+
+        self.controls.addItem(self.verticalSpacer_2)
+
+        self.create_clipping_extents_group(ControlPane_Primary)
+
+        self.controls.addWidget(self.extentsGroup)
+
+        self.verticalSpacer = QSpacerItem(
+            20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding
+        )
+
+        self.controls.addItem(self.verticalSpacer)
+
+        self.create_camera_location_group(ControlPane_Primary)
+
+        self.controls.addWidget(self.cameraLocationGroup)
+
+        self.gridLayout.addLayout(self.controls, 0, 0, 1, 1)
+
+        self.retranslateUi(ControlPane_Primary)
+
+        QMetaObject.connectSlotsByName(ControlPane_Primary)
+
+    def create_timestep_group(self, ControlPane_Primary):
         self.timeStepGroup = FoldingGroupBox(ControlPane_Primary)
         self.timeStepGroup.setAlignment(Qt.AlignCenter)
         self.verticalLayout_5 = QVBoxLayout(self.timeStepGroup)
@@ -77,14 +139,7 @@ class Ui_ControlPane_Primary(object):
 
         self.verticalLayout_5.addWidget(self.timestepdummyWidget)
 
-        self.controls.addWidget(self.timeStepGroup)
-
-        self.verticalSpacer_3 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_3)
-
+    def create_contour_data_group(self, ControlPane_Primary):
         self.contourDataGroup = FoldingGroupBox(ControlPane_Primary)
         self.contourDataGroup.setEnabled(True)
         self.contourDataGroup.setAlignment(Qt.AlignCenter)
@@ -185,14 +240,7 @@ class Ui_ControlPane_Primary(object):
 
         self.verticalLayout_4.addWidget(self.verticalWidget)
 
-        self.controls.addWidget(self.contourDataGroup)
-
-        self.verticalSpacer_4 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_4)
-
+    def create_grid_spacing_group(self, ControlPane_Primary):
         self.gsGroup = FoldingGroupBox(ControlPane_Primary)
         self.gsGroup.setAlignment(Qt.AlignCenter)
         self.horizontalLayout_10 = QHBoxLayout(self.gsGroup)
@@ -216,6 +264,9 @@ class Ui_ControlPane_Primary(object):
         self.gridLayout_5.addWidget(self.zgsLineEdit, 3, 1, 1, 1)
 
         self.gsLockButton = QPushButton(self.gsdummyWidget)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(
             self.gsLockButton.sizePolicy().hasHeightForWidth()
         )
@@ -229,14 +280,7 @@ class Ui_ControlPane_Primary(object):
 
         self.horizontalLayout_10.addWidget(self.gsdummyWidget)
 
-        self.controls.addWidget(self.gsGroup)
-
-        self.verticalSpacer_5 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_5)
-
+    def create_exaggeration_group(self, ControlPane_Primary):
         self.exagGroup = FoldingGroupBox(ControlPane_Primary)
         self.exagGroup.setEnabled(True)
         self.exagGroup.setAlignment(Qt.AlignCenter)
@@ -288,6 +332,9 @@ class Ui_ControlPane_Primary(object):
         self.gridLayout_4.addWidget(self.zexagSpinBox, 0, 2, 1, 1)
 
         self.exagLockButton = QPushButton(self.exagdummyWidget)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(
             self.exagLockButton.sizePolicy().hasHeightForWidth()
         )
@@ -301,14 +348,7 @@ class Ui_ControlPane_Primary(object):
 
         self.verticalLayout.addWidget(self.exagdummyWidget)
 
-        self.controls.addWidget(self.exagGroup)
-
-        self.verticalSpacer_2 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_2)
-
+    def create_clipping_extents_group(self, ControlPane_Primary):
         self.extentsGroup = FoldingGroupBox(ControlPane_Primary)
         self.extentsGroup.setAlignment(Qt.AlignCenter)
         self.verticalLayout_2 = QVBoxLayout(self.extentsGroup)
@@ -399,14 +439,7 @@ class Ui_ControlPane_Primary(object):
 
         self.verticalLayout_2.addWidget(self.extentsdummyWidget)
 
-        self.controls.addWidget(self.extentsGroup)
-
-        self.verticalSpacer = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding
-        )
-
-        self.controls.addItem(self.verticalSpacer)
-
+    def create_camera_location_group(self, ControlPane_Primary):
         self.cameraLocationGroup = FoldingGroupBox(ControlPane_Primary)
         self.cameraLocationGroup.setAlignment(Qt.AlignCenter)
         self.verticalLayout_3 = QVBoxLayout(self.cameraLocationGroup)
@@ -463,14 +496,6 @@ class Ui_ControlPane_Primary(object):
         self.verticalLayout_7.addLayout(self.gridLayout_7)
 
         self.verticalLayout_3.addWidget(self.cameralocationdummyWidget)
-
-        self.controls.addWidget(self.cameraLocationGroup)
-
-        self.gridLayout.addLayout(self.controls, 0, 0, 1, 1)
-
-        self.retranslateUi(ControlPane_Primary)
-
-        QMetaObject.connectSlotsByName(ControlPane_Primary)
 
     def retranslateUi(self, ControlPane_Primary):
         ControlPane_Primary.setWindowTitle(
