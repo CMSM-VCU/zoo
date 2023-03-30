@@ -1,6 +1,9 @@
+import os
 import sys
 from argparse import ArgumentParser
 from pathlib import Path
+
+os.environ["QT_API"] = "pyside6"
 
 from loguru import logger
 from qtpy import QtCore, QtWidgets
