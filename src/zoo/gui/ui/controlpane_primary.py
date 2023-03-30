@@ -44,9 +44,6 @@ class Ui_ControlPane_Primary(object):
         self.nextTimeStep.setMaximumSize(QSize(24, 16777215))
         self.nextTimeStep.setBaseSize(QSize(16, 16))
         self.nextTimeStep.setFont(Fonts.icon_small)
-        self.nextTimeStep.setCheckable(False)
-        self.nextTimeStep.setAutoRepeat(False)
-        self.nextTimeStep.setFlat(False)
 
         self.gridLayout_6.addWidget(self.nextTimeStep, 0, 2, 1, 1)
 
@@ -61,7 +58,6 @@ class Ui_ControlPane_Primary(object):
 
         self.timeStepSelector = QComboBox(self.timestepdummyWidget)
         self.timeStepSelector.setFont(Fonts.numeric_normal)
-        self.timeStepSelector.setEditable(False)
 
         self.gridLayout_6.addWidget(self.timeStepSelector, 0, 1, 1, 1)
 
@@ -244,7 +240,6 @@ class Ui_ControlPane_Primary(object):
         self.exagGroup = FoldingGroupBox(ControlPane_Primary)
         self.exagGroup.setEnabled(True)
         self.exagGroup.setAlignment(Qt.AlignCenter)
-        self.exagGroup.setCheckable(False)
         self.verticalLayout = QVBoxLayout(self.exagGroup)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.exagdummyWidget = QWidget(self.exagGroup)
