@@ -50,26 +50,26 @@ class Ui_ControlPane_Visuals(object):
     def create_viewport_group(self, ControlPane_Visuals):
         self.viewportGroup = FoldingGroupBox(ControlPane_Visuals)
         self.viewportGroup.setAlignment(Qt.AlignCenter)
-        self.verticalWidget = QWidget(self.viewportGroup)
+        verticalWidget = QWidget(self.viewportGroup)
 
-        self.widthLineEdit = QLineEdit(self.verticalWidget)
+        self.widthLineEdit = QLineEdit(verticalWidget)
         self.widthLineEdit.setFont(Fonts.numeric_small)
 
-        self.heightLineEdit = QLineEdit(self.verticalWidget)
+        self.heightLineEdit = QLineEdit(verticalWidget)
         self.heightLineEdit.setFont(Fonts.numeric_small)
 
-        self.resolution_label = QLabel(self.verticalWidget)
+        self.resolution_label = QLabel(verticalWidget)
         self.resolution_label.setFont(Fonts.label_small)
 
-        self.x_label = QLabel(self.verticalWidget)
+        self.x_label = QLabel(verticalWidget)
 
-        self.gridLayout_3 = QGridLayout()
-        self.gridLayout_3.addWidget(self.widthLineEdit, 1, 0, 1, 1)
-        self.gridLayout_3.addWidget(self.heightLineEdit, 1, 2, 1, 1)
-        self.gridLayout_3.addWidget(self.resolution_label, 0, 0, 1, 1)
-        self.gridLayout_3.addWidget(self.x_label, 1, 1, 1, 1)
+        gridLayout = QGridLayout()
+        gridLayout.addWidget(self.widthLineEdit, 1, 0, 1, 1)
+        gridLayout.addWidget(self.heightLineEdit, 1, 2, 1, 1)
+        gridLayout.addWidget(self.resolution_label, 0, 0, 1, 1)
+        gridLayout.addWidget(self.x_label, 1, 1, 1, 1)
 
-        self.bgcolorFrameButton = QFrame(self.verticalWidget)
+        self.bgcolorFrameButton = QFrame(verticalWidget)
         self.bgcolorFrameButton.setMinimumSize(QSize(24, 24))
         self.bgcolorFrameButton.setMaximumSize(QSize(24, 16777215))
         self.bgcolorFrameButton.setStyleSheet("background-color: red")
@@ -77,36 +77,36 @@ class Ui_ControlPane_Visuals(object):
         self.bgcolorFrameButton.setFrameShadow(QFrame.Sunken)
         self.bgcolorFrameButton.setLineWidth(3)
 
-        self.bgcolorLabel = QLabel(self.verticalWidget)
+        self.bgcolorLabel = QLabel(verticalWidget)
         self.bgcolorLabel.setFont(Fonts.label_small)
 
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.addWidget(self.bgcolorFrameButton)
-        self.horizontalLayout_2.addWidget(self.bgcolorLabel)
+        horizontalLayout = QHBoxLayout()
+        horizontalLayout.addWidget(self.bgcolorFrameButton)
+        horizontalLayout.addWidget(self.bgcolorLabel)
 
-        self.verticalLayout_2 = QVBoxLayout(self.verticalWidget)
-        self.verticalLayout_2.setSpacing(4)
-        self.verticalLayout_2.setContentsMargins(4, 4, 4, 4)
-        self.verticalLayout_2.addLayout(self.gridLayout_3)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+        verticalLayout_1 = QVBoxLayout(verticalWidget)
+        verticalLayout_1.setSpacing(4)
+        verticalLayout_1.setContentsMargins(4, 4, 4, 4)
+        verticalLayout_1.addLayout(gridLayout)
+        verticalLayout_1.addLayout(horizontalLayout)
 
-        self.verticalLayout_4 = QVBoxLayout(self.viewportGroup)
-        self.verticalLayout_4.setSpacing(0)
-        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_4.addWidget(self.verticalWidget)
+        verticalLayout_2 = QVBoxLayout(self.viewportGroup)
+        verticalLayout_2.setSpacing(0)
+        verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        verticalLayout_2.addWidget(verticalWidget)
 
     def create_colormap_group(self, ControlPane_Visuals):
         self.colormapGroup = FoldingGroupBox(ControlPane_Visuals)
         self.colormapGroup.setAlignment(Qt.AlignCenter)
-        self.verticalWidget1 = QWidget(self.colormapGroup)
+        verticalWidget1 = QWidget(self.colormapGroup)
 
-        self.colormapSelector = QComboBox(self.verticalWidget1)
+        self.colormapSelector = QComboBox(verticalWidget1)
         self.colormapSelector.setEditable(True)
 
-        self.reverseCheckBox = QCheckBox(self.verticalWidget1)
-        self.outofrangeCheckBox = QCheckBox(self.verticalWidget1)
+        self.reverseCheckBox = QCheckBox(verticalWidget1)
+        self.outofrangeCheckBox = QCheckBox(verticalWidget1)
 
-        self.abovecolorFrameButton = QFrame(self.verticalWidget1)
+        self.abovecolorFrameButton = QFrame(verticalWidget1)
         self.abovecolorFrameButton.setEnabled(False)
         self.abovecolorFrameButton.setMinimumSize(QSize(24, 24))
         self.abovecolorFrameButton.setMaximumSize(QSize(24, 16777215))
@@ -115,15 +115,15 @@ class Ui_ControlPane_Visuals(object):
         self.abovecolorFrameButton.setFrameShadow(QFrame.Sunken)
         self.abovecolorFrameButton.setLineWidth(3)
 
-        self.abovecolorLabel = QLabel(self.verticalWidget1)
+        self.abovecolorLabel = QLabel(verticalWidget1)
         self.abovecolorLabel.setEnabled(False)
         self.abovecolorLabel.setFont(Fonts.label_small)
 
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.addWidget(self.abovecolorFrameButton)
-        self.horizontalLayout_3.addWidget(self.abovecolorLabel)
+        horizontalLayout_1 = QHBoxLayout()
+        horizontalLayout_1.addWidget(self.abovecolorFrameButton)
+        horizontalLayout_1.addWidget(self.abovecolorLabel)
 
-        self.belowcolorFrameButton = QFrame(self.verticalWidget1)
+        self.belowcolorFrameButton = QFrame(verticalWidget1)
         self.belowcolorFrameButton.setEnabled(False)
         self.belowcolorFrameButton.setMinimumSize(QSize(24, 24))
         self.belowcolorFrameButton.setMaximumSize(QSize(24, 16777215))
@@ -132,34 +132,34 @@ class Ui_ControlPane_Visuals(object):
         self.belowcolorFrameButton.setFrameShadow(QFrame.Sunken)
         self.belowcolorFrameButton.setLineWidth(3)
 
-        self.belowcolorLabel = QLabel(self.verticalWidget1)
+        self.belowcolorLabel = QLabel(verticalWidget1)
         self.belowcolorLabel.setEnabled(False)
         self.belowcolorLabel.setFont(Fonts.label_small)
 
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.addWidget(self.belowcolorFrameButton)
-        self.horizontalLayout_4.addWidget(self.belowcolorLabel)
+        horizontalLayout_2 = QHBoxLayout()
+        horizontalLayout_2.addWidget(self.belowcolorFrameButton)
+        horizontalLayout_2.addWidget(self.belowcolorLabel)
 
-        self.verticalLayout = QVBoxLayout(self.verticalWidget1)
-        self.verticalLayout.setSpacing(4)
-        self.verticalLayout.setContentsMargins(4, 4, 4, 4)
-        self.verticalLayout.addWidget(self.colormapSelector)
-        self.verticalLayout.addWidget(self.reverseCheckBox)
-        self.verticalLayout.addWidget(self.outofrangeCheckBox)
-        self.verticalLayout.addLayout(self.horizontalLayout_3)
-        self.verticalLayout.addLayout(self.horizontalLayout_4)
+        verticalLayout_1 = QVBoxLayout(verticalWidget1)
+        verticalLayout_1.setSpacing(4)
+        verticalLayout_1.setContentsMargins(4, 4, 4, 4)
+        verticalLayout_1.addWidget(self.colormapSelector)
+        verticalLayout_1.addWidget(self.reverseCheckBox)
+        verticalLayout_1.addWidget(self.outofrangeCheckBox)
+        verticalLayout_1.addLayout(horizontalLayout_1)
+        verticalLayout_1.addLayout(horizontalLayout_2)
 
-        self.verticalLayout_5 = QVBoxLayout(self.colormapGroup)
-        self.verticalLayout_5.setSpacing(0)
-        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_5.addWidget(self.verticalWidget1)
+        verticalLayout_2 = QVBoxLayout(self.colormapGroup)
+        verticalLayout_2.setSpacing(0)
+        verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        verticalLayout_2.addWidget(verticalWidget1)
 
     def create_widgets_group(self, ControlPane_Visuals):
         self.widgetsGroup = FoldingGroupBox(ControlPane_Visuals)
         self.widgetsGroup.setAlignment(Qt.AlignCenter)
-        self.verticalWidget_2 = QWidget(self.widgetsGroup)
+        verticalWidget_2 = QWidget(self.widgetsGroup)
 
-        self.eyeLabel = QLabel(self.verticalWidget_2)
+        self.eyeLabel = QLabel(verticalWidget_2)
         sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -168,65 +168,57 @@ class Ui_ControlPane_Visuals(object):
         self.eyeLabel.setFont(Fonts.icon_normal)
         self.eyeLabel.setAlignment(Qt.AlignCenter)
 
-        self.scalarbarvisCheckBox = QCheckBox(self.verticalWidget_2)
+        self.scalarbarvisCheckBox = QCheckBox(verticalWidget_2)
         self.scalarbarvisCheckBox.setChecked(True)
 
-        self.scalarbarmoveCheckBox = QCheckBox(self.verticalWidget_2)
+        self.scalarbarmoveCheckBox = QCheckBox(verticalWidget_2)
         self.scalarbarmoveCheckBox.setEnabled(False)
 
-        self.orientationmoveCheckBox = QCheckBox(self.verticalWidget_2)
+        self.orientationmoveCheckBox = QCheckBox(verticalWidget_2)
         self.orientationmoveCheckBox.setEnabled(False)
 
-        self.orientationvisCheckBox = QCheckBox(self.verticalWidget_2)
+        self.orientationvisCheckBox = QCheckBox(verticalWidget_2)
         self.orientationvisCheckBox.setChecked(True)
 
-        self.scalarbarLabel = QLabel(self.verticalWidget_2)
-        self.orientationLabel = QLabel(self.verticalWidget_2)
+        self.scalarbarLabel = QLabel(verticalWidget_2)
+        self.orientationLabel = QLabel(verticalWidget_2)
 
-        self.moveLabel = QLabel(self.verticalWidget_2)
+        self.moveLabel = QLabel(verticalWidget_2)
         sizePolicy.setHeightForWidth(self.moveLabel.sizePolicy().hasHeightForWidth())
         self.moveLabel.setSizePolicy(sizePolicy)
         self.moveLabel.setFont(Fonts.icon_normal)
         self.moveLabel.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_2 = QGridLayout()
-        self.gridLayout_2.setHorizontalSpacing(8)
-        self.gridLayout_2.addWidget(self.eyeLabel, 0, 0, 1, 1)
-        self.gridLayout_2.addWidget(self.orientationLabel, 2, 2, 1, 1)
-        self.gridLayout_2.addWidget(
-            self.scalarbarvisCheckBox, 1, 0, 1, 1, Qt.AlignHCenter
-        )
-        self.gridLayout_2.addWidget(
-            self.scalarbarmoveCheckBox, 1, 1, 1, 1, Qt.AlignHCenter
-        )
-        self.gridLayout_2.addWidget(
-            self.orientationmoveCheckBox, 2, 1, 1, 1, Qt.AlignHCenter
-        )
-        self.gridLayout_2.addWidget(
-            self.orientationvisCheckBox, 2, 0, 1, 1, Qt.AlignHCenter
-        )
-        self.gridLayout_2.addWidget(self.scalarbarLabel, 1, 2, 1, 1)
-        self.gridLayout_2.addWidget(self.moveLabel, 0, 1, 1, 1)
+        gridLayout = QGridLayout()
+        gridLayout.setHorizontalSpacing(8)
+        gridLayout.addWidget(self.eyeLabel, 0, 0, 1, 1)
+        gridLayout.addWidget(self.orientationLabel, 2, 2, 1, 1)
+        gridLayout.addWidget(self.scalarbarvisCheckBox, 1, 0, 1, 1, Qt.AlignHCenter)
+        gridLayout.addWidget(self.scalarbarmoveCheckBox, 1, 1, 1, 1, Qt.AlignHCenter)
+        gridLayout.addWidget(self.orientationmoveCheckBox, 2, 1, 1, 1, Qt.AlignHCenter)
+        gridLayout.addWidget(self.orientationvisCheckBox, 2, 0, 1, 1, Qt.AlignHCenter)
+        gridLayout.addWidget(self.scalarbarLabel, 1, 2, 1, 1)
+        gridLayout.addWidget(self.moveLabel, 0, 1, 1, 1)
 
-        self.verticalLayout_3 = QVBoxLayout(self.verticalWidget_2)
-        self.verticalLayout_3.setSpacing(4)
-        self.verticalLayout_3.setContentsMargins(4, 4, 4, 4)
-        self.verticalLayout_3.addLayout(self.gridLayout_2)
+        verticalLayout_1 = QVBoxLayout(verticalWidget_2)
+        verticalLayout_1.setSpacing(4)
+        verticalLayout_1.setContentsMargins(4, 4, 4, 4)
+        verticalLayout_1.addLayout(gridLayout)
 
-        self.verticalLayout_6 = QVBoxLayout(self.widgetsGroup)
-        self.verticalLayout_6.setSpacing(0)
-        self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_6.addWidget(self.verticalWidget_2)
+        verticalLayout_2 = QVBoxLayout(self.widgetsGroup)
+        verticalLayout_2.setSpacing(0)
+        verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        verticalLayout_2.addWidget(verticalWidget_2)
 
     def create_glyphs_group(self, ControlPane_Visuals):
         self.glyphsGroup = FoldingGroupBox(ControlPane_Visuals)
         self.glyphsGroup.setAlignment(Qt.AlignCenter)
-        self.verticalWidget_3 = QWidget(self.glyphsGroup)
+        verticalWidget = QWidget(self.glyphsGroup)
 
-        self.opacityCheckBox = QCheckBox(self.verticalWidget_3)
+        self.opacityCheckBox = QCheckBox(verticalWidget)
         self.opacityCheckBox.setFont(Fonts.label_small)
 
-        self.opacitycontrolFrame = QFrame(self.verticalWidget_3)
+        self.opacitycontrolFrame = QFrame(verticalWidget)
         self.opacitycontrolFrame.setEnabled(False)
 
         sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -292,26 +284,26 @@ class Ui_ControlPane_Visuals(object):
             Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter
         )
 
-        self.gridLayout_4 = QGridLayout(self.opacitycontrolFrame)
-        self.gridLayout_4.setHorizontalSpacing(2)
-        self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_4.addWidget(self.clipped_label, 1, 0, 1, 1)
-        self.gridLayout_4.addWidget(self.maskopacityvalueLabel, 0, 2, 1, 1)
-        self.gridLayout_4.addWidget(self.clipopacitySlider, 1, 1, 1, 1)
-        self.gridLayout_4.addWidget(self.maskopacitySlider, 0, 1, 1, 1)
-        self.gridLayout_4.addWidget(self.masked_label, 0, 0, 1, 1)
-        self.gridLayout_4.addWidget(self.clipopacityvalueLabel, 1, 2, 1, 1)
+        gridLayout = QGridLayout(self.opacitycontrolFrame)
+        gridLayout.setHorizontalSpacing(2)
+        gridLayout.setContentsMargins(0, 0, 0, 0)
+        gridLayout.addWidget(self.clipped_label, 1, 0, 1, 1)
+        gridLayout.addWidget(self.maskopacityvalueLabel, 0, 2, 1, 1)
+        gridLayout.addWidget(self.clipopacitySlider, 1, 1, 1, 1)
+        gridLayout.addWidget(self.maskopacitySlider, 0, 1, 1, 1)
+        gridLayout.addWidget(self.masked_label, 0, 0, 1, 1)
+        gridLayout.addWidget(self.clipopacityvalueLabel, 1, 2, 1, 1)
 
-        self.verticalLayout_8 = QVBoxLayout(self.verticalWidget_3)
-        self.verticalLayout_8.setSpacing(4)
-        self.verticalLayout_8.setContentsMargins(4, 4, 4, 4)
-        self.verticalLayout_8.addWidget(self.opacityCheckBox)
-        self.verticalLayout_8.addWidget(self.opacitycontrolFrame)
+        verticalLayout_1 = QVBoxLayout(verticalWidget)
+        verticalLayout_1.setSpacing(4)
+        verticalLayout_1.setContentsMargins(4, 4, 4, 4)
+        verticalLayout_1.addWidget(self.opacityCheckBox)
+        verticalLayout_1.addWidget(self.opacitycontrolFrame)
 
-        self.verticalLayout_7 = QVBoxLayout(self.glyphsGroup)
-        self.verticalLayout_7.setSpacing(0)
-        self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_7.addWidget(self.verticalWidget_3)
+        verticalLayout_2 = QVBoxLayout(self.glyphsGroup)
+        verticalLayout_2.setSpacing(0)
+        verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        verticalLayout_2.addWidget(verticalWidget)
 
     def retranslateUi(self, ControlPane_Visuals):
         ControlPane_Visuals.setWindowTitle(
