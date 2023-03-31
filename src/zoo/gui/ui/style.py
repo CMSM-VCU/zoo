@@ -1,4 +1,5 @@
 from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QSizePolicy, QSpacerItem
 
 
 class Fonts:
@@ -29,3 +30,7 @@ class Fonts:
 
     icon_normal = QFont(icon_base)
     icon_normal.setPointSize(14)
+
+
+def default_spacer():
+    return QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum)

@@ -17,70 +17,37 @@ from PySide6.QtWidgets import (
 )
 
 from .foldinggroupbox import FoldingGroupBox
-from .style import Fonts
+from .style import Fonts, default_spacer
 
 
 class Ui_ControlPane_Primary(object):
     def setupUi(self, ControlPane_Primary):
         ControlPane_Primary.resize(200, 630)
-        self.gridLayout = QGridLayout(ControlPane_Primary)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.controls = QVBoxLayout()
 
         self.create_timestep_group(ControlPane_Primary)
-
-        self.controls.addWidget(self.timeStepGroup)
-
-        self.verticalSpacer_3 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_3)
-
         self.create_contour_data_group(ControlPane_Primary)
-
-        self.controls.addWidget(self.contourDataGroup)
-
-        self.verticalSpacer_4 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_4)
-
         self.create_grid_spacing_group(ControlPane_Primary)
-
-        self.controls.addWidget(self.gsGroup)
-
-        self.verticalSpacer_5 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_5)
-
         self.create_exaggeration_group(ControlPane_Primary)
-
-        self.controls.addWidget(self.exagGroup)
-
-        self.verticalSpacer_2 = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Maximum
-        )
-
-        self.controls.addItem(self.verticalSpacer_2)
-
         self.create_clipping_extents_group(ControlPane_Primary)
-
-        self.controls.addWidget(self.extentsGroup)
-
-        self.verticalSpacer = QSpacerItem(
-            20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding
-        )
-
-        self.controls.addItem(self.verticalSpacer)
-
         self.create_camera_location_group(ControlPane_Primary)
 
+        self.controls = QVBoxLayout()
+        self.controls.addWidget(self.timeStepGroup)
+        self.controls.addItem(default_spacer())
+        self.controls.addWidget(self.contourDataGroup)
+        self.controls.addItem(default_spacer())
+        self.controls.addWidget(self.gsGroup)
+        self.controls.addItem(default_spacer())
+        self.controls.addWidget(self.exagGroup)
+        self.controls.addItem(default_spacer())
+        self.controls.addWidget(self.extentsGroup)
+        self.controls.addItem(QSpacerItem(
+            20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding
+        ))
         self.controls.addWidget(self.cameraLocationGroup)
 
+        self.gridLayout = QGridLayout(ControlPane_Primary)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.addLayout(self.controls, 0, 0, 1, 1)
 
         self.retranslateUi(ControlPane_Primary)
