@@ -4,7 +4,7 @@ from typing import Any
 from loguru import logger
 from qtpy import QtCore as qtc
 
-from zoo.utils import truncate_int8_to_int4
+from zoo.utils import instigator_type, truncate_int8_to_int4
 
 from .ContourVTKCustom import ContourVTKCustom
 
@@ -44,21 +44,21 @@ class ContourController(qtc.QAbstractItemModel):
     _clip_opacity: float = 0.0
 
     initialized                      = qtc.Signal(int)
-    changed_timestep                 = qtc.Signal(int, int)
-    changed_time                     = qtc.Signal(float, int)
-    changed_glyph_size               = qtc.Signal(tuple, int)
-    changed_exaggeration             = qtc.Signal(tuple, int)
-    changed_plot_dataset             = qtc.Signal(str, int)
-    changed_mask_dataset             = qtc.Signal(str, int)
-    changed_clipping_extents         = qtc.Signal(tuple, int)
-    changed_mask_limits              = qtc.Signal(tuple, int)
-    changed_colorbar_limits          = qtc.Signal(tuple, int)
-    changed_widget_property          = qtc.Signal(dict, int)
-    changed_opacity_enabled          = qtc.Signal(bool, int)
-    changed_mask_opacity             = qtc.Signal(float, int)
-    changed_clip_opacity             = qtc.Signal(float, int)
+    changed_timestep                 = qtc.Signal(int, instigator_type)
+    changed_time                     = qtc.Signal(float, instigator_type)
+    changed_glyph_size               = qtc.Signal(tuple, instigator_type)
+    changed_exaggeration             = qtc.Signal(tuple, instigator_type)
+    changed_plot_dataset             = qtc.Signal(str, instigator_type)
+    changed_mask_dataset             = qtc.Signal(str, instigator_type)
+    changed_clipping_extents         = qtc.Signal(tuple, instigator_type)
+    changed_mask_limits              = qtc.Signal(tuple, instigator_type)
+    changed_colorbar_limits          = qtc.Signal(tuple, instigator_type)
+    changed_widget_property          = qtc.Signal(dict, instigator_type)
+    changed_opacity_enabled          = qtc.Signal(bool, instigator_type)
+    changed_mask_opacity             = qtc.Signal(float, instigator_type)
+    changed_clip_opacity             = qtc.Signal(float, instigator_type)
 
-    moved_camera                     = qtc.Signal(list, int)
+    moved_camera                     = qtc.Signal(list, instigator_type)
     # fmt: on
 
     def __init__(self, model: "H5Model") -> None:

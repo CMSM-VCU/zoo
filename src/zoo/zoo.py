@@ -1,12 +1,15 @@
+import os
 import sys
 from argparse import ArgumentParser
 from pathlib import Path
+
+os.environ["QT_API"] = "pyside6"
 
 from loguru import logger
 from qtpy import QtCore, QtWidgets
 
 from . import config
-from .MainWindow import MainWindow
+from .gui.MainWindow import MainWindow
 
 
 def path_is_file(path: str) -> Path | None:

@@ -3,6 +3,8 @@ from pathlib import Path
 from colorcet import all_original_names, get_aliases
 from matplotlib.pyplot import colormaps
 
+instigator_type = object
+
 # fmt: off
 EXTENSIONS_GOOD = {
     "h5": (".h5", ".hdf5"),
@@ -48,4 +50,5 @@ def has_known_extension(file: Path, exclude_known_bad: bool = True) -> bool:
 
 
 def truncate_int8_to_int4(val: int) -> int:
-    return int.from_bytes(val.to_bytes(8, "big")[4:], "big", signed=True)
+    return val
+    # return int.from_bytes(val.to_bytes(8, "big")[4:], "big", signed=True)
