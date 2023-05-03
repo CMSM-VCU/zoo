@@ -6,9 +6,9 @@ dependencies:
     - python=3.10
     - pandas
     - pytables
-    - pyqt
+    - pyside6
     - vtk>=9.1.0
-    - pyvista>=0.37.0
+    - pyvista=0.38
     - pyvistaqt
     - scipy
     - pyperclip

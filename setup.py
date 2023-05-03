@@ -28,7 +28,7 @@ setuptools.setup(
     install_requires=[
         "tables",
         "pandas",
-        "pyqt5",
+        "PySide6",
         "pyvista",
         "pyvistaqt",
         "scipy",
