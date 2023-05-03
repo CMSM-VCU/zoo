@@ -1,4 +1,3 @@
-
 from qtpy import QtCore as qtc
 from qtpy import QtGui as qtg
 from qtpy import QtWidgets as qtw
@@ -86,7 +85,7 @@ class ControlPaneVisuals(qtw.QWidget):
         ]
 
     def pick_color_bg(self, event=None) -> None:
-        if event.button() == 1:
+        if event.button().value == 1:
             self.controller.background_color = self._pick_color(
                 self.ui.bgcolorFrameButton
             )[:3]
@@ -97,7 +96,7 @@ class ControlPaneVisuals(qtw.QWidget):
 
     def tabcomplete_colormap(self, event=None) -> None:
         # https://doc.qt.io/qt-5/qt.html#FocusReason-enum
-        if event.reason() == 1:
+        if event.reason().value == 1:
             self.ui.colormap_completer.setCompletionPrefix(
                 self.ui.colormapSelector.currentText()
             )
@@ -134,13 +133,13 @@ class ControlPaneVisuals(qtw.QWidget):
             self.controller.lut.below_color = None
 
     def pick_color_above(self, event=None) -> None:
-        if event.button() == 1:
+        if event.button().value == 1:
             self.controller.lut.above_color = self._pick_color(
                 self.ui.abovecolorFrameButton
             )[:3]
 
     def pick_color_below(self, event=None) -> None:
-        if event.button() == 1:
+        if event.button().value == 1:
             self.controller.lut.below_color = self._pick_color(
                 self.ui.belowcolorFrameButton
             )[:3]

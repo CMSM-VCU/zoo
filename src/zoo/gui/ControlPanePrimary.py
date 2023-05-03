@@ -433,10 +433,10 @@ class ControlPanePrimary(qtw.QWidget):
             self.ui.timeLabel.setText("not found")
 
     def copypaste_camera_location(self, event=None) -> None:
-        if event.button() == 1:
+        if event.button().value == 1:
             print("Copied!")
             pyperclip.copy(str(self.controller.camera_location))
-        elif event.button() == 2:
+        elif event.button().value == 2:
             try:
                 paste_data = ast.literal_eval(pyperclip.paste().strip())
                 assert (
