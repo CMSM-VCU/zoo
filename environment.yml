@@ -8,7 +8,7 @@ dependencies:
     - pytables
     - pyqt
     - vtk>=9.1.0
-    - pyvista>=0.37.0
+    - pyvista=0.37
     - pyvistaqt
     - scipy
     - pyperclip
