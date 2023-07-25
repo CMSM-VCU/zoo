@@ -377,7 +377,7 @@ class ControlPanePrimary(qtw.QWidget):
             )
 
     @staticmethod
-    def set_clipping_extent_n(obj, index: int):
+    def set_clipping_extent_n(obj, index: int, *args):
         if obj.clip_checkboxes[index // 2].isChecked():
             obj.controller.replace_clipping_extents(
                 indeces=[index],
@@ -386,7 +386,7 @@ class ControlPanePrimary(qtw.QWidget):
             )
 
     @staticmethod
-    def set_grid_spacing_n(obj, index):
+    def set_grid_spacing_n(obj, index, *args):
         gs_vector = list(obj.controller.glyph_size)
         gs_vector[index] = float_or_zero(obj.gs_lineedits[index].text())
         obj.controller.set_glyph_size(gs_vector, instigator=id(obj))
@@ -395,7 +395,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.controller.set_glyph_size([float_or_zero(new_gs)] * 3, instigator=id(self))
 
     @staticmethod
-    def set_exaggeration_n(obj, index):
+    def set_exaggeration_n(obj, index, *args):
         new_exag = list(obj.controller.exaggeration)
         new_exag[index] = obj.exag_spinboxes[index].value()
         obj.controller.set_exaggeration(new_exag, instigator=id(obj))
