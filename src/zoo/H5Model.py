@@ -48,7 +48,8 @@ class H5Model(qtc.QAbstractItemModel):
         coords = self.get_data_at_timestep(["x1", "x2", "x3"], self.timesteps[0])
         tree = KDTree(coords)
         distances = tree.query(coords, k=2, workers=-1)[0][:, 1]
-        return (mode(distances)[0][0],) * 3
+        return (mode(distances, keepdims=False)[0],) * 3
+        # keepdims for compatibility with scipy<1.11
 
     def get_data_at_timestep(
         self, dataset: str | Sequence[str], timestep: int
