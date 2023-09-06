@@ -1,3 +1,5 @@
+import contextlib
+
 from qtpy import QtCore as qtc
 from qtpy import QtGui as qtg
 from qtpy import QtWidgets as qtw
@@ -79,10 +81,11 @@ class ControlPaneVisuals(qtw.QWidget):
             self.update_clip_opacity_value()
 
     def resize_window(self, event=None) -> None:
-        self.window().view_dimensions = [
-            int(self.ui.widthLineEdit.text()),
-            int(self.ui.heightLineEdit.text()),
-        ]
+        with contextlib.suppress(ValueError):
+            self.window().view_dimensions = [
+                int(self.widthLineEdit.text()),
+                int(self.heightLineEdit.text()),
+            ]
 
     def pick_color_bg(self, event=None) -> None:
         if event.button().value == 1:
