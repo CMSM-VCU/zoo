@@ -1,6 +1,6 @@
 import numpy as np
-from pyvista.plotting import get_cmap_safe
 from pyvista import Color
+from pyvista.plotting import get_cmap_safe
 from vtkmodules.util.numpy_support import numpy_to_vtk
 from vtkmodules.vtkCommonCore import vtkLookupTable
 
@@ -70,7 +70,7 @@ class LookupTable(vtkLookupTable):
     def above_color(self, above_color):
         if above_color:
             self.SetUseAboveRangeColor(True)
-            self.SetAboveRangeColor(*Color(above_color, opacity=1))
+            self.SetAboveRangeColor(*Color(above_color, opacity=1.0))
         else:
             self.SetUseAboveRangeColor(False)
         self._above_color = above_color
@@ -79,7 +79,7 @@ class LookupTable(vtkLookupTable):
     def below_color(self, below_color):
         if below_color:
             self.SetUseBelowRangeColor(True)
-            self.SetBelowRangeColor(*Color(below_color, opacity=1))
+            self.SetBelowRangeColor(*Color(below_color, opacity=1.0))
         else:
             self.SetUseBelowRangeColor(False)
         self._below_color = below_color
