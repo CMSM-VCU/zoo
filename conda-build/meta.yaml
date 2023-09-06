@@ -17,32 +17,34 @@ build:
 
 requirements:
     build:
-        - python >=3.10.0
+        - python ==3.10.*
         - setuptools
-        - pytables
-        - pandas
-        - pyqt
-        - vtk >=9.1.0
-        - pyvista >=0.37.0,<0.38.0
-        - pyvistaqt
-        - scipy
+        - numpy ==1.24.*
+        - pytables ==3.7.*
+        - pandas ==1.5.*
+        - pyqt ==5.15.*
+        - vtk ==9.1.*
+        - pyvista ==0.37.*
+        - pyvistaqt ==0.9.*
+        - scipy ==1.10.*
         - pyperclip
         - pywin32
-        - matplotlib
+        - matplotlib ==3.6.*
         - colorcet
 
     run:
-        - python >=3.10.0
-        - pytables
-        - pandas
-        - pyqt
-        - vtk >=9.1.0
-        - pyvista >=0.37.0,<0.38.0
-        - pyvistaqt
-        - scipy
+        - python ==3.10.*
+        - numpy ==1.24.*
+        - pytables ==3.7.*
+        - pandas ==1.5.*
+        - pyqt ==5.15.*
+        - vtk ==9.1.*
+        - pyvista ==0.37.*
+        - pyvistaqt ==0.9.*
+        - scipy ==1.10.*
         - pyperclip
         - pywin32
-        - matplotlib
+        - matplotlib ==3.6.*
         - colorcet
 
 test:
