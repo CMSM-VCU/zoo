@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zoo",
-    version="0.10.3",
+    version="0.10.4",
     author="Riley Hall",
     author_email="riley.hall.va@gmail.com",
     description="A tool for visualizing Peridynamic simulation results",
