@@ -4,15 +4,15 @@ channels:
     - defaults
 dependencies:
     - python=3.10
-    - numpy=1.24
-    - pandas=1.5
+    - numpy<=1.24
+    - pandas<=1.5
     - pytables
     - pyqt
-    - vtk=9.2
+    - vtk<=9.1
     - pyvista=0.37
     - pyvistaqt
-    - scipy=1.10
+    - scipy<=1.10
     - pyperclip
     - pywin32
+    - matplotlib<=3.6
     - colorcet
-    - matplotlib=3.6
