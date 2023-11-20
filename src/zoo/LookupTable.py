@@ -36,6 +36,14 @@ class LookupTable(vtkLookupTable):
         return self._below_color
 
     @property
+    def above_range_color(self):
+        return self._above_color
+
+    @property
+    def below_range_color(self):
+        return self._below_color
+
+    @property
     def reverse(self):
         return self._reverse
 
