@@ -24,6 +24,7 @@ EPSILON: float = 1e-6
 
 pv.global_theme.background = pv.Color("#4c4c4c")
 pv.global_theme.font.color = pv.Color("white")
+pv.global_theme.multi_samples = 16  # MSAA samples
 
 
 class ContourVTKCustom(qtc.QAbstractItemModel):
@@ -159,7 +160,6 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         self.plotter.add_actor(self.actor, name="primary", render=False)
         self.plotter.mapper = mapper
         self.plotter.ren_win.SetAlphaBitPlanes(True)
-        self.plotter.ren_win.SetMultiSamples(0)
         self.plotter.renderer.SetUseDepthPeeling(True)
         self.plotter.renderer.SetMaximumNumberOfPeels(200)
         self.plotter.renderer.SetOcclusionRatio(0.0)
