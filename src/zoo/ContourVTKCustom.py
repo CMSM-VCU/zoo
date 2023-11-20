@@ -106,6 +106,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         vertexGlyphFilter.Update()
 
         mapper = PolyDataMapper()
+        mapper.interpolate_before_map = False
         mapper.SetInputConnection(vertexGlyphFilter.GetOutputPort())
         mapper.lookup_table = self.lut
         mapper.MapDataArrayToVertexAttribute(
