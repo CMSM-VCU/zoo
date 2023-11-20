@@ -22,6 +22,9 @@ from .utils import instigator_type, truncate_int8_to_int4
 LARGE: float = 1e12
 EPSILON: float = 1e-6
 
+pv.global_theme.background = pv.Color("#4c4c4c")
+pv.global_theme.font.color = pv.Color("white")
+
 
 class ContourVTKCustom(qtc.QAbstractItemModel):
     plotter: "InteractorLike"  # e.g. QtInteractor, vtkInteractor
