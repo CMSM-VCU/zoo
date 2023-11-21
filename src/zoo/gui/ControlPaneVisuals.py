@@ -122,14 +122,10 @@ class ControlPaneVisuals(qtw.QWidget):
         self.ui.belowcolorLabel.setEnabled(enable)
         if enable:
             self.controller.lut.above_color = (
-                self.ui.abovecolorFrameButton.palette()
-                .color(qtg.QPalette.Background)
-                .name()
+                self.ui.abovecolorFrameButton.palette().color(qtg.QPalette.Base).name()
             )
             self.controller.lut.below_color = (
-                self.ui.belowcolorFrameButton.palette()
-                .color(qtg.QPalette.Background)
-                .name()
+                self.ui.belowcolorFrameButton.palette().color(qtg.QPalette.Base).name()
             )
         else:
             self.controller.lut.above_color = None
