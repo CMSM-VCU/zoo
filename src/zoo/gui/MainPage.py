@@ -1,7 +1,7 @@
 from io import BytesIO
 from pathlib import Path
+from platform import system
 
-import win32clipboard
 from loguru import logger
 from PIL import Image
 from qtpy import QtCore as qtc
@@ -76,17 +76,22 @@ class MainPage(qtw.QWidget):
         self._control_pane.toggle_control_pane(enable)
 
     def copy_image(self, _=None) -> None:
-        image = Image.fromarray(self._original_controller.plotter.image)
-        # https://stackoverflow.com/a/61546024/13130795
-        output = BytesIO()
-        image.convert("RGB").save(output, "BMP")
-        data = output.getvalue()[14:]
-        output.close()
+        if system() == "Windows":
+            import win32clipboard
 
-        win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
-        win32clipboard.CloseClipboard()
+            image = Image.fromarray(self._original_controller.plotter.image)
+            # https://stackoverflow.com/a/61546024/13130795
+            output = BytesIO()
+            image.convert("RGB").save(output, "BMP")
+            data = output.getvalue()[14:]
+            output.close()
+
+            win32clipboard.OpenClipboard()
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+            win32clipboard.CloseClipboard()
+        else:
+            logger.warning("Copy Image is only supported on Windows")
 
     def save_image(self, _=None, override=None) -> None:
         if override:
