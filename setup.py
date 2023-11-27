@@ -29,6 +29,7 @@ setuptools.setup(
         "tables",
         "pandas",
         "PySide6",
+        "QtPy",
         "pyvista",
         "pyvistaqt",
         "scipy",
