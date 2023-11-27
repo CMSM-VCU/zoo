@@ -77,19 +77,24 @@ class MainPage(qtw.QWidget):
 
     def copy_image(self, _=None) -> None:
         if system() == "Windows":
-            import win32clipboard
+            try:
+                import win32clipboard
+            except ImportError:
+                logger.warning(
+                    "Install pywin32 to use Copy Image (conda install pywin32)"
+                )
+            else:
+                image = Image.fromarray(self._original_controller.plotter.image)
+                # https://stackoverflow.com/a/61546024/13130795
+                output = BytesIO()
+                image.convert("RGB").save(output, "BMP")
+                data = output.getvalue()[14:]
+                output.close()
 
-            image = Image.fromarray(self._original_controller.plotter.image)
-            # https://stackoverflow.com/a/61546024/13130795
-            output = BytesIO()
-            image.convert("RGB").save(output, "BMP")
-            data = output.getvalue()[14:]
-            output.close()
-
-            win32clipboard.OpenClipboard()
-            win32clipboard.EmptyClipboard()
-            win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
-            win32clipboard.CloseClipboard()
+                win32clipboard.OpenClipboard()
+                win32clipboard.EmptyClipboard()
+                win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+                win32clipboard.CloseClipboard()
         else:
             logger.warning("Copy Image is only supported on Windows")
 
