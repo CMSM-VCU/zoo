@@ -3,12 +3,12 @@ channels:
     - conda-forge
     - defaults
 dependencies:
-    - python=3.10
+    - python>=3.10
     - pandas
     - pytables
     - pyside6
     - vtk>=9.1.0
-    - pyvista=0.38
+    - pyvista>=0.38
     - pyvistaqt
     - scipy
     - pyperclip

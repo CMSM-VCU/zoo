@@ -17,14 +17,14 @@ build:
 
 requirements:
     build:
-        - python >=3.10,<3.11
+        - python >=3.10
         - setuptools
         - pytables
         - pandas
         - pyside6
         - qtpy
         - vtk >=9.1.0
-        - pyvista >=0.38,<0.39
+        - pyvista >=0.38
         - pyvistaqt
         - scipy
         - pyperclip
@@ -33,13 +33,13 @@ requirements:
         - colorcet
 
     run:
-        - python >=3.10,<3.11
+        - python >=3.10
         - pytables
         - pandas
         - pyside6
         - qtpy
         - vtk >=9.1.0
-        - pyvista >=0.38,<0.39
+        - pyvista >=0.38
         - pyvistaqt
         - scipy
         - pyperclip
