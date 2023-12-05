@@ -28,7 +28,7 @@ requirements:
         - scipy
         - pyperclip
         - pywin32
-        - matplotlib
+        - matplotlib-base
         - colorcet
 
     run:
@@ -42,7 +42,7 @@ requirements:
         - scipy
         - pyperclip
         - pywin32
-        - matplotlib
+        - matplotlib-base
         - colorcet
 
 test:
