@@ -22,7 +22,6 @@ requirements:
         - pytables
         - pandas
         - pyside6
-        - qtpy
         - vtk >=9.1.0
         - pyvista >=0.38
         - pyvistaqt
@@ -37,7 +36,6 @@ requirements:
         - pytables
         - pandas
         - pyside6
-        - qtpy
         - vtk >=9.1.0
         - pyvista >=0.38
         - pyvistaqt
