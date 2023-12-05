@@ -1,4 +1,4 @@
-from qtpy import QtWidgets as qtw
+from PySide6 import QtWidgets as qtw
 
 from .ControlPanePrimary import ControlPanePrimary
 from .ControlPaneVisuals import ControlPaneVisuals

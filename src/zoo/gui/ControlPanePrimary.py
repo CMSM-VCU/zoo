@@ -4,9 +4,9 @@ from functools import partial
 
 import pyperclip
 from loguru import logger
-from qtpy import QtCore as qtc
-from qtpy import QtGui as qtg
-from qtpy import QtWidgets as qtw
+from PySide6 import QtCore as qtc
+from PySide6 import QtGui as qtg
+from PySide6 import QtWidgets as qtw
 
 from ..ContourController import ContourController
 from ..utils import instigator_type, truncate_int8_to_int4

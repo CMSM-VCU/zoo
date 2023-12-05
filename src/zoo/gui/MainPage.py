@@ -4,8 +4,8 @@ from platform import system
 
 from loguru import logger
 from PIL import Image
-from qtpy import QtCore as qtc
-from qtpy import QtWidgets as qtw
+from PySide6 import QtCore as qtc
+from PySide6 import QtWidgets as qtw
 
 from ..ContourController import ContourController
 from ..H5Model import H5Model

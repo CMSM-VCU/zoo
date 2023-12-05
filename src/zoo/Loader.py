@@ -2,7 +2,7 @@ import csv
 
 import pandas as pd
 from loguru import logger
-from qtpy import QtCore as qtc
+from PySide6 import QtCore as qtc
 from tables import is_hdf5_file
 
 from .utils import EXTENSIONS

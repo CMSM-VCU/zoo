@@ -1,6 +1,6 @@
 import typing
 
-from qtpy import QtWidgets as qtw
+from PySide6 import QtWidgets as qtw
 
 
 class FoldingGroupBox(qtw.QGroupBox):

@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 import numpy as np
 from loguru import logger
-from qtpy import QtCore as qtc
+from PySide6 import QtCore as qtc
 from scipy.spatial import KDTree
 from scipy.stats import mode
 

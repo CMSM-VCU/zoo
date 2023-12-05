@@ -4,7 +4,7 @@ import numpy as np
 import pyvista as pv
 import pyvistaqt
 from loguru import logger
-from qtpy import QtCore as qtc
+from PySide6 import QtCore as qtc
 from vtk.numpy_interface import dataset_adapter as dsa
 from vtkmodules.vtkCommonCore import vtkCommand, vtkPoints
 from vtkmodules.vtkCommonDataModel import vtkDataObject, vtkPolyData
@@ -296,7 +296,7 @@ class PolyDataMapper(vtkPolyDataMapper, pv.mapper._BaseMapper):
 if __name__ == "__main__":
     import sys
 
-    from qtpy import QtWidgets as qtw
+    from PySide6 import QtWidgets as qtw
 
     app = qtw.QApplication(sys.argv)
 

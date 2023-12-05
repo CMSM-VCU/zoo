@@ -2,7 +2,7 @@ from collections.abc import Iterable, Sequence
 from typing import Any
 
 from loguru import logger
-from qtpy import QtCore as qtc
+from PySide6 import QtCore as qtc
 
 from zoo.utils import instigator_type, truncate_int8_to_int4
 

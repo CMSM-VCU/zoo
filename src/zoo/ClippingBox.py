@@ -1,5 +1,5 @@
 import numpy as np
-from qtpy import QtCore as qtc
+from PySide6 import QtCore as qtc
 from vtkmodules.vtkInteractionWidgets import vtkBoxWidget2
 
 from .utils import instigator_type, truncate_int8_to_int4

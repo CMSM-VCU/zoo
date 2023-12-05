@@ -6,7 +6,7 @@ from pathlib import Path
 os.environ["QT_API"] = "pyside6"
 
 from loguru import logger
-from qtpy import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from . import config
 from .gui.MainWindow import MainWindow
