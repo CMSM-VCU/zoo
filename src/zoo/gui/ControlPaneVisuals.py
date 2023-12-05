@@ -83,8 +83,8 @@ class ControlPaneVisuals(qtw.QWidget):
     def resize_window(self, event=None) -> None:
         with contextlib.suppress(ValueError):
             self.window().view_dimensions = [
-                int(self.widthLineEdit.text()),
-                int(self.heightLineEdit.text()),
+                int(self.ui.widthLineEdit.text()),
+                int(self.ui.heightLineEdit.text()),
             ]
 
     def pick_color_bg(self, event=None) -> None:
