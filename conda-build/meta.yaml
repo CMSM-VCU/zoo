@@ -22,6 +22,7 @@ requirements:
         - pytables
         - pandas
         - pyside6
+        - qt6-main <=6.6.0 # Fatal error introduced in 6.6.1
         - vtk >=9.1.0
         - pyvista >=0.38
         - pyvistaqt
@@ -36,6 +37,7 @@ requirements:
         - pytables
         - pandas
         - pyside6
+        - qt6-main <=6.6.0 # Fatal error introduced in 6.6.1
         - vtk >=9.1.0
         - pyvista >=0.38
         - pyvistaqt
