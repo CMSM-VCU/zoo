@@ -33,7 +33,6 @@ jobs:
         with:
           meta_yaml_dir: conda-build
           python-version: ${{ matrix.python-version }} # Values previously defined in `matrix`
-          platform_win-64: true
           user: hallrc
           label: test
           token: ${{ secrets.hallrc_anaconda_token }} # Replace with the right name of your secret
