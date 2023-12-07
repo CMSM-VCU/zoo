@@ -1,13 +1,9 @@
 
 name: Build and upload conda package
 
-# on:
-#   release:
-#     types: ['released', 'prereleased']
-
-on: push
-
-# workflow_dispatch:        # Un comment line if you also want to trigger action manually
+on:
+  release:
+    types: ['released', 'prereleased']
 
 jobs:
   conda_deployment_with_new_tag:
@@ -34,5 +30,5 @@ jobs:
           meta_yaml_dir: conda-build
           python-version: ${{ matrix.python-version }} # Values previously defined in `matrix`
           user: hallrc
-          label: test
+          label: auto
           token: ${{ secrets.hallrc_anaconda_token }} # Replace with the right name of your secret
