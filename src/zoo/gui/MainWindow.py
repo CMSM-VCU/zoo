@@ -188,10 +188,12 @@ class MainWindow(qtw.QMainWindow):
         self.current_page.last_timestep()
 
     def clear_cache(self, _=None) -> None:
-        self.current_page.clear_cache()
+        for page in self.pages:
+            page.clear_cache()
 
     def disable_cache(self, _=None) -> None:
-        self.current_page.disable_cache()
+        for page in self.pages:
+            page.disable_cache()
 
     def _dragEnterEvent(self, event):
         # Based on https://stackoverflow.com/a/4176083/13130795
