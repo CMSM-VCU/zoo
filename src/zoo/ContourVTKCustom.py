@@ -79,7 +79,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
     def construct_timestep_data(self, timestep: int) -> pv.PolyData:
         logger.debug("Constructing data object...")
-        coords = self.model.get_data_at_timestep(("x1", "x2", "x3"), timestep)
+        coords = self.model.get_data_at_timestep(("x1", "x2", "x3"), timestep).astype(
+            float
+        )  # Weird bug where multiple categorical columns sometimes stay as Object type
         points = vtkPoints()
         points.SetData(dsa.numpyTovtkDataArray(coords))
         polydata = vtkPolyData()
@@ -96,7 +98,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             )
         polydata.GetPointData().AddArray(
             dsa.numpyTovtkDataArray(
-                self.model.get_data_at_timestep(("u1", "u2", "u3"), timestep),
+                self.model.get_data_at_timestep(("u1", "u2", "u3"), timestep).astype(
+                    float
+                ),
                 name="_displacement",
             )
         )
