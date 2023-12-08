@@ -90,13 +90,13 @@ class Loader(qtc.QObject):
 
         if DEFLATE_DATA:
             logger.info("Converting to categorical datasets...")
-            _size_before = int(df.memory_usage(deep=True).sum() / 1e6)
+            _size_before = max(int(df.memory_usage(deep=True).sum() / 1e6), 1)
 
             eligible = df.nunique() < len(df) / 10
             eligible = list(eligible[eligible].index)
             df[eligible] = df[eligible].astype("category")
 
-            _size_after = int(df.memory_usage(deep=True).sum() / 1e6)
+            _size_after = max(int(df.memory_usage(deep=True).sum() / 1e6), 1)
             _percent = int((1 - (_size_after / _size_before)) * 100)
             logger.debug(
                 f"Size reduction: {_size_before}->{_size_after} MB ({_percent}% reduction)"
