@@ -339,12 +339,14 @@ class ContourController(qtc.QAbstractItemModel):
             contour.controller = self
 
     def clear_cache(self, instigator: int) -> None:
-        self.contour_primary.construct_timestep_data.cache_clear()
-        self.refresh()  # Nudge the contour object so the memory is freed immediately
+        for contour in self.contours:
+            contour.construct_timestep_data.cache_clear()
+        self.refresh()  # Nudge the contour object(s) so the memory is freed immediately
 
     def disable_cache(self, instigator: int) -> None:
-        self.contour_primary.construct_timestep_data.cache_clear()  # Make sure the memory is freed
-        self.contour_primary.construct_timestep_data = lru_cache(maxsize=0)(
-            self.contour_primary.construct_timestep_data.__wrapped__
-        )
-        self.refresh()  # Nudge the contour object so the memory is freed immediately
+        for contour in self.contours:
+            contour.construct_timestep_data.cache_clear()  # Make sure the memory is freed
+            contour.construct_timestep_data = lru_cache(maxsize=0)(
+                contour.construct_timestep_data.__wrapped__
+            )
+        self.refresh()  # Nudge the contour object(s) so the memory is freed immediately
