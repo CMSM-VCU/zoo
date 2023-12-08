@@ -1,4 +1,5 @@
 from collections.abc import Iterable, Sequence
+from functools import lru_cache
 from typing import Any
 
 from loguru import logger
@@ -336,3 +337,16 @@ class ContourController(qtc.QAbstractItemModel):
         if contour not in self.contours:
             self.contours.append(contour)
             contour.controller = self
+
+    def clear_cache(self, instigator: int) -> None:
+        for contour in self.contours:
+            contour.construct_timestep_data.cache_clear()
+        self.refresh()  # Nudge the contour object(s) so the memory is freed immediately
+
+    def disable_cache(self, instigator: int) -> None:
+        for contour in self.contours:
+            contour.construct_timestep_data.cache_clear()  # Make sure the memory is freed
+            contour.construct_timestep_data = lru_cache(maxsize=0)(
+                contour.construct_timestep_data.__wrapped__
+            )
+        self.refresh()  # Nudge the contour object(s) so the memory is freed immediately

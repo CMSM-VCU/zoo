@@ -35,8 +35,8 @@ def run():
     parser.add_argument(
         "--cache-size",
         action="store",
-        help="Number of timesteps to cache in memory, for each file. -1 for unlimited",
-        type=positive_or_none,
+        help="Number of timesteps to cache in memory, for each file. -1 for unlimited, 0 to disable",
+        type=positive_or_none,  # Actual "unlimited" value is None. Convert negatives to that
         default=config.cache_size,
     )
     args = parser.parse_args()

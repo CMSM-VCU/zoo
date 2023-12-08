@@ -85,6 +85,8 @@ class MainWindow(qtw.QMainWindow):
         self.ui.actionSave_All_Images_In_All_Tabs.triggered.connect(
             self.save_all_images_in_all_tabs
         )
+        self.ui.actionClear_Cache.triggered.connect(self.clear_cache)
+        self.ui.actionDisable_Cache.triggered.connect(self.disable_cache)
         self.ui.actionExit.triggered.connect(self.close)
         self.ui.actionDuplicate.triggered.connect(self.duplicate_current_tab)
         self.ui.actionSynchronizeTabs.triggered.connect(self.unify_tabs)
@@ -184,6 +186,14 @@ class MainWindow(qtw.QMainWindow):
 
     def last_timestep(self, _=None) -> None:
         self.current_page.last_timestep()
+
+    def clear_cache(self, _=None) -> None:
+        for page in self.pages:
+            page.clear_cache()
+
+    def disable_cache(self, _=None) -> None:
+        for page in self.pages:
+            page.disable_cache()
 
     def _dragEnterEvent(self, event):
         # Based on https://stackoverflow.com/a/4176083/13130795
