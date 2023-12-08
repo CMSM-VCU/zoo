@@ -141,3 +141,6 @@ class MainPage(qtw.QWidget):
 
     def last_timestep(self, _=None) -> None:
         self.controller.last_timestep(instigator=id(self))
+
+    def clear_cache(self, _=None) -> None:
+        self.controller.clear_cache(instigator=id(self))

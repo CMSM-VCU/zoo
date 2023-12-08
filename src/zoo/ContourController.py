@@ -336,3 +336,7 @@ class ContourController(qtc.QAbstractItemModel):
         if contour not in self.contours:
             self.contours.append(contour)
             contour.controller = self
+
+    def clear_cache(self, instigator: int) -> None:
+        self.contour_primary.construct_timestep_data.cache_clear()
+        self.refresh()  # Nudge the contour object so the memory is freed immediately

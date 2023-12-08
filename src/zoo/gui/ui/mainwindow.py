@@ -21,6 +21,7 @@ class Ui_MainWindow(object):
         self.actionPrevious_Timestep = QAction(MainWindow)
         self.actionFirst_Timestep = QAction(MainWindow)
         self.actionLast_Timestep = QAction(MainWindow)
+        self.actionClear_Cache = QAction(MainWindow)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setEnabled(True)
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -51,6 +52,8 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionSave_Image)
         self.menuFile.addAction(self.actionSave_All_Images)
         self.menuFile.addAction(self.actionSave_All_Images_In_All_Tabs)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionClear_Cache)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
         self.menuView.addAction(self.actionDuplicate)
@@ -128,6 +131,9 @@ class Ui_MainWindow(object):
         )
         self.actionLast_Timestep.setShortcut(
             QCoreApplication.translate("MainWindow", "End", None)
+        )
+        self.actionClear_Cache.setText(
+            QCoreApplication.translate("MainWindow", "Clear Timestep Cache", None)
         )
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
         self.menuView.setTitle(QCoreApplication.translate("MainWindow", "View", None))
