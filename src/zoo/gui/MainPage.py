@@ -144,3 +144,6 @@ class MainPage(qtw.QWidget):
 
     def clear_cache(self, _=None) -> None:
         self.controller.clear_cache(instigator=id(self))
+
+    def disable_cache(self, _=None) -> None:
+        self.controller.disable_cache(instigator=id(self))
