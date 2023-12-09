@@ -148,13 +148,13 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             if dim == 0.0:
                 self._model_size[i] = self.model.grid_spacing[0]
 
-        logger.debug(f"Size: {self._model_size}")
-        logger.debug(f"Extents: {self._original_extents}")
+        logger.trace(f"Size: {self._model_size}")
+        logger.trace(f"Extents: {self._original_extents}")
         if np.linalg.norm(self._model_size) ** 2 <= 1000.000000:
-            logger.debug(f"System span^2={np.linalg.norm(self._model_size)**2} <= 1000")
+            logger.trace(f"System span^2={np.linalg.norm(self._model_size)**2} <= 1000")
             self.length_over_threshold = False
         else:
-            logger.debug(f"System span^2={np.linalg.norm(self._model_size)**2} > 1000")
+            logger.trace(f"System span^2={np.linalg.norm(self._model_size)**2} > 1000")
             self.length_over_threshold = True
 
         mapper = self.construct_data_mapper(self.polydata)
@@ -215,9 +215,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
             self.actor.clip_opacity = opacity
 
     def update_plot_dataset(self, plot_dataset: str, instigator: int = None) -> None:
-        logger.debug(f"Updating plot dataset to {plot_dataset}...")
+        logger.trace(f"Updating plot dataset to {plot_dataset}...")
         self._plot_dataset_limits = list(self.polydata.get_data_range(plot_dataset))
-        logger.debug(f"Detected value range of {self._plot_dataset_limits}")
+        logger.trace(f"Detected value range of {self._plot_dataset_limits}")
         self.controller.set_colorbar_limits(
             self._plot_dataset_limits, instigator=id(self)
         )
@@ -230,9 +230,9 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
         )
 
     def update_mask_dataset(self, mask_dataset: str, instigator: int = None) -> None:
-        logger.debug(f"Updating mask dataset to {mask_dataset}...")
+        logger.trace(f"Updating mask dataset to {mask_dataset}...")
         self._mask_dataset_limits = list(self.polydata.get_data_range(mask_dataset))
-        logger.debug(f"Detected value range of {self._plot_dataset_limits}")
+        logger.trace(f"Detected value range of {self._plot_dataset_limits}")
         self.controller.set_mask_limits(self._mask_dataset_limits, instigator=id(self))
         self.actor.GetMapper().MapDataArrayToVertexAttribute(
             "_mask_scalar", mask_dataset, vtkDataObject.FIELD_ASSOCIATION_POINTS, -1
@@ -240,7 +240,7 @@ class ContourVTKCustom(qtc.QAbstractItemModel):
 
     def change_colorbar_limits(self, colorbar_limits: tuple, instigator: int) -> None:
         if colorbar_limits[0] <= colorbar_limits[1]:
-            logger.debug(
+            logger.trace(
                 f"Colorbar limits {colorbar_limits} in correct order. Applying..."
             )
             self.plotter.update_scalar_bar_range(colorbar_limits)

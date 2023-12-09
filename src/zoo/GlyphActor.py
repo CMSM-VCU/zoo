@@ -60,12 +60,12 @@ class GlyphActor(vtkActor):
 
         self.shader_params = _shader_property.GetGeometryCustomUniforms()
         if np.linalg.norm(model_size) ** 2 > 1000.000000:
-            logger.debug(f"System span^2={np.linalg.norm(model_size)**2} <= 1000")
+            logger.trace(f"System span^2={np.linalg.norm(model_size)**2} <= 1000")
             self.shader_params.SetUniform4f("modelSize", [*model_size, 1.0])
             self.shader_params.SetUniform3f("epsilon_vector", [1e-3] * 3)
             self.use_model_coords = True
         else:
-            logger.debug(f"System span^2={np.linalg.norm(model_size)**2} > 1000")
+            logger.trace(f"System span^2={np.linalg.norm(model_size)**2} > 1000")
             self.shader_params.SetUniform4f("modelSize", [1.0, 1.0, 1.0, 1.0])
             self.shader_params.SetUniform3f(
                 "epsilon_vector", [np.linalg.norm(model_size) / 1000.0] * 3
@@ -80,7 +80,7 @@ class GlyphActor(vtkActor):
 
     @glyph_size.setter
     def glyph_size(self, size: tuple[float]) -> None:
-        logger.debug(f"Updating shaders with grid spacing {size}...")
+        logger.trace(f"Updating shaders with grid spacing {size}...")
         self.shader_params.SetUniform4f("glyph_scale", [*size, 0.0])
         self._applied_glyph_size = size
 
@@ -90,7 +90,7 @@ class GlyphActor(vtkActor):
 
     @exaggeration.setter
     def exaggeration(self, exag: tuple[float]) -> None:
-        logger.debug(f"Updating shaders with exaggeration {exag}...")
+        logger.trace(f"Updating shaders with exaggeration {exag}...")
         self.shader_params.SetUniform4f("disp_scale", [*exag, 0.0])
         self._applied_exaggeration = exag
 
@@ -100,7 +100,7 @@ class GlyphActor(vtkActor):
 
     @mask_limits.setter
     def mask_limits(self, limits: tuple[float]) -> None:
-        logger.debug(f"Updating shaders with mask limits {limits}...")
+        logger.trace(f"Updating shaders with mask limits {limits}...")
         self.shader_params.SetUniform2f("mask_limits", limits)
         self._applied_mask_limits = limits
 
@@ -111,19 +111,19 @@ class GlyphActor(vtkActor):
     @clipping_extents.setter
     def clipping_extents(self, extents: tuple[float]) -> None:
         if extents == self._applied_clipping_extents:
-            logger.debug(
+            logger.trace(
                 f"Clipping extents {extents} same as current value. Update not applied."
             )
             return
         if not any(extents):
-            logger.debug(f"Invalid clipping extents {extents}. Update not applied.")
+            logger.trace(f"Invalid clipping extents {extents}. Update not applied.")
             return
-        logger.debug(f"Updating shaders with clipping extents {extents}...")
+        logger.trace(f"Updating shaders with clipping extents {extents}...")
         if self.use_model_coords:
             extents_MC = bbox_to_model_coordinates(extents, self._original_extents)
         else:
             extents_MC = (extents[::2], extents[1::2])
-        logger.debug(
+        logger.trace(
             "Actual values sent to shaders: "
             + f"bottom left - {extents_MC[0]}, top right - {extents_MC[1]}"
         )
@@ -138,7 +138,7 @@ class GlyphActor(vtkActor):
 
     @opacity_enabled.setter
     def opacity_enabled(self, enabled: bool) -> None:
-        logger.debug(f"Setting opacity enabled to {enabled}...")
+        logger.trace(f"Setting opacity enabled to {enabled}...")
         self.SetForceTranslucent(enabled)
 
     @property
@@ -147,7 +147,7 @@ class GlyphActor(vtkActor):
 
     @mask_opacity.setter
     def mask_opacity(self, opacity: float) -> None:
-        logger.debug(f"Updating shaders with mask_opacity {opacity}...")
+        logger.trace(f"Updating shaders with mask_opacity {opacity}...")
         self.shader_params.SetUniformf("mask_opacity", opacity)
         self._applied_mask_opacity = opacity
 
@@ -157,7 +157,7 @@ class GlyphActor(vtkActor):
 
     @clip_opacity.setter
     def clip_opacity(self, opacity: float) -> None:
-        logger.debug(f"Updating shaders with clip_opacity {opacity}...")
+        logger.trace(f"Updating shaders with clip_opacity {opacity}...")
         self.shader_params.SetUniformf("clip_opacity", opacity)
         self._applied_clip_opacity = opacity
 

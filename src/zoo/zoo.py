@@ -56,7 +56,7 @@ def run():
         logger.remove()
         logger.add(sys.stderr, level="INFO")
 
-    logger.debug(f"Command line arguments: {args}")
+    logger.trace(f"Command line arguments: {args}")
 
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, on=True)
     app = QtWidgets.QApplication(sys.argv)

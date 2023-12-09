@@ -85,7 +85,7 @@ class MainPage(qtw.QWidget):
                 )
             else:
                 if not self.controller.plotter.render_window.IsCurrent():
-                    logger.debug("Window not current. Fixing...")
+                    logger.trace("Window not current. Fixing...")
                     self.controller.plotter.render_window.MakeCurrent()
                 image = Image.fromarray(self._original_controller.plotter.image)
                 # https://stackoverflow.com/a/61546024/13130795
@@ -108,7 +108,7 @@ class MainPage(qtw.QWidget):
         else:
             filename, _ = qtw.QFileDialog.getSaveFileName(self, filter="PNG (*.png)")
         if filename:
-            logger.debug(f"Saving image at {Path(filename).absolute()}")
+            logger.info(f"Saving image at {Path(filename).absolute()}")
             self._original_controller.save_image(filename)
 
     def save_all_images(self, _=None, name_prefix="image") -> None:
@@ -120,7 +120,7 @@ class MainPage(qtw.QWidget):
             self, directory=str(Path(self._filename).parent)
         )
         if folder:
-            logger.debug(f"Saving all images in {Path(folder).absolute()}")
+            logger.info(f"Saving all images in {Path(folder).absolute()}")
             for ts in self._original_controller.model.timesteps:
                 self.controller.set_timestep(ts, instigator=id(self))
                 self._original_controller.contour_primary.plotter.render()

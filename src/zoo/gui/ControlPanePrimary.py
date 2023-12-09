@@ -307,7 +307,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.controller.set_timestep_index(int(new_timestep), instigator=id(self))
 
     def select_plot_dataset(self, _=None, *, override: str = None):
-        logger.debug(
+        logger.trace(
             f"Selected plot dataset {self.ui.plotdatasetSelector.currentText()} overridden by {override}"
         )
         new_set = (
@@ -318,7 +318,7 @@ class ControlPanePrimary(qtw.QWidget):
         self.controller.set_plot_dataset(new_set, instigator=id(self))
 
     def select_mask_dataset(self, _=None, *, override: str = None):
-        logger.debug(
+        logger.trace(
             f"Selected mask dataset {self.ui.maskdatasetSelector.currentText()} overridden by {override}"
         )
         new_set = (

@@ -50,7 +50,7 @@ class Loader(qtc.QObject):
         elif self.filename.suffix in EXTENSIONS["grid"]:
             df = Loader.read_as_grid_file(self.filename)
         elif self.filename.suffix in EXTENSIONS["known_bad"]:
-            logger.debug(f"Ignoring {self.filename.suffix:5} file: {self.filename}")
+            logger.trace(f"Ignoring {self.filename.suffix:5} file: {self.filename}")
             self.rejected.emit()
             return
         else:
@@ -103,7 +103,7 @@ class Loader(qtc.QObject):
 
             _size_after = max(int(df.memory_usage(deep=True).sum() / 1e6), 1)
             _percent = int((1 - (_size_after / _size_before)) * 100)
-            logger.debug(
+            logger.info(
                 f"Size reduction: {_size_before}->{_size_after} MB ({_percent}% reduction)"
             )
 
@@ -143,7 +143,7 @@ class Loader(qtc.QObject):
                 if line.strip().startswith(COMMENT_CHARACTER):
                     continue
                 if line.strip().isdigit():  # Header of Emu grid file
-                    logger.debug(f"Integer row found at {i}")
+                    logger.trace(f"Integer row found at {i}")
                     continue
                 try:
                     sep = csv.Sniffer().sniff(line).delimiter
@@ -151,14 +151,14 @@ class Loader(qtc.QObject):
                     continue
                 else:
                     break
-        logger.debug(f"Detected delimiter as {sep}")
+        logger.trace(f"Detected delimiter as {sep}")
         return skiprows, sep
 
     @staticmethod
     def postprocess_csv(grid):
         # Figure out headers
         if any(grid.iloc[0].apply(lambda x: isinstance(x, str))):
-            logger.debug("Detected column headers. Converting...")
+            logger.trace("Detected column headers. Converting...")
             grid = (
                 grid[1:]
                 .reset_index(drop=True)
@@ -166,28 +166,28 @@ class Loader(qtc.QObject):
                 .astype(float)
             )
         else:
-            logger.debug("No column headers. Assuming defaults...")
+            logger.trace("No column headers. Assuming defaults...")
             grid = grid.rename(
                 columns=lambda x: DEFAULT_COLUMNS[x]
                 if x in DEFAULT_COLUMNS.keys()
                 else str(x)
             )
         grid.columns = grid.columns.str.strip()
-        logger.debug(grid.columns)
+        logger.trace(grid.columns)
         # Add indices
         grid["iter"] = 0
         grid["m_global"] = grid.index
         grid.set_index(["iter", "m_global"], inplace=True)
         # Switch to required column names
         if {"x", "y", "z"}.issubset(set(grid.columns)):
-            logger.debug("Converting x,y,z to x1,x2,x3")
+            logger.trace("Converting x,y,z to x1,x2,x3")
             grid = grid.rename(columns={"x": "x1", "y": "x2", "z": "x3"})
         if {"ux", "uy", "uz"}.issubset(set(grid.columns)):
-            logger.debug("Converting ux,uy,uz to u1,u2,u3")
+            logger.trace("Converting ux,uy,uz to u1,u2,u3")
             grid = grid.rename(columns={"ux": "u1", "uy": "u2", "uz": "u3"})
         # Add missing columns
         if not {"u1", "u2", "u3"}.issubset(set(grid.columns)):
-            logger.debug("Adding dummy displacement columns")
+            logger.trace("Adding dummy displacement columns")
             grid["u1"] = 0.0
             grid["u2"] = 0.0
             grid["u3"] = 0.0
