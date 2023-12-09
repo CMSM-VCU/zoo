@@ -39,9 +39,24 @@ def run():
         type=positive_or_none,  # Actual "unlimited" value is None. Convert negatives to that
         default=config.cache_size,
     )
+    parser.add_argument(
+        "-v", "--verbose", help="increase output verbosity", action="count", default=0
+    )
+
     args = parser.parse_args()
-    logger.debug(f"Command line arguments: {args}")
+
     config.cache_size = args.cache_size
+    if args.verbose > 1:
+        logger.remove()
+        logger.add(sys.stderr, level="TRACE")
+    elif args.verbose > 0:
+        logger.remove()
+        logger.add(sys.stderr, level="DEBUG")
+    else:
+        logger.remove()
+        logger.add(sys.stderr, level="INFO")
+
+    logger.debug(f"Command line arguments: {args}")
 
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, on=True)
     app = QtWidgets.QApplication(sys.argv)

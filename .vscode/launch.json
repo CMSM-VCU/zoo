@@ -19,10 +19,30 @@
             "console": "integratedTerminal",
             "module": "zoo.zoo",
             "cwd": "${workspaceFolder}/src",
-            "args": ["${workspaceFolder}/test_data/kylesheartest1.h5"]
+            "args": ["-v", "${workspaceFolder}/test_data/kylesheartest1.h5"]
         },
         {
-            "name": "Debug Blank",
+            "name": "Run - Trace",
+            "type": "python",
+            "request": "launch",
+            // "program": "${workspaceFolder}/src/zoo",
+            "console": "integratedTerminal",
+            "module": "zoo.zoo",
+            "cwd": "${workspaceFolder}/src",
+            "args": ["-vv"]
+        },
+        {
+            "name": "Run - Debug",
+            "type": "python",
+            "request": "launch",
+            // "program": "${workspaceFolder}/src/zoo",
+            "console": "integratedTerminal",
+            "module": "zoo.zoo",
+            "cwd": "${workspaceFolder}/src",
+            "args": ["-v"]
+        },
+        {
+            "name": "Run - Info",
             "type": "python",
             "request": "launch",
             // "program": "${workspaceFolder}/src/zoo",
