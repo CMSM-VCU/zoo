@@ -86,11 +86,11 @@ class Loader(qtc.QObject):
             logger.critical(f"Out of memory: {path}")
             return None
         except HDF5ExtError as err:
-            logger.critical(f"Failed to read HDF5: {path} - Possibly corrupted")
+            logger.warning(f"Failed to read HDF5: {path} - Possibly corrupted")
             return None
         except Exception as err:
-            logger.critical(f"Error occured while reading: {path}")
-            logger.opt(raw=True).critical(f"{err}")
+            logger.warning(f"Error occured while reading: {path}")
+            logger.opt(raw=True).warning(f"{err}")
             return None
 
         if DEFLATE_DATA:
