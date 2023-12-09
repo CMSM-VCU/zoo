@@ -54,4 +54,4 @@ class H5Model(qtc.QAbstractItemModel):
     def get_data_at_timestep(
         self, dataset: str | Sequence[str], timestep: int
     ) -> np.ndarray:
-        return self._df.loc[timestep, dataset].values
+        return self._df.loc[timestep, dataset].to_numpy()
