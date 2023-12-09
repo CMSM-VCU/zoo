@@ -233,9 +233,7 @@ class MainWindow(qtw.QMainWindow):
             elif path.is_dir():
                 self.open_dropped_files(list(path.iterdir()), depth=depth + 1)
             elif path.is_file() and not utils.has_known_extension(path):
-                logger.info(
-                    f"Unrecognized file extension: {self.filename.suffix} Ignoring..."
-                )
+                logger.info(f"Unrecognized file extension: {path.suffix} Ignoring...")
 
     def unify_tabs(self) -> None:
         for tab in self.other_pages:
