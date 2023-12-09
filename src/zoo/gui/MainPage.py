@@ -84,6 +84,9 @@ class MainPage(qtw.QWidget):
                     "Install pywin32 to use Copy Image (conda install pywin32)"
                 )
             else:
+                if not self.controller.plotter.render_window.IsCurrent():
+                    logger.debug("Window not current. Fixing...")
+                    self.controller.plotter.render_window.MakeCurrent()
                 image = Image.fromarray(self._original_controller.plotter.image)
                 # https://stackoverflow.com/a/61546024/13130795
                 output = BytesIO()
