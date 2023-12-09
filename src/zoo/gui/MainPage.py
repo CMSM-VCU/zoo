@@ -95,6 +95,7 @@ class MainPage(qtw.QWidget):
                 win32clipboard.EmptyClipboard()
                 win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
                 win32clipboard.CloseClipboard()
+                logger.info("Copied image to clipboard")
         else:
             logger.warning("Copy Image is only supported on Windows")
 
