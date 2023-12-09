@@ -70,7 +70,7 @@ class Loader(qtc.QObject):
                     df = Loader.read_as_grid_file(self.filename)
 
         if df is None:
-            logger.warning("Data is `None`, rejecting...")
+            logger.warning(f"Extracted no data from {self.filename}, rejecting...")
             self.rejected.emit()
             return
 
