@@ -4,6 +4,7 @@ import pandas as pd
 from loguru import logger
 from PySide6 import QtCore as qtc
 from tables import is_hdf5_file
+from tables.exceptions import HDF5ExtError
 
 from .utils import EXTENSIONS
 
@@ -84,9 +85,13 @@ class Loader(qtc.QObject):
         except MemoryError as err:
             logger.critical(f"Out of memory: {path}")
             return None
+        except HDF5ExtError as err:
+            logger.critical(f"Failed to read HDF5: {path} - Possibly corrupted")
+            return None
         except Exception as err:
-            logger.critical(f"Failed to read: {path}")
-            raise err
+            logger.critical(f"Error occured while reading: {path}")
+            logger.opt(raw=True).critical(f"{err}")
+            return None
 
         if DEFLATE_DATA:
             logger.info("Converting to categorical datasets...")
