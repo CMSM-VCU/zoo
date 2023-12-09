@@ -127,7 +127,9 @@ class Loader(qtc.QObject):
                 logger.warning(f"Ignoring NaN values found in {path}")
                 grid = grid.dropna(how="any")
         except Exception as err:
-            raise err
+            logger.warning(f"Error occured while reading: {path}")
+            logger.opt(raw=True).warning(f"{err}")
+            return None
         else:
             grid = Loader.postprocess_csv(grid)
             return grid
