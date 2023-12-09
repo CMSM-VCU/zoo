@@ -434,7 +434,7 @@ class ControlPanePrimary(qtw.QWidget):
 
     def copypaste_camera_location(self, event=None) -> None:
         if event.button().value == 1:
-            print("Copied!")
+            logger.info("Copied camera location")
             pyperclip.copy(str(self.controller.camera_location))
         elif event.button().value == 2:
             try:
@@ -446,9 +446,9 @@ class ControlPanePrimary(qtw.QWidget):
                     isinstance(item, Iterable) and len(item) == 3 for item in paste_data
                 ), "Each item in paste data must be a vector of length 3."
             except (SyntaxError, ValueError):
-                print("Bad paste data - syntax")
+                logger.info("Bad paste data - syntax")
             except AssertionError as err:
-                print(err)
+                logger.info(err)
             else:
                 self.controller.camera_location = paste_data
                 self.controller.moved_camera.emit(
@@ -457,7 +457,7 @@ class ControlPanePrimary(qtw.QWidget):
                 self.update_camera_readout(
                     self.controller.camera_location, instigator=id(self)
                 )
-                print("Pasted!")
+                logger.info("Pasted camera location")
 
     def toggle_clipping_box(self, enable: bool):
         self.controller.toggle_clipping_box(enable)
