@@ -6,10 +6,10 @@ from PySide6 import QtCore as qtc
 from tables import is_hdf5_file
 from tables.exceptions import HDF5ExtError
 
+from . import config
 from .utils import EXTENSIONS
 
 THREADED = True  # TODO: Expose as command line option
-DEFLATE_DATA = True  # TODO: Expose as command line option
 COMMENT_CHARACTER = "#"
 DEFAULT_COLUMNS = {0: "x1", 1: "x2", 2: "x3", 3: "material"}
 
@@ -93,7 +93,7 @@ class Loader(qtc.QObject):
             logger.opt(raw=True).warning(f"{err}")
             return None
 
-        if DEFLATE_DATA:
+        if not config.no_deflate:
             logger.info("Converting to categorical datasets...")
             _size_before = max(int(df.memory_usage(deep=True).sum() / 1e6), 1)
 

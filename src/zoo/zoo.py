@@ -40,12 +40,19 @@ def run():
         default=config.cache_size,
     )
     parser.add_argument(
+        "--no-deflate",
+        action="store_true",
+        help="Disable deflation of data by conversion to categorical types. May prevent rare bugs in exchange for increased memory usage",
+        default=config.no_deflate,
+    )
+    parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="count", default=0
     )
 
     args = parser.parse_args()
 
     config.cache_size = args.cache_size
+    config.no_deflate = args.no_deflate
     if args.verbose > 1:
         logger.remove()
         logger.add(sys.stderr, level="TRACE")
