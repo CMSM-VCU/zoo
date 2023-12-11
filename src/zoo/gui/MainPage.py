@@ -86,7 +86,7 @@ class MainPage(qtw.QWidget):
             else:
                 if not self.controller.plotter.render_window.IsCurrent():
                     logger.trace("Window not current. Fixing...")
-                    self.controller.plotter.render_window.MakeCurrent()
+                    self._make_render_window_current()
                 image = Image.fromarray(self._original_controller.plotter.image)
                 # https://stackoverflow.com/a/61546024/13130795
                 output = BytesIO()
@@ -151,3 +151,12 @@ class MainPage(qtw.QWidget):
 
     def disable_cache(self, _=None) -> None:
         self.controller.disable_cache(instigator=id(self))
+
+    def _make_render_window_current(self) -> None:
+        self.controller.plotter.render_window.MakeCurrent()
+
+    def closeEvent(self, QCloseEvent):
+        logger.trace(f"Closing page: {self}")
+        super().closeEvent(QCloseEvent)
+        self._make_render_window_current()  # OpenGL errors if plotter is not current
+        self.controller.plotter.Finalize()  # https://stackoverflow.com/a/73554760

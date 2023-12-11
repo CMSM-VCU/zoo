@@ -240,3 +240,10 @@ class MainWindow(qtw.QMainWindow):
             self.current_page.controller.add_contour(tab.controller.contour_primary)
             tab._master_controller = self.current_page.controller
         self.master_controller = self.current_page.controller
+
+    def closeEvent(self, QCloseEvent):
+        logger.trace("Closing pages before window...")
+        for page in self.pages:
+            page.close()
+        logger.trace("Closing window")
+        super().closeEvent(QCloseEvent)
