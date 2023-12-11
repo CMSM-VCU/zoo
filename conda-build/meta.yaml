@@ -30,7 +30,7 @@ requirements:
         - scipy
         - pyperclip
         - pywin32
-        - matplotlib-base
+        - matplotlib-base # Only needed for its colormaps
         - colorcet
 
 test:
